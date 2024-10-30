@@ -1,8 +1,36 @@
-# React + Vite
+# AIChess Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The client is built with [Vite](https://vitejs.dev/), a frontend build tool and development server supporting hot reload.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v20 or higher)
+- [npm](https://www.npmjs.com/)
+
+### Installation
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Start the development server
+
+```bash
+npm run dev
+```
+
+3. Open the browser and navigate to [http://localhost:3000](http://localhost:3000). Alternatively, you can use the shortcuts provided by Vite to open the browser.
+
+## Structure
+
+The project is structured as follows:
+
+- `public/`: Static files that are served as-is
+- `src/`: Source files
+  - `components/`: Reusable components
+  - `pages/`: Pages
+  - `assets/`: Assets such as images, styles, etc.
