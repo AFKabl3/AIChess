@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-3. Open the browser and navigate to [http://localhost:3000](http://localhost:3000). Alternatively, you can use the shortcuts provided by Vite to open the browser.
+3. Open the browser and navigate to [http://localhost:5173](http://localhost:5173). Alternatively, you can use the shortcuts provided by Vite to open the browser.
 
 ## Structure
 
