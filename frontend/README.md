@@ -25,6 +25,8 @@ npm run dev
 
 3. Open the browser and navigate to [http://localhost:5173](http://localhost:5173). Alternatively, you can use the shortcuts provided by Vite to open the browser.
 
+Note: See `/example` and [`main.jsx`](src/main.jsx) for a simple example for a simple demonstration of routing.
+
 ## Structure
 
 The project is structured as follows:
