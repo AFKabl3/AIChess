@@ -11,9 +11,6 @@ class ChessGame:
             self.board.push(move)
             return True
         return False
-    
+
     def reset_game(self):
         self.board.reset()
-    
-    def get_board_svg(self):
-        return chess.svg.board(board=self.board)

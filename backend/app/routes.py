@@ -1,32 +1,28 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import jsonify, request, Flask
 import chess
+from chess_game import ChessGame
 
-main = Blueprint('main', __name__)
+def create_main_app():
+
+    main = Flask(__name__)
 
 
-game = chess.Board()
+    game = ChessGame()
 
-@main.route('/')
-def index():
-    return render_template('index.html')
+    @main.route('/send_move', methods=['POST'])
+    def send_move():
+        data = request.get_json()
+        move = data['move']
+        game.make_move(move)
+        return jsonify({'fen': game.board.fen()})
 
-@main.route('/move', methods=['POST'])
-def move():
-    global game
-    data = request.get_json()
-    move_uci = data.get('move')
-    try:
-        move = chess.Move.from_uci(move_uci)
-        if move in game.legal_moves:
-            game.push(move)
-            return jsonify({'status': 'success', 'fen': game.fen()})
-        else:
-            return jsonify({'status': 'invalid move'}), 400
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+    @main.route('/get_board', methods=['GET'])
+    def get_board():
+        return jsonify({'fen': game.board.fen()})
 
-@main.route('/reset', methods=['POST'])
-def reset():
-    global game
-    game = chess.Board()
-    return jsonify({'status': 'reset', 'fen': game.fen()})
+    @main.route('/reset_game', methods=['POST'])
+    def reset_game():
+        game.reset_game()
+        return jsonify({'fen': game.board.fen()})
+    
+    return main
