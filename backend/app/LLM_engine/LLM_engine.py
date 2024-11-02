@@ -1,6 +1,9 @@
 from langchain_huggingface import HuggingFaceEndpoint
 from huggingface_hub import InferenceClient
 import os
+from stockfish import Stockfish
+
+stockfish = Stockfish(path="../stockfish/stockfish-windows-x86-64-avx2.exe")
 
 # Define API key
 SECRET_KEY = "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"
@@ -8,7 +11,7 @@ SECRET_KEY = "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"
 client = InferenceClient(api_key=SECRET_KEY)
 
 
-class chat_box:
+class ChatBox:
     def __init__(self):
         self.conversation_history = []
         self.client = InferenceClient(api_key=SECRET_KEY)
@@ -34,12 +37,9 @@ class chat_box:
         
         return answer
     
-    def reset(self):
+    def reset_memory(self):
         self.conversation_history = []
-        return "Chat history has been reset."
-
-# Define the chat box
-new_chat_box = chat_box()
+        pass
 
 
 
