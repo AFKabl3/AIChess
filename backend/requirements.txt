@@ -1,3 +1,5 @@
 Flask
 python-chess
-stockfish
+chess
+python-dotenv
+requests
