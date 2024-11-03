@@ -4,3 +4,4 @@ node_modules
 /backend/app/__pycache__
 /backend/app/stockfish
 /backend/app/LLM_engine/.env
+/backend/app/LLM_engine/__pycache__

@@ -1,7 +1,7 @@
 import requests
 from LLM_engine.utilities import is_move_valid
 from LLM_engine.utilities import is_fen_valid
-import chess
+import chess # type: ignore
 
 class Stockfish:
     def __init__(self,depth=10):
