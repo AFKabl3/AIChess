@@ -12,6 +12,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { Typography } from "@mui/material";
 import { ExamplePage } from "./pages/ExamplePage.jsx";
+import { ChessboardPage } from "./pages/ChessboardPage.jsx";
 import Root from "./Root.jsx";
 import theme from "./theme.js";
 
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "example",
         element: <ExamplePage />,
+      },
+      {
+        path: "chessboard",
+        element: <ChessboardPage />,
       },
       {
         path: "/*",
