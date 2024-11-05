@@ -40,8 +40,53 @@ export const ChessboardPage = () => {
       const winner = game.in_checkmate() ? (game.turn() === 'w' ? 'Black wins!' : 'White wins!') : 'Draw!';
       setStatusMessage(winner);
       setIsGameOver(true);
+      console.log(winner);
+    } 
+    else if (game.in_check()) { 
+      const kingPos = getKingPosition(game);
+      
+      setOptionSquares({ [kingPos]: { backgroundColor: "rgba(255, 0, 0, 0.5)" } });
+    } 
+    else {
+      setOptionSquares({});
     }
-  }, [game]);
+  }, [game])
+
+
+  /**
+   * Retrieves the position of the king on the chessboard.
+   * 
+   * @param {Object} game - The current chess game instance (from chess.js).
+   * 
+   * @returns {string|null} The position of the king on the board in chess notation
+   *                        (e.g., "e1") or `null` if the king is not found.
+   * 
+   * This function searches through the current chessboard for the king ('k' piece with 'w/b' color)
+   * and returns its position in standard chess notation.
+   */
+  function getKingPosition(game) {
+    // Flatten the 2D board array and iterate over each square
+    const kingPosition = []
+      .concat(...game.board())
+      .map((piece, index) => {
+        // Check if the piece is the king
+        if (piece !== null && piece.type === 'k' && piece.color === game.turn()) {
+          return index; 
+        }
+      })
+      .filter(Number.isInteger); 
+
+    // If the king is found, convert the index to chess notation
+    if (kingPosition.length > 0) {
+      const pieceIndex = kingPosition[0]; 
+      const row = 'abcdefgh'[pieceIndex % 8]; 
+      const column = Math.ceil((64 - pieceIndex) / 8);
+      return row + column; 
+    }
+
+    // Return null if the king is not found
+    return null;
+  }
 
 
   /**
@@ -297,7 +342,7 @@ export const ChessboardPage = () => {
 
   return (
     <Container
-      sx={{
+      sx = {{
         minHeight: '100vh',   // Makes the box cover the full viewport height
         minWidth: '100vw',    // Makes the box cover the full viewport width
         display: 'flex',      // Centers children inside the box
@@ -312,7 +357,7 @@ export const ChessboardPage = () => {
           flexDirection: 'column'
         }}
       >
-        <Chessboard className="customBoardStyle"
+        <Chessboard className = "customBoardStyle"
           position = { game.fen() }
           onPieceDrop = { onDrop }
 
@@ -324,7 +369,7 @@ export const ChessboardPage = () => {
           promotionToSquare = { moveTo } 
           showPromotionDialog = { showPromotionDialog }
 
-          customBoardStyle={{
+          customBoardStyle = {{
             borderRadius: "4px",
             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)"
           }} 
@@ -342,46 +387,38 @@ export const ChessboardPage = () => {
             gap: '3',
           }}    
         >
-          <Button variant="contained" size="large" onClick={() => {
+          <Button variant = "contained" size = "large" sx = {{ margin: '10px' }} onClick = {() => {
               safeGameMutate(game => { game.reset(); });
               setMoveSquares({});
               setOptionSquares({});
               setRightClickedSquares({});
-            }}>
+              setStatusMessage('');
+              setIsGameOver(false);
+            }}
+          >
             reset
-          </Button>
-          
-          <Button variant="contained" size="large" onClick={() => {
-            safeGameMutate(game => {
-              game.undo();
-            });
-            setMoveSquares({});
-            setOptionSquares({});
-            setRightClickedSquares({});
-          }}>
-            undo
           </Button>
         </Box>
       </Box>
       <Stack
-      sx={{
-        width: isGameOver ? 'auto' : '0px',
-        padding: 2,
-        margin: 2,
-        borderRadius: 1,
-        backgroundColor: isGameOver ? 'rgba(0, 0, 0, 0.7)' : 'transparent',
-        color: isGameOver ? 'white' : 'transparent',
-        transition: 'width 0.3s ease-in-out',
-        boxShadow: isGameOver ? '0 4px 10px rgba(0, 0, 0, 0.5)' : 'none',
-        textAlign: 'center',
-      }}
-    >
-      {isGameOver && (
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-          {statusMessage}
-        </Typography>
-      )}
-    </Stack>
+        sx = {{
+          width: isGameOver ? 'auto' : '0px',
+          padding: 2,
+          margin: 2,
+          borderRadius: 1,
+          backgroundColor: isGameOver ? 'rgba(0, 0, 0, 0.7)' : 'transparent',
+          color: isGameOver ? 'white' : 'transparent',
+          transition: 'width 0.3s ease-in-out',
+          boxShadow: isGameOver ? '0 4px 10px rgba(0, 0, 0, 0.5)' : 'none',
+          textAlign: 'center',
+        }}
+      >
+        {isGameOver && (
+          <Typography variant = "h6" sx = {{ fontWeight: 'bold' }}>
+            {statusMessage}
+          </Typography>
+        )}
+      </Stack>
     </Container>
   );
 }
