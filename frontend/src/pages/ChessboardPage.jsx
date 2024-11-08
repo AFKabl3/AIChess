@@ -7,26 +7,26 @@ import { Chess } from "chess.js";
 export const ChessboardPage = () => {
 
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
-  const [game, setGame] = useState(new Chess());                             
+  const [game, setGame] = useState(new Chess());
 
   // Tracks the initial square of the piece being moved (e.g., "e2").
-  const [moveFrom, setMoveFrom] = useState("");                               
+  const [moveFrom, setMoveFrom] = useState("");
 
   // Tracks the target square of the piece move (e.g., "e4").
-  const [moveTo, setMoveTo] = useState(null);                                 
+  const [moveTo, setMoveTo] = useState(null);
 
   // Flag to trigger the pawn promotion dialog if a pawn reaches the opposite side of the board.
-  const [showPromotionDialog, setShowPromotionDialog] = useState(false);      
+  const [showPromotionDialog, setShowPromotionDialog] = useState(false);
 
   // Tracks squares that have been right-clicked for marking, commonly used to highlight potential moves or key squares for reference.
-  const [rightClickedSquares, setRightClickedSquares] = useState({});          
+  const [rightClickedSquares, setRightClickedSquares] = useState({});
 
   // Highlights squares related to the current move, like the start and target squares, to provide visual feedback on each move.
-  const [moveSquares, setMoveSquares] = useState({});                          
+  const [moveSquares, setMoveSquares] = useState({});
 
   // Highlights squares to show valid moves when a piece is selected, using a unique color or style.
-  const [optionSquares, setOptionSquares] = useState({});  
-  
+  const [optionSquares, setOptionSquares] = useState({});
+
   // State to hold the status message to be displayed to the user
   const [statusMessage, setStatusMessage] = useState('');
 
@@ -41,12 +41,12 @@ export const ChessboardPage = () => {
       setStatusMessage(winner);
       setIsGameOver(true);
       console.log(winner);
-    } 
-    else if (game.in_check()) { 
+    }
+    else if (game.in_check()) {
       const kingPos = getKingPosition(game);
-      
+
       setOptionSquares({ [kingPos]: { backgroundColor: "rgba(255, 0, 0, 0.5)" } });
-    } 
+    }
     else {
       setOptionSquares({});
     }
@@ -71,17 +71,17 @@ export const ChessboardPage = () => {
       .map((piece, index) => {
         // Check if the piece is the king
         if (piece !== null && piece.type === 'k' && piece.color === game.turn()) {
-          return index; 
+          return index;
         }
       })
-      .filter(Number.isInteger); 
+      .filter(Number.isInteger);
 
     // If the king is found, convert the index to chess notation
     if (kingPosition.length > 0) {
-      const pieceIndex = kingPosition[0]; 
-      const row = 'abcdefgh'[pieceIndex % 8]; 
+      const pieceIndex = kingPosition[0];
+      const row = 'abcdefgh'[pieceIndex % 8];
       const column = Math.ceil((64 - pieceIndex) / 8);
-      return row + column; 
+      return row + column;
     }
 
     // Return null if the king is not found
@@ -103,7 +103,7 @@ export const ChessboardPage = () => {
    * React to track changes and re-render as needed.
    */
   function safeGameMutate(modify) {
-    setGame( (g) => { const update = {...g}; modify(update); return update; } )
+    setGame((g) => { const update = { ...g }; modify(update); return update; })
   }
 
   /**
@@ -136,9 +136,9 @@ export const ChessboardPage = () => {
     // Map over each possible move and set visual highlights on the board
     moves.map(move => {
       newSquares[move.to] = {
-        background: game.get(move.to) && game.get(move.to).color !== game.get(square).color ? 
-        "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)" : 
-        "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
+        background: game.get(move.to) && game.get(move.to).color !== game.get(square).color ?
+          "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)" :
+          "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
         borderRadius: "50%"
       };
       return move;
@@ -174,21 +174,21 @@ export const ChessboardPage = () => {
    */
   function onSquareClick(square) {
     setRightClickedSquares({});
-    
+
     // Set starting square for move
-    if ( !moveFrom ) {
+    if (!moveFrom) {
       const hasMoveOptions = getMoveOptions(square);
 
-      if (hasMoveOptions) 
+      if (hasMoveOptions)
         setMoveFrom(square);
       return;
     }
 
     // Set destination square for move
-    if ( !moveTo ) {
+    if (!moveTo) {
       // Check if the clicked square is a valid destination
-      const moves = game.moves( { moveFrom, verbose: true } );
-      const foundMove = moves.find( m => m.from === moveFrom && m.to === square );
+      const moves = game.moves({ moveFrom, verbose: true });
+      const foundMove = moves.find(m => m.from === moveFrom && m.to === square);
 
       // Handle invalid move by checking if a new piece was clicked
       if (!foundMove) {
@@ -201,8 +201,8 @@ export const ChessboardPage = () => {
       setMoveTo(square);
 
       // If promotion move
-      if ((foundMove.color === "w" && foundMove.piece === "p" && square[1] === "8") || 
-          (foundMove.color === "b" && foundMove.piece === "p" && square[1] === "1")) {
+      if ((foundMove.color === "w" && foundMove.piece === "p" && square[1] === "8") ||
+        (foundMove.color === "b" && foundMove.piece === "p" && square[1] === "1")) {
         setShowPromotionDialog(true);
         return;
       }
@@ -210,12 +210,12 @@ export const ChessboardPage = () => {
       // Handle regular move
       const gameCopy = { ...game };
       let move_UCI_notation = moveFrom + square;
-      const move = gameCopy.move( move_UCI_notation, { sloppy: true } );
-      
+      const move = gameCopy.move(move_UCI_notation, { sloppy: true });
+
       // Handle invalid move scenario
       if (move === null) {
         const hasMoveOptions = getMoveOptions(square);
-        if (hasMoveOptions) 
+        if (hasMoveOptions)
           setMoveFrom(square);
         return;
       }
@@ -308,7 +308,7 @@ export const ChessboardPage = () => {
     const randomIndex = Math.floor(Math.random() * possibleMove.length);
 
     // Play the randomly selected move and update the game state
-    safeGameMutate( (game) => game.move(possibleMove[randomIndex]) )
+    safeGameMutate((game) => game.move(possibleMove[randomIndex]))
   }
 
 
@@ -327,14 +327,14 @@ export const ChessboardPage = () => {
     let move = null;
 
     // Try to make a move from source to target; promote pawns to queens by default
-    safeGameMutate( (game) => {
-      move = game.move( { from: source, to: target, promotion: 'q' } )
+    safeGameMutate((game) => {
+      move = game.move({ from: source, to: target, promotion: 'q' })
     })
 
     // If the move is invalid, return false to indicate an illegal move
-    if (move == null) 
+    if (move == null)
       return false
-    
+
     // If the move is valid, trigger a random computer move after a 200ms delay
     setTimeout(makeRandomMove, 200);
     return true;
@@ -342,7 +342,8 @@ export const ChessboardPage = () => {
 
   return (
     <Container
-      sx = {{
+      sx={{
+        position: 'relative',
         minHeight: '100vh',   // Makes the box cover the full viewport height
         minWidth: '100vw',    // Makes the box cover the full viewport width
         display: 'flex',      // Centers children inside the box
@@ -351,74 +352,78 @@ export const ChessboardPage = () => {
       }}
     >
       <Box
-        sx = {{
-          width: '30%',
+        sx={{
+          width: '40%',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          position: 'relative', // Added to allow absolute positioning inside this box
+          alignItems: 'center'   // Center the board and message horizontally
         }}
       >
-        <Chessboard className = "customBoardStyle"
-          position = { game.fen() }
-          onPieceDrop = { onDrop }
-
-          animationDuration = { 200 } 
-          arePiecesDraggable = { true } 
-          onSquareClick = { onSquareClick } 
-          onSquareRightClick = { onSquareRightClick } 
-          onPromotionPieceSelect = { onPromotionPieceSelect } 
-          promotionToSquare = { moveTo } 
-          showPromotionDialog = { showPromotionDialog }
-
-          customBoardStyle = {{
-            borderRadius: "4px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)"
-          }} 
-
-          customSquareStyles = { { ...moveSquares, ...optionSquares, ...rightClickedSquares } }
-          customDarkSquareStyle = { { backgroundColor : "#769656" } }
-          customLightSquareStyle = { { backgroundColor : "#EEEED2" } }
+        <Chessboard
+          className="customBoardStyle"
+          position={game.fen()}
+          onPieceDrop={onDrop}
+          animationDuration={200}
+          arePiecesDraggable={true}
+          onSquareClick={onSquareClick}
+          onSquareRightClick={onSquareRightClick}
+          onPromotionPieceSelect={onPromotionPieceSelect}
+          promotionToSquare={moveTo}
+          showPromotionDialog={showPromotionDialog}
+          customBoardStyle={{
+            borderRadius: "10px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
+          }}
+          customSquareStyles={{ ...moveSquares, ...optionSquares, ...rightClickedSquares }}
+          customDarkSquareStyle={{ backgroundColor: "#769656" }}
+          customLightSquareStyle={{ backgroundColor: "#EEEED2" }}
         />
-        <Box 
-          sx = {{
+
+        {/* Game over message overlay */}
+        {isGameOver && (
+          <Stack
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              padding: 2,
+              borderRadius: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              color: 'white',
+              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              {statusMessage}
+            </Typography>
+          </Stack>
+        )}
+
+        <Box
+          sx={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "center", 
+            alignItems: "center",
             margin: '2',
             gap: '3',
-          }}    
+          }}
         >
-          <Button variant = "contained" size = "large" sx = {{ margin: '10px' }} onClick = {() => {
-              safeGameMutate(game => { game.reset(); });
-              setMoveSquares({});
-              setOptionSquares({});
-              setRightClickedSquares({});
-              setStatusMessage('');
-              setIsGameOver(false);
-            }}
+          <Button variant="contained" size="large" sx={{ margin: '10px' }} onClick={() => {
+            safeGameMutate(game => { game.reset(); });
+            setMoveSquares({});
+            setOptionSquares({});
+            setRightClickedSquares({});
+            setStatusMessage('');
+            setIsGameOver(false);
+          }}
           >
             reset
           </Button>
         </Box>
       </Box>
-      <Stack
-        sx = {{
-          width: isGameOver ? 'auto' : '0px',
-          padding: 2,
-          margin: 2,
-          borderRadius: 1,
-          backgroundColor: isGameOver ? 'rgba(0, 0, 0, 0.7)' : 'transparent',
-          color: isGameOver ? 'white' : 'transparent',
-          transition: 'width 0.3s ease-in-out',
-          boxShadow: isGameOver ? '0 4px 10px rgba(0, 0, 0, 0.5)' : 'none',
-          textAlign: 'center',
-        }}
-      >
-        {isGameOver && (
-          <Typography variant = "h6" sx = {{ fontWeight: 'bold' }}>
-            {statusMessage}
-          </Typography>
-        )}
-      </Stack>
     </Container>
   );
 }
