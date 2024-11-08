@@ -1,14 +1,24 @@
 from langchain_huggingface import HuggingFaceEndpoint
 from huggingface_hub import InferenceClient
 import os
+from backend.app.stockfish_api import Stockfish
+from dotenv import load_dotenv # type: ignore
 
-# Define API key
-SECRET_KEY = "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"
+#Load the environment variables
+load_dotenv()
+
+#Get the secret key and stockfish path from the environment variables
+SECRET_KEY = os.getenv("SECRET_KEY")
+STOCKFISH_PATH = os.getenv("STOCKFISH_PATH")
+
+stockfish = Stockfish(path=STOCKFISH_PATH)
+
 
 client = InferenceClient(api_key=SECRET_KEY)
 
 
-class chat_box:
+#Super class for each agent
+class ChatBox:
     def __init__(self):
         self.conversation_history = []
         self.client = InferenceClient(api_key=SECRET_KEY)
@@ -34,12 +44,9 @@ class chat_box:
         
         return answer
     
-    def reset(self):
+    def reset_memory(self):
         self.conversation_history = []
-        return "Chat history has been reset."
-
-# Define the chat box
-new_chat_box = chat_box()
+        pass
 
 
 

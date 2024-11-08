@@ -1,2 +1,6 @@
 Flask
+Flask-Cors
 python-chess
+chess
+python-dotenv
+requests
