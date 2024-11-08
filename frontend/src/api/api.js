@@ -1,3 +1,9 @@
+import {
+  answerChessQuestion,
+  evaluateMove,
+  getSuggestedMove,
+  getSuggestedMoveWithExplanation,
+} from "./chess";
 import { example } from "./example";
 
 export const Method = {
@@ -10,4 +16,8 @@ export const Method = {
 
 export const api = {
   example,
+  evaluateMove,
+  answerChessQuestion,
+  getSuggestedMove,
+  getSuggestedMoveWithExplanation,
 };
