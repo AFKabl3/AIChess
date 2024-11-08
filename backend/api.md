@@ -1,18 +1,29 @@
 # Chess Analysis API Specification
 
-## 1. Evaluate Move Endpoint
+## Table of Contents
+
+1. [Endpoints](#endpoints)
+   - [1. Evaluate Move Endpoint](#1-evaluate-move-endpoint)
+   - [2. Answer Chess Question Endpoint](#2-answer-chess-question-endpoint)
+   - [3. Get Suggested Move Endpoint](#3-get-suggested-move-endpoint)
+   - [4. Get Suggested Move with Explanation Endpoint](#4-get-suggested-move-with-explanation-endpoint)
+2. [Error Handling](#error-handling)
+
+## Endpoints
+
+### 1. Evaluate Move Endpoint
 
 - **Endpoint**: `/evaluate_move`
 - **Method**: `POST`
 - **Description**: Accepts a chess board in FEN notation and a move in UCI notation, then returns an evaluation score and feedback string about the move.
 
-### Request Parameters
+#### Request Parameters
 
 - **Body (JSON)**:
   - `fen` (string, required): The FEN string representing the board state.
   - `move` (string, required): The UCI notation of the move to evaluate (e.g., "e2e4").
 
-### Response
+#### Response
 
 - **200 OK**:
   - **Body (JSON)**:
@@ -44,19 +55,19 @@ POST /evaluate_move
 
 </details>
 
-## 2. Answer Chess Question Endpoint
+### 2. Answer Chess Question Endpoint
 
 - **Endpoint**: `/answer_question`
 - **Method**: `POST`
 - **Description**: Accepts a chess board in FEN notation and a question about the board, then returns an answer.
 
-### Request Parameters
+#### Request Parameters
 
 - **Body (JSON)**:
   - `fen` (string, required): The FEN string representing the board state.
   - `question` (string, required): The question regarding the position (e.g., "What is the best move for white?").
 
-### Response
+#### Response
 
 - **200 OK**:
   - **Body (JSON)**:
@@ -86,18 +97,18 @@ POST /answer_question
 
 </details>
 
-## 3. Get Suggested Move Endpoint
+### 3. Get Suggested Move Endpoint
 
 - **Endpoint**: `/suggest_move`
 - **Method**: `POST`
 - **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation based on the position.
 
-### Request Parameters
+#### Request Parameters
 
 - **Body (JSON)**:
   - `fen` (string, required): The FEN string representing the board state.
 
-### Response
+#### Response
 
 - **200 OK**:
   - **Body (JSON)**:
@@ -126,18 +137,18 @@ POST /suggest_move
 
 </details>
 
-## 4. Get Suggested Move with Explanation Endpoint
+### 4. Get Suggested Move with Explanation Endpoint
 
 - **Endpoint**: `/suggest_move_with_explanation`
 - **Method**: `POST`
 - **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation, along with a textual explanation for the move.
 
-### Request Parameters
+#### Request Parameters
 
 - **Body (JSON)**:
   - `fen` (string, required): The FEN string representing the board state.
 
-### Response
+#### Response
 
 - **200 OK**:
   - **Body (JSON)**:
@@ -167,3 +178,34 @@ POST /suggest_move_with_explanation
 ```
 
 </details>
+
+## Error Handling
+
+For all error responses, the REST API will return the relevant HTTP status code (4xx or 5xx), along with a JSON object containing details about the error. The error response should includes the type, and an optional message providing more context.
+
+### Error Response Format
+
+- **Response Body (JSON)**:
+  - `type` (string): A brief description of the error type (e.g., `not_found`, `invalid_fen_notation`, `invalid_move`).
+  - `message` (string, optional): Additional information about the error, if available.
+
+### Common Error Codes
+
+- **400 Bad Request**: Returned when the request is malformed or missing required parameters.
+
+- **404 Not Found**: Returned when the requested resource or endpoint does not exist.
+
+- **422 Unprocessable Entity**: Returned when the server understands the request but cannot process the provided data (e.g., invalid chess notation).
+
+- **500 Internal Server Error**: Returned when an unexpected server error occurs.
+
+### Example Error Response
+
+If an invalid FEN string is provided in the request to `/evaluate_move`, the response might be (with status code 422):
+
+```json
+{
+  "type": "invalid_fen_notation",
+  "message": "Invalid FEN string provided."
+}
+```
