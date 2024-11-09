@@ -1,7 +1,11 @@
 from flask import jsonify, request, Flask
 from flask_cors import CORS
 import chess
-from chess_engine import ChessEngine
+# import requests
+from .chess_engine import ChessEngine
+
+STOCKFISH_API_URL = "http://localhost:5001/stockfish/evaluate"
+LLM_API_URL = "http://localhost:5002/llm/analyze"
 
 def create_main_app():
 
@@ -42,4 +46,63 @@ def create_main_app():
         game.reset_game()
         return jsonify({'fen': game.board.fen()})
     
+    @app.route('/evaluate_move', methods=['POST'])
+    def evaluate_move():
+        data = request.get_json()
+        fen = data.get("fen")
+        move = data.get("move")
+
+        # Validate FEN and move data
+        if not fen or not move:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'fen' and 'move' fields are required."
+            }), 400
+
+        # Check if the FEN notation is valid
+        try:
+            chess.Board(fen)  # This will create an error if FEN is invalid
+        except ValueError:
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422
+
+        # Check if the move notation is valid
+        try:
+            chess.Move.from_uci(move)  # Error if UCI is invalid
+        except ValueError:
+            return jsonify({
+                "type": "invalid_move",
+                "message": "Invalid move notation provided."
+            }), 422
+
+        # Hardcoded responses for demonstration, will need to merge with LLM and Stockfish
+        evaluation = -0.3  # Example evaluation score
+        suggested_move = "Nf6"  # Example suggested move
+        feedback = "The move is solid but does not improve the black's position significantly."  # Example feedback
+
+        # Response to client
+        return jsonify({
+            "evaluation": evaluation,
+            "feedback": feedback,
+            "suggested_move": suggested_move
+        }), 200
+
+   
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "type": "not_found",
+            "message": "The requested resource was not found."
+        }), 404
+
+    
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return jsonify({
+            "type": "internal_server_error",
+            "message": "An unexpected error occurred."
+        }), 500
+
     return app
