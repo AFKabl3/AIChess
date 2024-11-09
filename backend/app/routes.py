@@ -1,5 +1,6 @@
 from flask import jsonify, request, Flask
 from flask_cors import CORS
+from app.LLM_engine import utilities as check
 import chess
 # import requests
 from .chess_engine import ChessEngine
@@ -61,7 +62,11 @@ def create_main_app():
 
         # Check if the FEN notation is valid
         try:
-            chess.Board(fen)  # This will create an error if FEN is invalid
+            if not check.is_fen_valid(fen):
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": "Invalid FEN string provided."
+                }),422  # This will create an error if FEN is invalid
         except ValueError:
             return jsonify({
                 "type": "invalid_fen_notation",
@@ -70,17 +75,21 @@ def create_main_app():
 
         # Check if the move notation is valid
         try:
-            chess.Move.from_uci(move)  # Error if UCI is invalid
+            if not check.is_move_valid(fen, move):  # true if valid, false otherwise
+                return jsonify({
+                    "type": "invalid_move",
+                    "message": "Invalid move notation provided."
+                }), 422
         except ValueError:
             return jsonify({
                 "type": "invalid_move",
                 "message": "Invalid move notation provided."
             }), 422
 
-        # Hardcoded responses for demonstration, will need to merge with LLM and Stockfish
+        # Hardcoded responses for demonstration will need to merge with LLM and Stockfish
         evaluation = -0.3  # Example evaluation score
         suggested_move = "Nf6"  # Example suggested move
-        feedback = "The move is solid but does not improve the black's position significantly."  # Example feedback
+        feedback = "The move is solid but does not improve the blacks position significantly."  # Example feedback
 
         # Response to client
         return jsonify({
