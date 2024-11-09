@@ -1,8 +1,9 @@
-// src/pages/ChessPage.jsx
-import React, { useState, useRef, useEffect } from "react";
-import { Box, TextField, IconButton, Typography, Paper } from "@mui/material";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { Box, IconButton, Paper, TextField, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { api } from "../api/api";
 import "./ChessPage.css";
+import { ChessboardPage } from "./ChessboardPage";
 
 function ChessPage() {
   const [messages, setMessages] = useState([]);
@@ -29,9 +30,22 @@ function ChessPage() {
     }
   };
 
+  const requestFeedback = async (fen, move) => {
+    const response = await api.evaluateMove(fen, move);
+    const data = await response.json();
+    console.log(data);
+    return data.feedback;
+  };
+
   return (
     <Box className="chess-page-container">
-      <Box className="chess-board" />
+      <ChessboardPage
+        onPlayerMove={(move, fen) => {
+          requestFeedback(fen, move).then((answer) => {
+            setMessages([...messages, `You played ${move}. ${answer}`]);
+          });
+        }}
+      />
       <Box className="notation-interface">
         <Typography variant="h6">Notation</Typography>
       </Box>

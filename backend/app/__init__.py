@@ -21,6 +21,7 @@ def create_app():
 
         # Mock evaluation logic
         evaluation_score = stockfish.evaluate_move_score(fen, move)
+        print(evaluation_score)
         feedback = coach.ask_move_feedback(move, fen)
 
         return jsonify({
