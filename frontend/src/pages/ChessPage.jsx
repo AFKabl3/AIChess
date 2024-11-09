@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, TextField, IconButton, Typography, Paper } from "@mui/material";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { ChessboardPage } from "./ChessboardPage";
 import "./ChessPage.css";
 
 function ChessPage() {
@@ -31,7 +32,9 @@ function ChessPage() {
 
   return (
     <Box className="chess-page-container">
-      <Box className="chess-board" />
+      <Box className="chess-board" >
+      <ChessboardPage />
+      </Box>
       <Box className="notation-interface">
         <Typography variant="h6">Notation</Typography>
       </Box>
