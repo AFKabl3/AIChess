@@ -4,8 +4,8 @@ import chess
 # import requests
 from .chess_engine import ChessEngine
 
-STOCKFISH_API_URL = "http://localhost:5001/stockfish/evaluate"
-LLM_API_URL = "http://localhost:5002/llm/analyze"
+# STOCKFISH_API = ""
+# LLM_API = ""
 
 def create_main_app():
 
