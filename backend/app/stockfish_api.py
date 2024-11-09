@@ -1,19 +1,18 @@
 import requests
-from LLM_engine.utilities import is_move_valid
-from LLM_engine.utilities import is_fen_valid
-import chess # type: ignore
+from .LLM_engine import is_fen_valid, is_move_valid
+import chess  # type: ignore
+
 
 class Stockfish:
-    def __init__(self,depth=10):
-        self.url ="https://chess-api.com/v1"
+    def __init__(self, depth=10):
+        self.url = "https://chess-api.com/v1"
         self.headers = {
             "Content-Type": "application/json"
         }
         self.parameters = {
             "maxThinkingTime": 100,
-            "depth":depth
+            "depth": depth
         }
-        
 
     def _send_request(self, payload):
         payload = {**self.parameters, **payload}
@@ -21,8 +20,8 @@ class Stockfish:
         if response.status_code == 200:
             return response.json()
         else:
-            raise Exception(f"Request failed with status code {response.status_code}")
-    
+            raise Exception(
+                f"Request failed with status code {response.status_code}")
 
     def get_evaluation(self, fen):
         if not is_fen_valid(fen):
@@ -32,7 +31,7 @@ class Stockfish:
         }
         response = self._send_request(payload)
         return response.get("eval", "No evaluation available")
-    
+
     def evaluate_move_score(self, fen, move, player_color="w"):
         if not is_fen_valid(fen) or not is_move_valid(fen, move):
             return "No score available"
@@ -53,9 +52,6 @@ class Stockfish:
         if player_color == "b":
             evaluation_diff = (evaluation_before - evaluation_after)
         else:
-            evaluation_diff = (evaluation_after - evaluation_before) 
+            evaluation_diff = (evaluation_after - evaluation_before)
 
         return evaluation_diff
-
-
-
