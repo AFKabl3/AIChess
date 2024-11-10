@@ -11,7 +11,7 @@ import chess
 def is_valid_fen(fen):
     try:
         board = chess.Board(fen)
-        return True
+        return board.is_valid()     # <- check basic chess rules => we have to trust the frontend engine
     except ValueError:
         return False
 
