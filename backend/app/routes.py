@@ -1,4 +1,4 @@
-from flask import jsonify, request, Flask
+from flask import jsonify, Flask
 from flask_cors import CORS
 from app.LLM_engine import utilities as check
 import chess
@@ -6,7 +6,9 @@ from .chess_engine import ChessEngine
 from .stockfish_api import Stockfish  # Import the Stockfish class
 from app.LLM_engine import LLM_engine
 from .LLM_engine.agents.main_coach import MainCoach
-import pdb;
+import pdb
+from flask import request
+
 
 
 def create_main_app():
@@ -56,6 +58,9 @@ def create_main_app():
         data = request.get_json()
         fen = data.get("fen")
         move = data.get("move")
+
+        # pdb.set_trace()
+        # pdb.set_trace()
 
         # Validate FEN and move data
         if not fen or not move:
