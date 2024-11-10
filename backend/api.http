@@ -1,0 +1,51 @@
+### Valid Request
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1b1kbnr/pppq1ppp/2n1P3/8/8/8/PPP1PPPP/RNB1KBNR b KQkq - 0 1",
+  "move": "d7e6"
+}
+### Missing FEN Field
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "move": "e7e5"
+}
+### Missing Move Field
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
+}
+### Invalid FEN String
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "invalid_fen_string",
+  "move": "e7e5"
+}
+### Invalid Move Notation
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
+  "move": "Kb4"
+}
+### Empty Request Body
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{}
+### Non-JSON Content Type
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: text/plain
+
+{
+  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
+  "move": "e7e5"
+}

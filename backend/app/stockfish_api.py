@@ -1,6 +1,6 @@
 import requests
-from LLM_engine.utilities import is_move_valid
-from LLM_engine.utilities import is_fen_valid
+from app.LLM_engine.utilities import is_move_valid
+from app.LLM_engine.utilities import is_fen_valid
 import chess # type: ignore
 
 class Stockfish:

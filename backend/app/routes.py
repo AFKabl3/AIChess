@@ -2,11 +2,12 @@ from flask import jsonify, request, Flask
 from flask_cors import CORS
 from app.LLM_engine import utilities as check
 import chess
-# import requests
 from .chess_engine import ChessEngine
+from .stockfish_api import Stockfish  # Import the Stockfish class
+from app.LLM_engine import LLM_engine
+from .LLM_engine.agents.main_coach import MainCoach
+import pdb;
 
-# STOCKFISH_API = ""
-# LLM_API = ""
 
 def create_main_app():
 
@@ -14,6 +15,9 @@ def create_main_app():
     CORS(app)
 
     game = ChessEngine()
+    stockfish = Stockfish(depth=10)
+    # chatbox = LLM_engine.ChatBox()
+    coach = MainCoach(player_color="b")
 
     @app.route('/api/send_possible_move', methods=['POST'])
     def send_possible_move():
@@ -85,16 +89,43 @@ def create_main_app():
                 "type": "invalid_move",
                 "message": "Invalid move notation provided."
             }), 422
+        
+        try:
+            # pdb.set_trace()
+
+            evaluation_diff = stockfish.evaluate_move_score(fen, move, player_color="b")  # Assuming black's move
+            if evaluation_diff == "No score available":
+                return jsonify({
+                    "type": "evaluation_error",
+                    "message": "Could not evaluate the move."
+                }), 500
+        except Exception as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": str(e)
+            }), 500
+
 
         # Hardcoded responses for demonstration will need to merge with LLM and Stockfish
-        evaluation = -0.3  # Example evaluation score
+        evaluation = evaluation_diff  # Evaluation we get from stockfish
         suggested_move = "Nf6"  # Example suggested move
-        feedback = "The move is solid but does not improve the blacks position significantly."  # Example feedback
+      # Prepare data for the LLM
+       
+
+        # Send the prompt to the LLM via ChatBox
+        try:
+            # llm_feedback = chatbox.ask(prompt)
+            response = coach.ask_move_feedback(move, fen)
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
 
         # Response to client
         return jsonify({
             "evaluation": evaluation,
-            "feedback": feedback,
+            "feedback": response,
             "suggested_move": suggested_move
         }), 200
 
