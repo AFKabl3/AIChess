@@ -1,7 +1,7 @@
 # from langchain_huggingface import HuggingFaceEndpoint
 from huggingface_hub import InferenceClient
 import os
-from app.stockfish_api import Stockfish
+from AIChess.backend.app.stockfish_api import Stockfish
 from dotenv import load_dotenv # type: ignore
 
 #Load the environment variables

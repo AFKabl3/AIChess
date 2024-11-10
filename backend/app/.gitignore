@@ -1,9 +1,9 @@
 node_modules
-/backend/venv
+/AIChess/backend/venv
 /backend/__pycache__
 /backend/app/__pycache__
 /backend/app/stockfish
-/backend/app/LLM_engine/.env
+/backend/app/LLM_engine/env
+/backend/app/LLM_engine/env/.env
 /backend/app/LLM_engine/__pycache__
-.env
 
