@@ -1,0 +1,8 @@
+node_modules
+venv
+/__pycache__
+/app/__pycache__
+/app/LLM_engine/env
+/app/LLM_engine/__pycache__
+/app/LLM_engine/env/.env
+.env
