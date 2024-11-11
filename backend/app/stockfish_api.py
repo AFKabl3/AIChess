@@ -1,8 +1,8 @@
 import chess # type: ignore
 import requests
 
-from AIChess.backend.app.LLM_engine.utilities import is_valid_move
-from AIChess.backend.app.LLM_engine.utilities import is_valid_fen
+from app.LLM_engine.utilities import is_valid_move
+from app.LLM_engine.utilities import is_valid_fen
 
 
 class Stockfish:

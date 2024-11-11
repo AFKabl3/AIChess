@@ -1,7 +1,13 @@
 from huggingface_hub import InferenceClient
 import os
+import pdb
+from dotenv import load_dotenv # type: ignore
+
+#Load the environment variables
+load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 client = InferenceClient(api_key=SECRET_KEY)
 
 

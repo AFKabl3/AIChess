@@ -1,8 +1,8 @@
 from flask import jsonify, Flask
 from flask_cors import CORS
-from AIChess.backend.app.LLM_engine import utilities as check
+from .LLM_engine import utilities as check
 import chess
-from AIChess.backend.app.stockfish_api import Stockfish  # Import the Stockfish class
+from .stockfish_api import Stockfish  # Import the Stockfish class
 from .LLM_engine.agents.main_coach import MainCoach
 import pdb
 from flask import request
@@ -16,7 +16,7 @@ def create_main_app():
 
     stockfish = Stockfish(depth=10)
     # chatbox = LLM_engine.ChatBox()
-    coach = MainCoach(player_color="b")
+    coach = MainCoach(player_color="w")
 
 
     @app.route('/evaluate_move', methods=['POST'])
@@ -25,9 +25,6 @@ def create_main_app():
         fen = data.get("fen")
         move = data.get("move")
 
-        # pdb.set_trace()
-        # pdb.set_trace()
-
         # Validate FEN and move data
         if not fen or not move:
             return jsonify({
@@ -35,38 +32,12 @@ def create_main_app():
                 "message": "Both 'fen' and 'move' fields are required."
             }), 400
 
-        # try:
-        #     if not check.is_fen_valid(fen):
-        #         return jsonify({
-        #             "type": "invalid_fen_notation",
-        #             "message": "Invalid FEN string provided."
-        #         }),422  # This will create an error if FEN is invalid
-        # except ValueError:
-        #     return jsonify({
-        #         "type": "invalid_fen_notation",
-        #         "message": "Invalid FEN string provided."
-        #     }), 422
-
-
-            if not check.is_valid_fen(fen):
+        if not check.is_valid_fen(fen):
                 return jsonify({
                     "type": "invalid_fen_notation",
                     "message": "Invalid FEN string provided."
                 }),422  # This will create an error if FEN is invalid
 
-
-        # Check if the move notation is valid
-        # try:
-        #     if not check.is_move_valid(fen, move):  # true if valid, false otherwise
-        #         return jsonify({
-        #             "type": "invalid_move",
-        #             "message": "Invalid move notation provided."
-        #         }), 422
-        # except ValueError:
-        #     return jsonify({
-        #         "type": "invalid_move",
-        #         "message": "Invalid move notation provided."
-        #     }), 422
 
         if not check.is_valid_move(fen, move):
             return jsonify({
@@ -75,9 +46,7 @@ def create_main_app():
             }), 422
         
         try:
-            # pdb.set_trace()
-
-            evaluation_diff = stockfish.evaluate_move_score(fen, move, player_color="b")  # Assuming black's move
+            evaluation_diff = stockfish.evaluate_move_score(fen, move, player_color="w")  # Assuming black's move
             if evaluation_diff == "No score available":
                 return jsonify({
                     "type": "evaluation_error",

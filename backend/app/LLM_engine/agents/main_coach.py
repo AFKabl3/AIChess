@@ -21,7 +21,7 @@ class MainCoach(ChatBox):
         evaluation = self.stockfish.evaluate_move_score(fen,move,player_color=self.player_color)
         return (self.ask(f"""The current state of the board is as follows in FEN notation: \n  {fen} \n
         The user move is {move}. The evaluation of this move by stockfish is {evaluation}.\n
-        Provide feedback on this move. Coach the user by providing explanation to the evaluation."""))
+        Provide feedback on this move. Try to limit the response to 150 words. Coach the user by providing explanation to the evaluation."""))
 
 
     
