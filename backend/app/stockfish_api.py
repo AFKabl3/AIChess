@@ -1,7 +1,9 @@
-import requests
-from LLM_engine.utilities import is_move_valid
-from LLM_engine.utilities import is_fen_valid
 import chess # type: ignore
+import requests
+
+from app.LLM_engine.utilities import is_valid_move
+from app.LLM_engine.utilities import is_valid_fen
+
 
 class Stockfish:
     def __init__(self,depth=10):
@@ -13,7 +15,6 @@ class Stockfish:
             "maxThinkingTime": 100,
             "depth":depth
         }
-        
 
     def _send_request(self, payload):
         payload = {**self.parameters, **payload}
@@ -25,7 +26,7 @@ class Stockfish:
     
 
     def get_evaluation(self, fen):
-        if not is_fen_valid(fen):
+        if not is_valid_fen(fen):
             return "No evaluation available"
         payload = {
             "fen": fen,
@@ -34,7 +35,7 @@ class Stockfish:
         return response.get("eval", "No evaluation available")
     
     def evaluate_move_score(self, fen, move, player_color="w"):
-        if not is_fen_valid(fen) or not is_move_valid(fen, move):
+        if not is_valid_fen(fen) or not is_valid_move(fen, move):
             return "No score available"
 
         evaluation_before = self.get_evaluation(fen)
