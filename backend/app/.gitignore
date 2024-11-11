@@ -6,4 +6,4 @@ node_modules
 /backend/app/LLM_engine/env
 /backend/app/LLM_engine/env/.env
 /backend/app/LLM_engine/__pycache__
-
+.env
