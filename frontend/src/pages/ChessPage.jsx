@@ -50,7 +50,8 @@ function ChessPage() {
 
     setLock(true);
     try {
-      const data = await api.evaluateMove(fen, move);
+      const res = await api.evaluateMove(fen, move);
+      const data = await res.json();
       modifyMessage(index, `You played ${move}. ${data.feedback}`);
     } catch (error) {
       console.error(error);
