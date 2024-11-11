@@ -1,7 +1,6 @@
 from huggingface_hub import InferenceClient
 import os
 
-# Load environment variables for API keys, etc.
 SECRET_KEY = os.getenv("SECRET_KEY")
 client = InferenceClient(api_key=SECRET_KEY)
 
