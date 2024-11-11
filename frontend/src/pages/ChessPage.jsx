@@ -1,14 +1,16 @@
-// src/pages/ChessPage.jsx
-import React, { useState, useRef, useEffect } from "react";
-import { Box, TextField, IconButton, Typography, Paper } from "@mui/material";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { ChessboardPage } from "./ChessboardPage";
-import "./ChessPage.css";
+import { Box, IconButton, Paper, TextField, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import { api } from '../api/api';
+import { ChessComponent } from '../components/chessComponent/ChessComponent';
+import './ChessPage.css';
 
 function ChessPage() {
   const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState('');
   const chatDisplayRef = useRef(null);
+  const [lock, setLock] = useState(false);
 
   useEffect(() => {
     if (chatDisplayRef.current) {
@@ -17,23 +19,51 @@ function ChessPage() {
   }, [messages]);
 
   const handleSend = () => {
-    if (inputText.trim() !== "") {
+    if (inputText.trim() !== '') {
       setMessages([...messages, inputText]);
-      setInputText("");
+      setInputText('');
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
+  const addMessage = (message) => {
+    const index = messages.length;
+    setMessages([...messages, message]);
+
+    return index;
+  };
+
+  const modifyMessage = (index, message) => {
+    const newMessages = [...messages];
+    newMessages[index] = message;
+    setMessages(newMessages);
+  };
+
+  const onPlayerMove = async (move, fen) => {
+    const index = addMessage(`You played ${move}. Evaluating the move ...`);
+
+    setLock(true);
+    try {
+      const data = await api.evaluateMove(fen, move);
+      modifyMessage(index, `You played ${move}. ${data.feedback}`);
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred while evaluating the move.');
+      modifyMessage(index, 'An error occurred while evaluating the move.');
+    }
+    setLock(false);
+  };
+
   return (
     <Box className="chess-page-container">
-      <Box className="chess-board" >
-      <ChessboardPage />
+      <Box className="chess-board">
+        <ChessComponent onPlayerMove={onPlayerMove} lock={lock} />
       </Box>
       <Box className="notation-interface">
         <Typography variant="h6">Notation</Typography>
@@ -51,7 +81,6 @@ function ChessPage() {
             fullWidth
             multiline
             rows={1}
-            maxRows={5}
             placeholder="Type a message..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
