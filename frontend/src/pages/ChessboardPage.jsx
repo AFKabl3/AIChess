@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
@@ -20,6 +20,8 @@ export const ChessboardPage = () => {
   const [currentFEN, setCurrentFEN] = useState(""); // Tracks the current FEN state displayed
   const [isPaused, setIsPaused] = useState(false);  // Tracks the pause/resume state
 
+  const notationEndRef = useRef(null); // Reference to scroll to latest move
+
   useEffect(() => {
     if (game.game_over()) {
       const winner = game.in_checkmate() ? (game.turn() === "w" ? "Black wins!" : "White wins!") : "Draw!";
@@ -36,6 +38,13 @@ export const ChessboardPage = () => {
   useEffect(() => {
     setCurrentFEN(game.fen()); // Update current FEN whenever the game changes
   }, [game]);
+
+  useEffect(() => {
+    // Scrolls to the latest move whenever a new move is added
+    if (notationEndRef.current) {
+      notationEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [notation]);
 
   function getKingPosition(game) {
     const kingPosition = []
@@ -272,40 +281,44 @@ export const ChessboardPage = () => {
         </Box>
       </Box>
 
-      <Box className="notation-table">
+      <Box className="notation-table-wrapper">
         <Typography variant="h6" gutterBottom>
           Notation Table
         </Typography>
-        <Stack spacing={1}>
-          {notation.map((movePair, index) => (
-            <Typography key={index} className="notation-item">
-              <span
-                className="notation-move clickable"
-                onClick={() => handleNotationClick(movePair.user.fen)}
-              >
-                {`${index + 1}. ${movePair.user.san}`}
-              </span>
-              {movePair.bot && (
+        <Box className="notation-table">
+          <Stack spacing={1}>
+            {notation.map((movePair, index) => (
+              <Typography key={index} className="notation-item">
                 <span
-                  className="notation-move bot-move clickable"
-                  onClick={() => handleNotationClick(movePair.bot.fen)}
+                  className="notation-move clickable"
+                  onClick={() => handleNotationClick(movePair.user.fen)}
                 >
-                  {movePair.bot.san}
+                  {`${index + 1}. ${movePair.user.san}`}
                 </span>
-              )}
-            </Typography>
-          ))}
-        </Stack>
+                {movePair.bot && (
+                  <span
+                    className="notation-move bot-move clickable"
+                    onClick={() => handleNotationClick(movePair.bot.fen)}
+                  >
+                    {movePair.bot.san}
+                  </span>
+                )}
+              </Typography>
+            ))}
+            <div ref={notationEndRef} /> {/* Reference for scrolling */}
+          </Stack>
+        </Box>
 
-        {/* Pause/Resume Button */}
-        <Button
-          variant="contained"
-          color={isPaused ? "primary" : "secondary"}
-          className="pause-resume-button"
-          onClick={togglePauseResume}
-        >
-          {isPaused ? "Resume" : "Pause"}
-        </Button>
+        {/* Persistent Pause/Resume Button */}
+        <Box className="pause-resume-button">
+          <Button
+            variant="contained"
+            color={isPaused ? "primary" : "secondary"}
+            onClick={togglePauseResume}
+          >
+            {isPaused ? "Resume" : "Pause"}
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

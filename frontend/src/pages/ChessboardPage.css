@@ -15,10 +15,12 @@
   align-items: center;
 }
 
-.notation-table {
+.notation-table-wrapper {
   width: 20%;
   max-height: 80vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 16px;
   background-color: #f5f5f5;
   margin-left: 20px;
@@ -26,10 +28,19 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+.notation-table {
+  overflow-y: auto;
+  max-height: 400px; /* Increased fixed maximum height */
+  min-height: 300px; /* Increased starting height */
+  width: 100%;
+  margin-bottom: 10px;
+}
+
 .notation-item {
   display: flex;
   justify-content: space-between;
-  gap: 16px; /* Space between user and bot moves */
+  gap: 8px; /* Closer spacing between user and bot notations */
+  padding-right: 8px; /* Add padding to create space from the scroll bar */
 }
 
 .notation-move {
@@ -40,6 +51,12 @@
 .clickable:hover {
   text-decoration: underline;
   color: #4a90e2;
+}
+
+.pause-resume-button {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .game-over-message {
