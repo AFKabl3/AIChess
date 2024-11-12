@@ -35,9 +35,7 @@ function ChessPage() {
       <Box className="chess-board" >
       <ChessboardPage />
       </Box>
-      <Box className="notation-interface">
-        <Typography variant="h6">Notation</Typography>
-      </Box>
+
       <Box className="chat-interface">
         <Paper className="chat-display" elevation={3} ref={chatDisplayRef}>
           {messages.map((message, index) => (
