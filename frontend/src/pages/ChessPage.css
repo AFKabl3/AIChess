@@ -22,24 +22,14 @@ body {
   padding: 10px;
 }
 
-.notation-interface {
-  background-color: #d2b48c;
-  width: 22vw;
-  max-width: 300px;
-  height: calc(100vh - 40px);
-  border-radius: 8px;
-  padding: 10px;
-  margin-left: 20px;
-  overflow-y: auto;
-}
-
 .chat-interface {
   display: flex;
   flex-direction: column;
-  width: 30vw;
-  max-width: 400px;
+  width: 40vw;
+  max-width: 500px;
   height: calc(100vh - 40px);
   margin-left: 40px;
+  overflow-y: auto;
 }
 
 .chat-display {
@@ -54,16 +44,6 @@ body {
   gap: 10px;
 }
 
-/* Custom Scrollbar for Chat Display */
-.chat-display::-webkit-scrollbar {
-  width: 8px; /* Wider scrollbar */
-}
-
-.chat-display::-webkit-scrollbar-thumb {
-  background-color: #666666; /* Gray color for better visibility */
-  border-radius: 4px; /* Rounded edges */
-}
-
 .chat-bubble {
   margin: 5px 0;
   padding: 10px;
@@ -71,7 +51,9 @@ body {
   color: white;
   border-radius: 10px;
   width: 100%;
+  max-width: 85%;
   word-break: break-word;
+  user-select: text; /* Allows text selection within bubbles */
 }
 
 .chat-input-container {

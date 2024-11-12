@@ -32,16 +32,24 @@ function ChessPage() {
 
   return (
     <Box className="chess-page-container">
-      <Box className="chess-board" >
-      <ChessboardPage />
+      <Box className="chess-board">
+        <ChessboardPage />
       </Box>
 
       <Box className="chat-interface">
-        <Paper className="chat-display" elevation={3} ref={chatDisplayRef}>
+        <Paper
+          className="chat-display"
+          elevation={3}
+          ref={chatDisplayRef}
+        >
           {messages.map((message, index) => (
-            <Box key={index} className="chat-bubble">
-              <Typography>{message}</Typography>
-            </Box>
+            <Typography
+              key={index}
+              className="chat-bubble"
+              component="div"
+            >
+              {message}
+            </Typography>
           ))}
         </Paper>
         <Box className="chat-input-container">
@@ -55,7 +63,9 @@ function ChessPage() {
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
             variant="outlined"
-            className="chat-input"
+            InputProps={{
+              className: "chat-input",
+            }}
           />
           <IconButton onClick={handleSend} className="send-button">
             <ArrowForwardIcon />
