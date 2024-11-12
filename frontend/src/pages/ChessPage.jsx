@@ -1,46 +1,93 @@
-// src/pages/ChessPage.jsx
-import React, { useState, useRef, useEffect } from "react";
-import { Box, TextField, IconButton, Typography, Paper } from "@mui/material";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { ChessboardPage } from "./ChessboardPage";
-import "./ChessPage.css";
+import { Box, IconButton, Paper, TextField, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import { api } from '../api/api';
+import { ChessComponent } from '../components/chessComponent/ChessComponent';
+import './ChessPage.css';
 
+/**
+ * ChessPage component renders the chess game interface including the chess board,
+ * chat interface, and notation interface. It handles player moves, chat messages,
+ * and move evaluations.
+ *
+ * @component
+ */
 function ChessPage() {
-  const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [inputText, setInputText] = useState('');
   const chatDisplayRef = useRef(null);
+  const [lock, setLock] = useState(false);
 
   useEffect(() => {
     if (chatDisplayRef.current) {
       chatDisplayRef.current.scrollTop = chatDisplayRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [chatMessages]);
 
-  const handleSend = () => {
-    if (inputText.trim() !== "") {
-      setMessages([...messages, inputText]);
-      setInputText("");
+  const handleSendChatMessage = () => {
+    if (inputText.trim() !== '') {
+      setChatMessages([...chatMessages, inputText]);
+      setInputText('');
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSendChatMessage();
     }
+  };
+
+  const addChatMessage = (message) => {
+    const index = chatMessages.length;
+    setChatMessages([...chatMessages, message]);
+
+    return index;
+  };
+
+  const modifyChatMessage = (index, message) => {
+    const newMessages = [...chatMessages];
+    newMessages[index] = message;
+    setChatMessages(newMessages);
+  };
+
+  /**
+   * Handles the player's move by evaluating it and updating the chat with the result.
+   *
+   * @param {string} move - The move made by the player in standard algebraic notation.
+   * @param {string} fen - The FEN (Forsyth-Edwards Notation) string representing the current board state.
+   * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
+   */
+  const onPlayerMove = async (move, fen) => {
+    const index = addChatMessage(`You played ${move}. Evaluating the move ...`);
+
+    setLock(true);
+    try {
+      const res = await api.evaluateMove(fen, move);
+      const data = await res.json();
+
+      modifyChatMessage(index, `You played ${move}. ${data.feedback}`);
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred while evaluating the move.');
+
+      modifyChatMessage(index, 'An error occurred while evaluating the move.');
+    }
+    setLock(false);
   };
 
   return (
     <Box className="chess-page-container">
-      <Box className="chess-board" >
-      <ChessboardPage />
+      <Box className="chess-board">
+        <ChessComponent onPlayerMove={onPlayerMove} lock={lock} />
       </Box>
       <Box className="notation-interface">
         <Typography variant="h6">Notation</Typography>
       </Box>
       <Box className="chat-interface">
         <Paper className="chat-display" elevation={3} ref={chatDisplayRef}>
-          {messages.map((message, index) => (
+          {chatMessages.map((message, index) => (
             <Box key={index} className="chat-bubble">
               <Typography>{message}</Typography>
             </Box>
@@ -51,7 +98,6 @@ function ChessPage() {
             fullWidth
             multiline
             rows={1}
-            maxRows={5}
             placeholder="Type a message..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -59,7 +105,7 @@ function ChessPage() {
             variant="outlined"
             className="chat-input"
           />
-          <IconButton onClick={handleSend} className="send-button">
+          <IconButton onClick={handleSendChatMessage} className="send-button">
             <ArrowForwardIcon />
           </IconButton>
         </Box>
