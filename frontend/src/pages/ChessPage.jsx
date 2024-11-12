@@ -6,8 +6,15 @@ import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
 import './ChessPage.css';
 
+/**
+ * ChessPage component renders the chess game interface including the chess board,
+ * chat interface, and notation interface. It handles player moves, chat messages,
+ * and move evaluations.
+ *
+ * @component
+ */
 function ChessPage() {
-  const [messages, setMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const chatDisplayRef = useRef(null);
   const [lock, setLock] = useState(false);
@@ -16,11 +23,11 @@ function ChessPage() {
     if (chatDisplayRef.current) {
       chatDisplayRef.current.scrollTop = chatDisplayRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [chatMessages]);
 
-  const handleSend = () => {
+  const handleSendChatMessage = () => {
     if (inputText.trim() !== '') {
-      setMessages([...messages, inputText]);
+      setChatMessages([...chatMessages, inputText]);
       setInputText('');
     }
   };
@@ -28,35 +35,44 @@ function ChessPage() {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSendChatMessage();
     }
   };
 
-  const addMessage = (message) => {
-    const index = messages.length;
-    setMessages([...messages, message]);
+  const addChatMessage = (message) => {
+    const index = chatMessages.length;
+    setChatMessages([...chatMessages, message]);
 
     return index;
   };
 
-  const modifyMessage = (index, message) => {
-    const newMessages = [...messages];
+  const modifyChatMessage = (index, message) => {
+    const newMessages = [...chatMessages];
     newMessages[index] = message;
-    setMessages(newMessages);
+    setChatMessages(newMessages);
   };
 
+  /**
+   * Handles the player's move by evaluating it and updating the chat with the result.
+   *
+   * @param {string} move - The move made by the player in standard algebraic notation.
+   * @param {string} fen - The FEN (Forsyth-Edwards Notation) string representing the current board state.
+   * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
+   */
   const onPlayerMove = async (move, fen) => {
-    const index = addMessage(`You played ${move}. Evaluating the move ...`);
+    const index = addChatMessage(`You played ${move}. Evaluating the move ...`);
 
     setLock(true);
     try {
       const res = await api.evaluateMove(fen, move);
       const data = await res.json();
-      modifyMessage(index, `You played ${move}. ${data.feedback}`);
+
+      modifyChatMessage(index, `You played ${move}. ${data.feedback}`);
     } catch (error) {
       console.error(error);
       toast.error('An error occurred while evaluating the move.');
-      modifyMessage(index, 'An error occurred while evaluating the move.');
+
+      modifyChatMessage(index, 'An error occurred while evaluating the move.');
     }
     setLock(false);
   };
@@ -71,7 +87,7 @@ function ChessPage() {
       </Box>
       <Box className="chat-interface">
         <Paper className="chat-display" elevation={3} ref={chatDisplayRef}>
-          {messages.map((message, index) => (
+          {chatMessages.map((message, index) => (
             <Box key={index} className="chat-bubble">
               <Typography>{message}</Typography>
             </Box>
@@ -89,7 +105,7 @@ function ChessPage() {
             variant="outlined"
             className="chat-input"
           />
-          <IconButton onClick={handleSend} className="send-button">
+          <IconButton onClick={handleSendChatMessage} className="send-button">
             <ArrowForwardIcon />
           </IconButton>
         </Box>

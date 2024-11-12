@@ -257,9 +257,6 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
    * 3. Clears selected moves (`moveFrom` and `moveTo`) and resets the promotion dialog and highlighted squares.
    */
   function onPromotionPieceSelect(piece, fromSquare, toSquare) {
-    console.log('Promotion piece selected:', piece);
-    console.log('From square:', fromSquare);
-    console.log('To square:', toSquare);
     // If no piece selected (e.g., user canceled promotion dialog), reset and exit
     if (piece) {
       // Apply promotion move with selected piece, defaulting to Queen if undefined
