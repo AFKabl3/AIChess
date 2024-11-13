@@ -43,7 +43,7 @@ const ChatInput = ({ sendMessage }) => {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendChatMessage();
+      handleSend();
     }
   };
 
