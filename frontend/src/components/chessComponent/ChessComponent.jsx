@@ -1,12 +1,12 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { useWindowSize } from '@uidotdev/usehooks';
 import { Chess } from 'chess.js';
 import PropTypes from 'prop-types';
-import toast from 'react-hot-toast';
 import { useEffect, useRef, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
+import toast from 'react-hot-toast';
 import { formatUciMove } from '../../util/chessUtil';
 import './ChessComponent.css';
-import { useWindowSize } from "@uidotdev/usehooks";
 
 export const ChessComponent = ({ onPlayerMove, lock }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
@@ -36,10 +36,8 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
   // State to track if the game is over
   const [isGameOver, setIsGameOver] = useState(false);
 
-
   // Tracks moves with separate FEN states for the notation table
   const [notation, setNotation] = useState([]);
-  const [currentFEN, setCurrentFEN] = useState(""); // Tracks the current FEN state displayed
   const [isPaused, setIsPaused] = useState(false); // Tracks the pause/resume state
   const { height, width } = useWindowSize();
   const notationEndRef = useRef(null); // Reference to scroll to latest move
@@ -65,13 +63,9 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
   }, [game]);
 
   useEffect(() => {
-    setCurrentFEN(game.fen()); // Update current FEN whenever the game changes
-  }, [game]);
-
-  useEffect(() => {
     // Scrolls to the latest move whenever a new move is added
     if (notationEndRef.current) {
-      notationEndRef.current.scrollIntoView({ behavior: "smooth" });
+      notationEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [notation]);
 
@@ -250,7 +244,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
       }
 
       // Update game state, reset variables, and trigger AI move (for the moment a Random move)
-      updateNotation(move, "user"); 
+      updateNotation(move, 'user');
       setGame(gameCopy);
       setTimeout(makeRandomMove, 300);
       setMoveFrom('');
@@ -264,7 +258,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
     setNotation((prevNotation) => {
       const newNotation = [...prevNotation];
       const fen = game.fen();
-      if (player === "user") {
+      if (player === 'user') {
         newNotation.push({ user: { san: move.san, fen }, bot: null });
       } else {
         newNotation[newNotation.length - 1].bot = { san: move.san, fen };
@@ -353,7 +347,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
     if (game.game_over() || game.in_draw() || possibleMove.length === 0) return;
     const randomIndex = Math.floor(Math.random() * possibleMove.length);
     const move = game.move(possibleMove[randomIndex]);
-    if (move) updateNotation(move, "bot");
+    if (move) updateNotation(move, 'bot');
     setGame(new Chess(game.fen()));
   }
 
@@ -376,7 +370,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
       });
       return false;
     }
-    
+
     let move = null;
 
     const currBoard = game.fen();
@@ -390,7 +384,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
     if (move == null) return false;
 
     if (onPlayerMove) onPlayerMove(formatUciMove(move), currBoard);
-    updateNotation(move, "user"); 
+    updateNotation(move, 'user');
     // If the move is valid, trigger a random computer move after a 200ms delay
     setTimeout(makeRandomMove, 200);
     return true;
@@ -399,7 +393,6 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
   function handleNotationClick(fen) {
     const newGame = new Chess(fen);
     setGame(newGame);
-    setCurrentFEN(fen);
     setIsPaused(true); // Enter pause state whenever a move is clicked
   }
 
@@ -425,6 +418,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
           boardWidth={Math.min(height, width / 1.5) - 150} // Responsive board width
           position={game.fen()}
           onPieceDrop={isPaused ? () => false : onDrop} // Disable piece drop in paused state
+          onPieceDragBegin={(_, square) => getMoveOptions(square)}
           animationDuration={200}
           arePiecesDraggable={!isPaused} // Enable dragging only if not paused
           onSquareClick={onSquareClick}
@@ -433,21 +427,21 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
           promotionToSquare={moveTo}
           showPromotionDialog={showPromotionDialog}
           customBoardStyle={{
-            borderRadius: "10px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
+            borderRadius: '10px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
           }}
           customSquareStyles={{
             ...moveSquares,
             ...optionSquares,
             ...rightClickedSquares,
           }}
-          customDarkSquareStyle={{ backgroundColor: "#769656" }}
-          customLightSquareStyle={{ backgroundColor: "#EEEED2" }}
+          customDarkSquareStyle={{ backgroundColor: '#769656' }}
+          customLightSquareStyle={{ backgroundColor: '#EEEED2' }}
         />
 
         {isGameOver && (
           <Stack className="game-over-message">
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
               {statusMessage}
             </Typography>
           </Stack>
@@ -464,10 +458,9 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
               setMoveSquares({});
               setOptionSquares({});
               setRightClickedSquares({});
-              setStatusMessage("");
+              setStatusMessage('');
               setIsGameOver(false);
               setNotation([]);
-              setCurrentFEN(game.fen());
               setIsPaused(false); // Reset to resume state
             }}
           >
@@ -508,10 +501,10 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
         <Box className="pause-resume-button">
           <Button
             variant="contained"
-            color={isPaused ? "primary" : "secondary"}
+            color={isPaused ? 'primary' : 'secondary'}
             onClick={togglePauseResume}
           >
-            {isPaused ? "Resume" : "Pause"}
+            {isPaused ? 'Resume' : 'Pause'}
           </Button>
         </Box>
       </Box>
@@ -523,4 +516,3 @@ ChessComponent.propTypes = {
   onPlayerMove: PropTypes.func,
   lock: PropTypes.bool.isRequired,
 };
-
