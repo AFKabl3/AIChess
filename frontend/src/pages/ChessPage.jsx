@@ -40,8 +40,46 @@ const ChatInput = ({ sendMessage }) => {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSendChatMessage();
     }
+  };
+
+  const addChatMessage = (message) => {
+    const index = chatMessages.length;
+    setChatMessages([...chatMessages, message]);
+
+    return index;
+  };
+
+  const modifyChatMessage = (index, message) => {
+    const newMessages = [...chatMessages];
+    newMessages[index] = message;
+    setChatMessages(newMessages);
+  };
+
+  /**
+   * Handles the player's move by evaluating it and updating the chat with the result.
+   *
+   * @param {string} move - The move made by the player in standard algebraic notation.
+   * @param {string} fen - The FEN (Forsyth-Edwards Notation) string representing the current board state.
+   * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
+   */
+  const onPlayerMove = async (move, fen) => {
+    const index = addChatMessage(`You played ${move}. Evaluating the move ...`);
+
+    setLock(true);
+    try {
+      const res = await api.evaluateMove(fen, move);
+      const data = await res.json();
+
+      modifyChatMessage(index, `You played ${move}. ${data.feedback}`);
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred while evaluating the move.');
+
+      modifyChatMessage(index, 'An error occurred while evaluating the move.');
+    }
+    setLock(false);
   };
 
   return (
