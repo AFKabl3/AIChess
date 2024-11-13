@@ -30,8 +30,8 @@
 
 .notation-table {
   overflow-y: auto;
-  max-height: 500px; /* Increased fixed maximum height */
-  min-height: 500px; /* Increased starting height */
+  max-height: 60vh;
+  min-height: 60vh;
   width: 100%;
   margin-bottom: -10px;
 }
@@ -39,8 +39,10 @@
 .notation-item {
   display: flex;
   justify-content: space-between;
-  gap: 8px; /* Closer spacing between user and bot notations */
-  padding-right: 20px; /* Add padding to create space from the scroll bar */
+  gap: 8px;
+  /* Closer spacing between user and bot notations */
+  padding-right: 20px;
+  /* Add padding to create space from the scroll bar */
 }
 
 .notation-move {

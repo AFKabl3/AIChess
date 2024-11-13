@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChessPage.css';
-import { ChessboardPage } from "./ChessboardPage";
+import { ChessboardPage } from './ChessboardPage'; // Import the chessboard component
+
 const ChatBubble = ({ message, isUser }) => (
   <div className={`chat-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>
     {message}
@@ -66,7 +67,15 @@ const FollowChatToggle = ({ followChat, toggleFollowChat }) => (
   </div>
 );
 
-const ChatInterface = () => {
+const ChatInterface = ({ followChat, toggleFollowChat, messages, sendMessage }) => (
+  <div className="chat-interface">
+    <FollowChatToggle followChat={followChat} toggleFollowChat={toggleFollowChat} />
+    <ChatDisplay messages={messages} followChat={followChat} />
+    <ChatInput sendMessage={sendMessage} />
+  </div>
+);
+
+const ChessPage = () => {
   const [messages, setMessages] = useState([
     { text: 'Welcome to the game chat!', isUser: false },
   ]);
@@ -83,24 +92,16 @@ const ChatInterface = () => {
   };
 
   return (
-    <div classname="main-chess-page">
-      <div>
-        <ChessboardPage />
-      </div>
-      <div className="chat-interface">
-        <FollowChatToggle followChat={followChat} toggleFollowChat={toggleFollowChat} />
-        <ChatDisplay messages={messages} followChat={followChat} />
-        <ChatInput sendMessage={sendMessage} />
-      </div>
+    <div className="chess-page-container">
+      <ChessboardPage />
+      <ChatInterface 
+        followChat={followChat} 
+        toggleFollowChat={toggleFollowChat} 
+        messages={messages} 
+        sendMessage={sendMessage} 
+      />
     </div>
   );
 };
-
-const ChessPage = () => (
-  <div className="chess-page-container">
-    {/* Chess Board Component would be here */}
-    <ChatInterface />
-  </div>
-);
 
 export default ChessPage;
