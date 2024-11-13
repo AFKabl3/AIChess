@@ -1,7 +1,8 @@
-import { React, useState, useEffect, useRef } from "react";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
-import { Chessboard } from "react-chessboard";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useWindowSize } from "@uidotdev/usehooks";
 import { Chess } from "chess.js";
+import { useEffect, useRef, useState } from "react";
+import { Chessboard } from "react-chessboard";
 import "./ChessboardPage.css";
 
 export const ChessboardPage = () => {
@@ -14,22 +15,30 @@ export const ChessboardPage = () => {
   const [optionSquares, setOptionSquares] = useState({});
   const [statusMessage, setStatusMessage] = useState("");
   const [isGameOver, setIsGameOver] = useState(false);
-  
+
   // Tracks moves with separate FEN states for the notation table
   const [notation, setNotation] = useState([]);
   const [currentFEN, setCurrentFEN] = useState(""); // Tracks the current FEN state displayed
-  const [isPaused, setIsPaused] = useState(false);  // Tracks the pause/resume state
+  const [isPaused, setIsPaused] = useState(false); // Tracks the pause/resume state
 
   const notationEndRef = useRef(null); // Reference to scroll to latest move
 
+  const { height, width } = useWindowSize();
+
   useEffect(() => {
     if (game.game_over()) {
-      const winner = game.in_checkmate() ? (game.turn() === "w" ? "Black wins!" : "White wins!") : "Draw!";
+      const winner = game.in_checkmate()
+        ? game.turn() === "w"
+          ? "Black wins!"
+          : "White wins!"
+        : "Draw!";
       setStatusMessage(winner);
       setIsGameOver(true);
     } else if (game.in_check()) {
       const kingPos = getKingPosition(game);
-      setOptionSquares({ [kingPos]: { backgroundColor: "rgba(255, 0, 0, 0.5)" } });
+      setOptionSquares({
+        [kingPos]: { backgroundColor: "rgba(255, 0, 0, 0.5)" },
+      });
     } else {
       setOptionSquares({});
     }
@@ -163,7 +172,11 @@ export const ChessboardPage = () => {
   function onPromotionPieceSelect(piece) {
     if (piece) {
       const gameCopy = { ...game };
-      gameCopy.move({ from: moveFrom, to: moveTo, promotion: piece[1].toLowerCase() ?? "q" });
+      gameCopy.move({
+        from: moveFrom,
+        to: moveTo,
+        promotion: piece[1].toLowerCase() ?? "q",
+      });
       setGame(gameCopy);
       updateNotation({ san: `${moveFrom}${moveTo}${piece}` }, "user");
       setTimeout(makeRandomMove, 300);
@@ -179,9 +192,10 @@ export const ChessboardPage = () => {
     const colour = "rgba(0, 0, 255, 0.4)";
     setRightClickedSquares({
       ...rightClickedSquares,
-      [square]: rightClickedSquares[square] && rightClickedSquares[square].backgroundColor === colour
-        ? undefined
-        : { backgroundColor: colour },
+      [square]:
+        rightClickedSquares[square] && rightClickedSquares[square].backgroundColor === colour
+          ? undefined
+          : { backgroundColor: colour },
     });
   }
 
@@ -210,17 +224,19 @@ export const ChessboardPage = () => {
   function handleNotationClick(fen) {
     const newGame = new Chess(fen);
     setGame(newGame);
-    setCurrentFEN(fen); 
+    setCurrentFEN(fen);
     setIsPaused(true); // Enter pause state whenever a move is clicked
   }
 
   function togglePauseResume() {
     if (isPaused) {
       // Resume: set to the latest FEN and enable moves
-      const latestFEN = notation.length ? notation[notation.length - 1].bot?.fen || notation[notation.length - 1].user.fen : game.fen();
+      const latestFEN = notation.length
+        ? notation[notation.length - 1].bot?.fen || notation[notation.length - 1].user.fen
+        : game.fen();
       const newGame = new Chess(latestFEN);
       setGame(newGame);
-      setIsPaused(false); 
+      setIsPaused(false);
     } else {
       // Pause: disable moves
       setIsPaused(true);
@@ -228,10 +244,10 @@ export const ChessboardPage = () => {
   }
 
   return (
-    <Container className="chessboard-container">
+    <Box className="chessboard-container">
       <Box className="chessboard-box">
         <Chessboard
-          className="customBoardStyle"
+          boardWidth={Math.min(height, width / 1.5) - 150} // Responsive board width
           position={game.fen()}
           onPieceDrop={isPaused ? () => false : onDrop} // Disable piece drop in paused state
           animationDuration={200}
@@ -245,7 +261,11 @@ export const ChessboardPage = () => {
             borderRadius: "10px",
             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
           }}
-          customSquareStyles={{ ...moveSquares, ...optionSquares, ...rightClickedSquares }}
+          customSquareStyles={{
+            ...moveSquares,
+            ...optionSquares,
+            ...rightClickedSquares,
+          }}
           customDarkSquareStyle={{ backgroundColor: "#769656" }}
           customLightSquareStyle={{ backgroundColor: "#EEEED2" }}
         />
@@ -320,6 +340,6 @@ export const ChessboardPage = () => {
           </Button>
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 };
