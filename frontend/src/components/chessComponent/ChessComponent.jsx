@@ -2,10 +2,11 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { Chess } from 'chess.js';
 import PropTypes from 'prop-types';
 import toast from 'react-hot-toast';
-
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { formatUciMove } from '../../util/chessUtil';
+import './ChessComponent.css';
+import { useWindowSize } from "@uidotdev/usehooks";
 
 export const ChessComponent = ({ onPlayerMove, lock }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
@@ -35,6 +36,14 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
   // State to track if the game is over
   const [isGameOver, setIsGameOver] = useState(false);
 
+
+  // Tracks moves with separate FEN states for the notation table
+  const [notation, setNotation] = useState([]);
+  const [currentFEN, setCurrentFEN] = useState(""); // Tracks the current FEN state displayed
+  const [isPaused, setIsPaused] = useState(false); // Tracks the pause/resume state
+  const { height, width } = useWindowSize();
+  const notationEndRef = useRef(null); // Reference to scroll to latest move
+
   // Effect to check the game's status whenever the game state changes
   useEffect(() => {
     if (game.game_over()) {
@@ -54,6 +63,17 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
       setOptionSquares({});
     }
   }, [game]);
+
+  useEffect(() => {
+    setCurrentFEN(game.fen()); // Update current FEN whenever the game changes
+  }, [game]);
+
+  useEffect(() => {
+    // Scrolls to the latest move whenever a new move is added
+    if (notationEndRef.current) {
+      notationEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [notation]);
 
   /**
    * Retrieves the position of the king on the chessboard.
@@ -183,7 +203,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
    */
   function onSquareClick(square) {
     setRightClickedSquares({});
-
+    if (isPaused) return; // Disable piece movement if game is paused
     // Set starting square for move
     if (!moveFrom) {
       const hasMoveOptions = getMoveOptions(square);
@@ -230,6 +250,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
       }
 
       // Update game state, reset variables, and trigger AI move (for the moment a Random move)
+      updateNotation(move, "user"); 
       setGame(gameCopy);
       setTimeout(makeRandomMove, 300);
       setMoveFrom('');
@@ -237,6 +258,19 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
       setOptionSquares({});
       return;
     }
+  }
+
+  function updateNotation(move, player) {
+    setNotation((prevNotation) => {
+      const newNotation = [...prevNotation];
+      const fen = game.fen();
+      if (player === "user") {
+        newNotation.push({ user: { san: move.san, fen }, bot: null });
+      } else {
+        newNotation[newNotation.length - 1].bot = { san: move.san, fen };
+      }
+      return newNotation;
+    });
   }
 
   /**
@@ -316,15 +350,11 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
    */
   function makeRandomMove() {
     const possibleMove = game.moves();
-
-    // Exit if the game is over, in a draw, or there are no legal moves available
     if (game.game_over() || game.in_draw() || possibleMove.length === 0) return;
-
-    // Select a random index within the range of available moves
     const randomIndex = Math.floor(Math.random() * possibleMove.length);
-
-    // Play the randomly selected move and update the game state
-    safeGameMutate((game) => game.move(possibleMove[randomIndex]));
+    const move = game.move(possibleMove[randomIndex]);
+    if (move) updateNotation(move, "bot");
+    setGame(new Chess(game.fen()));
   }
 
   /**
@@ -339,13 +369,14 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   function onDrop(source, target) {
+    if (isPaused) return false; // Disable drop if game is paused
     if (lock) {
       toast('Please wait for a response from the last move', {
         icon: '⏳',
       });
       return false;
     }
-
+    
     let move = null;
 
     const currBoard = game.fen();
@@ -359,88 +390,73 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
     if (move == null) return false;
 
     if (onPlayerMove) onPlayerMove(formatUciMove(move), currBoard);
-
+    updateNotation(move, "user"); 
     // If the move is valid, trigger a random computer move after a 200ms delay
     setTimeout(makeRandomMove, 200);
     return true;
   }
 
+  function handleNotationClick(fen) {
+    const newGame = new Chess(fen);
+    setGame(newGame);
+    setCurrentFEN(fen);
+    setIsPaused(true); // Enter pause state whenever a move is clicked
+  }
+
+  function togglePauseResume() {
+    if (isPaused) {
+      // Resume: set to the latest FEN and enable moves
+      const latestFEN = notation.length
+        ? notation[notation.length - 1].bot?.fen || notation[notation.length - 1].user.fen
+        : game.fen();
+      const newGame = new Chess(latestFEN);
+      setGame(newGame);
+      setIsPaused(false);
+    } else {
+      // Pause: disable moves
+      setIsPaused(true);
+    }
+  }
+
   return (
-    <Container
-      sx={{
-        position: 'relative',
-        minHeight: '100vh', // Makes the box cover the full viewport height
-        minWidth: '100vw', // Makes the box cover the full viewport width
-        display: 'flex', // Centers children inside the box
-        alignItems: 'center', // Centers children vertically
-        justifyContent: 'center', // Centers children horizontally
-      }}
-    >
-      <Box
-        sx={{
-          width: '40%',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative', // Added to allow absolute positioning inside this box
-          alignItems: 'center', // Center the board and message horizontally
-        }}
-      >
+    <Box className="chessboard-container">
+      <Box className="chessboard-box">
         <Chessboard
-          className="customBoardStyle"
+          boardWidth={Math.min(height, width / 1.5) - 150} // Responsive board width
           position={game.fen()}
-          onPieceDrop={onDrop}
+          onPieceDrop={isPaused ? () => false : onDrop} // Disable piece drop in paused state
           animationDuration={200}
-          arePiecesDraggable={true}
-          onPieceDragBegin={(_, square) => getMoveOptions(square)}
+          arePiecesDraggable={!isPaused} // Enable dragging only if not paused
           onSquareClick={onSquareClick}
           onSquareRightClick={onSquareRightClick}
           onPromotionPieceSelect={onPromotionPieceSelect}
           promotionToSquare={moveTo}
           showPromotionDialog={showPromotionDialog}
           customBoardStyle={{
-            borderRadius: '10px',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+            borderRadius: "10px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
           }}
-          customSquareStyles={{ ...moveSquares, ...optionSquares, ...rightClickedSquares }}
-          customDarkSquareStyle={{ backgroundColor: '#769656' }}
-          customLightSquareStyle={{ backgroundColor: '#EEEED2' }}
+          customSquareStyles={{
+            ...moveSquares,
+            ...optionSquares,
+            ...rightClickedSquares,
+          }}
+          customDarkSquareStyle={{ backgroundColor: "#769656" }}
+          customLightSquareStyle={{ backgroundColor: "#EEEED2" }}
         />
 
-        {/* Game over message overlay */}
         {isGameOver && (
-          <Stack
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              padding: 2,
-              borderRadius: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              color: 'white',
-              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',
-              textAlign: 'center',
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          <Stack className="game-over-message">
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {statusMessage}
             </Typography>
           </Stack>
         )}
 
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '2',
-            gap: '3',
-          }}
-        >
+        <Box className="reset-button">
           <Button
             variant="contained"
             size="large"
-            sx={{ margin: '10px' }}
             onClick={() => {
               safeGameMutate((game) => {
                 game.reset();
@@ -448,15 +464,58 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
               setMoveSquares({});
               setOptionSquares({});
               setRightClickedSquares({});
-              setStatusMessage('');
+              setStatusMessage("");
               setIsGameOver(false);
+              setNotation([]);
+              setCurrentFEN(game.fen());
+              setIsPaused(false); // Reset to resume state
             }}
           >
             reset
           </Button>
         </Box>
       </Box>
-    </Container>
+
+      <Box className="notation-table-wrapper">
+        <Typography variant="h6" gutterBottom>
+          Notation Table
+        </Typography>
+        <Box className="notation-table">
+          <Stack spacing={1}>
+            {notation.map((movePair, index) => (
+              <Typography key={index} className="notation-item">
+                <span
+                  className="notation-move clickable"
+                  onClick={() => handleNotationClick(movePair.user.fen)}
+                >
+                  {`${index + 1}. ${movePair.user.san}`}
+                </span>
+                {movePair.bot && (
+                  <span
+                    className="notation-move bot-move clickable"
+                    onClick={() => handleNotationClick(movePair.bot.fen)}
+                  >
+                    {movePair.bot.san}
+                  </span>
+                )}
+              </Typography>
+            ))}
+            <div ref={notationEndRef} /> {/* Reference for scrolling */}
+          </Stack>
+        </Box>
+
+        {/* Persistent Pause/Resume Button */}
+        <Box className="pause-resume-button">
+          <Button
+            variant="contained"
+            color={isPaused ? "primary" : "secondary"}
+            onClick={togglePauseResume}
+          >
+            {isPaused ? "Resume" : "Pause"}
+          </Button>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

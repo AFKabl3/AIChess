@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChessPage.css';
-import { ChessboardPage } from "./ChessboardPage";
+import { ChessComponent } from "../components/chessComponent/ChessComponent";
+
+// import { ChessboardPage } from "./ChessboardPage";
+
 
 const ChatBubble = ({ message, isUser }) => (
   <div className={`chat-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>
@@ -131,7 +134,8 @@ const ChessPage = () => {
 
   return (
     <div className="chess-page-container">
-      <ChessboardPage />
+      {<ChessComponent />}
+      {/* { <ChessboardPage /> } */}
       <ChatInterface 
         followChat={followChat} 
         toggleFollowChat={toggleFollowChat} 
