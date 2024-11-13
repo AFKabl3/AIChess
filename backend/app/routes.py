@@ -1,6 +1,6 @@
 from flask import jsonify, Flask
 from flask_cors import CORS
-from .LLM_engine import utilities as check
+from .LLM_engine import helper_functions as check
 import chess
 from .stockfish_api import Stockfish  # Import the Stockfish class
 from .LLM_engine.agents.main_coach import MainCoach
