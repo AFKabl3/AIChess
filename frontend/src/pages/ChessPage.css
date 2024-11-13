@@ -4,16 +4,15 @@ body {
 
 .chess-page-container {
   display: flex;
-  justify-content: space-between; /* Position the chessboard and chat side by side */
-  align-items: flex-start; /* Align items at the top */
+  justify-content: space-between;
+  align-items: flex-start;
   /* padding: 20px; */
   height: 100vh;
-  /* gap: 20px; Space between chessboard and chat */
 }
 
 .chessboard-section {
   background-color: white;
-  width: calc(60vw - 40px); /* Adjusted to take up 60% of the width */
+  width: calc(60vw - 40px);
   height: calc(100vh - 40px);
   border-radius: 10px;
   display: flex;
@@ -26,7 +25,7 @@ body {
 .chat-interface {
   display: flex;
   flex-direction: column;
-  width: calc(40vw - 40px); /* Adjusted to take up 40% of the width */
+  width: calc(40vw - 40px);
   max-width: 500px;
   height: calc(100vh - 40px);
   overflow-y: auto;

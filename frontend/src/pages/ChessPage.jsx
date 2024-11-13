@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChessPage.css';
-import { ChessboardPage } from './ChessboardPage'; // Import the chessboard component
+import { ChessboardPage } from "./ChessboardPage";
 
 const ChatBubble = ({ message, isUser }) => (
   <div className={`chat-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>
