@@ -120,3 +120,8 @@ body {
 .toggle-switch.on .toggle-circle {
   transform: translateX(25px);
 }
+
+.follow-chat-toggle {
+  color: white;
+
+}
