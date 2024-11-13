@@ -62,8 +62,7 @@ def create_main_app():
         # Hardcoded responses for demonstration will need to merge with LLM and Stockfish
         evaluation = evaluation_diff  # Evaluation we get from stockfish
         suggested_move = "Nf6"  # Example suggested move
-      # Prepare data for the LLM
-       
+        # Prepare data for the LLM
 
         # Send the prompt to the LLM via ChatBox
         try:
@@ -82,7 +81,6 @@ def create_main_app():
             "suggested_move": suggested_move
         }), 200
 
-   
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
