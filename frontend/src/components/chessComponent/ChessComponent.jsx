@@ -296,6 +296,8 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
   function onPromotionPieceSelect(piece, fromSquare, toSquare) {
     // If no piece selected (e.g., user canceled promotion dialog), reset and exit
     if (piece) {
+      const currFen = game.fen();
+
       // Apply promotion move with selected piece, defaulting to Queen if undefined
       const move = safeGameMutate((game) => {
         return game.move({
@@ -305,7 +307,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
         });
       });
 
-      if (onPlayerMove) onPlayerMove(formatUciMove(move), game.fen());
+      if (onPlayerMove) onPlayerMove(formatUciMove(move), currFen);
 
       setTimeout(makeRandomMove, 300);
     }
