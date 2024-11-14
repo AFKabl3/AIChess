@@ -4,8 +4,8 @@ import { Chess } from 'chess.js';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
-import toast from 'react-hot-toast';
 import { formatUciMove } from '../../util/chessUtil';
+import { waitForResponseToast } from '../../util/toasts';
 import './ChessComponent.css';
 
 export const ChessComponent = ({ onPlayerMove, lock }) => {
@@ -219,6 +219,12 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
         return;
       }
 
+      // If the board is locked, show a toast and return from function
+      if (lock) {
+        waitForResponseToast();
+        return false;
+      }
+
       // Valid move - set moveTo and handle promotion if applicable
       setMoveTo(square);
 
@@ -230,6 +236,8 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
         setShowPromotionDialog(true);
         return;
       }
+
+      const currFen = game.fen();
 
       // Handle regular move
       const gameCopy = { ...game };
@@ -244,6 +252,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
       }
 
       // Update game state, reset variables, and trigger AI move (for the moment a Random move)
+      if (onPlayerMove) onPlayerMove(formatUciMove(move), currFen);
       updateNotation(move, 'user');
       setGame(gameCopy);
       setTimeout(makeRandomMove, 300);
@@ -365,9 +374,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
   function onDrop(source, target) {
     if (isPaused) return false; // Disable drop if game is paused
     if (lock) {
-      toast('Please wait for a response from the last move', {
-        icon: '⏳',
-      });
+      waitForResponseToast();
       return false;
     }
 
@@ -385,6 +392,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
 
     if (onPlayerMove) onPlayerMove(formatUciMove(move), currBoard);
     updateNotation(move, 'user');
+
     // If the move is valid, trigger a random computer move after a 200ms delay
     setTimeout(makeRandomMove, 200);
     return true;
@@ -417,8 +425,9 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
         <Chessboard
           boardWidth={Math.min(height, width / 1.5) - 150} // Responsive board width
           position={game.fen()}
-          onPieceDrop={isPaused ? () => false : onDrop} // Disable piece drop in paused state
+          onPieceDrop={onDrop}
           onPieceDragBegin={(_, square) => getMoveOptions(square)}
+          onPieceDragEnd={(_, square) => setMoveFrom(square)}
           animationDuration={200}
           arePiecesDraggable={!isPaused} // Enable dragging only if not paused
           onSquareClick={onSquareClick}
