@@ -61,49 +61,63 @@ class StockfishAPI:
 
     # return the current
     def get_player_game_status(self, fen):
-        payload = utils.payload(fen)
+        if not utils.is_valid_fen(fen):
+            return "No evaluation available"
+        payload = {
+            "fen": fen,
+        }
         response = self._send_request(payload)
         return response.get("winChance", "No evaluation available")
 
     # return an array of next moves to be played
     def get_evaluation(self, fen):
-        payload = utils.payload(fen)
+        if not utils.is_valid_fen(fen):
+            return "No evaluation available"
+        payload = {
+            "fen": fen,
+        }
         response = self._send_request(payload)
         return response.get("eval", "No evaluation available")
 
     # return an array of next moves to be played
     def get_next_moves(self, fen):
-        payload = utils.payload(fen)
-        response = self._send_request(payload)
-        cont_arr = response.get("continuationArr", "No evaluation available")
-        if cont_arr == "No evaluation available":
+        if not utils.is_valid_fen(fen):
             return "No evaluation available"
-        cleaned_cont_arr = cont_arr[cont_arr.find('['):]
-        next_moves = ast.literal_eval(cleaned_cont_arr)
+        payload = {
+            "fen": fen,
+        }
+        response = self._send_request(payload)
+        next_moves = response.get("continuationArr", "No suggestions available")
+        if next == "No suggestions available":
+            return "No suggestions available"
         return next_moves
 
-    def get_move_suggestions(self, fen):
+    def get_move_suggestion(self, fen):
         next_moves = self.get_next_moves(fen)
-        if next_moves == "No evaluation available":
-            return "No evaluation available"
-        return next_moves[0]
+        if next_moves == "No suggestions available":
+            return "No suggestion available"
+        return next_moves[1]
 
     def evaluate_move_score(self, fen, move):
+        print(type(move))
         if not utils.is_valid_fen(fen) or not utils.is_valid_move(fen, move):
+            print("first if")
             return "No score available"
 
         evaluation_before = self.get_evaluation(fen)
         if evaluation_before == "No evaluation available":
+            print("second if")
             return "No score available"
 
-        new_fen = utils.move_to_fen(move)
+        new_fen = utils.move_to_fen(fen, move)
         evaluation_after = self.get_evaluation(new_fen)
         if evaluation_after == "No evaluation available":
+            print("third if")
             return "No score available"
 
         evaluation_after = float(evaluation_after)
         evaluation_before = float(evaluation_before)
 
-        return math.abs(math.abs(evaluation_after) - math.abs(evaluation_before))
 
-        return eval_diff
+        return abs(abs(evaluation_after) - abs(evaluation_before))
+

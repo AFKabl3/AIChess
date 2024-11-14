@@ -16,7 +16,7 @@ def create_main_app():
 
     stockfish = StockfishAPI(depth=10)
     # chatbox = LLM_engine.ChatBox()
-    coach = MainCoach(player_color="w")
+    coach = MainCoach()
 
 
     @app.route('/evaluate_move', methods=['POST'])
@@ -58,8 +58,9 @@ def create_main_app():
                 "message": str(e)
             }), 500
 
+        new_fen = check.move_to_fen(fen, move)
         input = (
-            fen,
+            new_fen,
             move,
             evaluation_diff)
 
@@ -80,23 +81,28 @@ def create_main_app():
                 "message": f"Failed to get a response from the LLM: {str(e)}"
             }), 500
 
+        player_made_move = check.get_current_player(fen)
+        current_player = check.get_current_player(new_fen)
+
         # Response to client
         return jsonify({
+            "fen": fen,
+            "new_fen": new_fen,
+            "current_player": current_player,
+            "player_made_move": player_made_move,
             "evaluation": evaluation,
             "feedback": response,
             # "suggested_move": suggested_move
         }), 200
 
 
-
-    @app.route('/move_suggestion', methods=['POST'])
+    @app.route('/suggest_move', methods=['POST'])
     def move_suggestion():
         data = request.get_json()
         fen = data.get("fen")
-        move = data.get("move")
 
         # Validate FEN and move data
-        if not fen or not move:
+        if not fen:
             return jsonify({
                 "type": "invalid_request",
                 "message": "Both 'fen' and 'move' fields are required."
@@ -109,8 +115,8 @@ def create_main_app():
                 }),422  # This will create an error if FEN is invalid
 
         try:
-            move_suggestion = stockfish.get_move_suggestions(fen)
-            if move_suggestion == "No score available":
+            move_suggestion = stockfish.get_move_suggestion(fen)
+            if move_suggestion == "No suggestion available":
                 return jsonify({
                     "type": "stockfish_error",
                     "message": "Could not evaluate the move."
@@ -122,8 +128,8 @@ def create_main_app():
             }), 500
 
         try:
-            evaluation_diff = stockfish.evaluate_move_score(fen, move_suggestion)
-            if evaluation_diff == "No score available":
+            evaluation = stockfish.evaluate_move_score(fen, move_suggestion)
+            if evaluation == "No score available":
                 return jsonify({
                     "type": "evaluation_error",
                     "message": "Could not evaluate the move."
@@ -134,8 +140,7 @@ def create_main_app():
                 "message": str(e)
             }), 500
 
-        evaluation = evaluate_move()
-        input = (fen, move, evaluation)
+        input = (fen, move_suggestion, evaluation)
 
         try:
             response = coach.ask_move_suggestion(input)
@@ -144,6 +149,17 @@ def create_main_app():
                 "type": "llm_error",
                 "message": f"Failed to get a response from the LLM: {str(e)}"
             }), 500
+
+        current_player = check.get_current_player(fen)
+
+        return jsonify({
+            "fen": fen,
+            "current_player": current_player,
+            "evaluation": evaluation,
+            "suggested_move": move_suggestion,
+            "suggestion": response,
+            # "suggested_move": suggested_move
+        }), 200
 
 
    

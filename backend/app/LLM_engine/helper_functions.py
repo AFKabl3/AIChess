@@ -14,6 +14,7 @@ def is_valid_move(fen, move):
     except ValueError:
         return False
 
+# make the move using the current board state and generate the fen
 def move_to_fen(fen, move):
     board = chess.Board(fen)
     chess_move = board.parse_san(move) if len(move) <= 3 else board.parse_uci(move)
@@ -23,9 +24,3 @@ def move_to_fen(fen, move):
 def get_current_player(fen):
     return fen.split()[1]
 
-def payload(fen):
-    if is_valid_fen(fen):
-        return "No evaluation available"
-    return {
-        "fen": fen,
-    }
