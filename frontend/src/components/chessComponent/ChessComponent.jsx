@@ -471,7 +471,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
 
       <Box className="notation-table-wrapper">
         <Typography variant="h6" gutterBottom>
-          Notation Table
+          Move History
         </Typography>
         <Box className="notation-table">
           <Stack spacing={1}>
