@@ -60,14 +60,14 @@ class StockfishAPI:
             raise Exception(f"Request failed with status code {response.status_code}")
 
     # return the current
-    def get_player_game_status(self, fen):
+    def get_game_status(self, fen):
         if not utils.is_valid_fen(fen):
-            return "No evaluation available"
+            return "No status available"
         payload = {
             "fen": fen,
         }
         response = self._send_request(payload)
-        return response.get("winChance", "No evaluation available")
+        return response.get("winChance", "No status available")
 
     # return an array of next moves to be played
     def get_evaluation(self, fen):
@@ -119,5 +119,5 @@ class StockfishAPI:
         evaluation_before = float(evaluation_before)
 
 
-        return abs(abs(evaluation_after) - abs(evaluation_before))
+        return abs(evaluation_after) - abs(evaluation_before)
 
