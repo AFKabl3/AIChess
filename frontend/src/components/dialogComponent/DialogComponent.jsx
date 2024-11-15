@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Chess } from 'chess.js';
 
 
-export const DialogComponent = ({ isOpen, onClose, onSubmit }) => {
+const DialogComponent = ({ isOpen, onClose, onSubmit }) => {
     const [fenInput, setFenInput] = useState(''); // State to store FEN input
     const [error, setError] = useState(''); // State to store error message if the FEN is invalid
 

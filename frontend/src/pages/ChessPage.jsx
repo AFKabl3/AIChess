@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
-import { DialogComponent } from '../components/dialogComponent/DialogComponentt';
+import  DialogComponent  from '../components/dialogComponent/DialogComponent';
 import './ChessPage.css';
 
 const ChatBubble = ({ message, isUser }) => (
