@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import { Box, FormControl, FormControlLabel, FormGroup, FormLabel, Switch } from '@mui/material';
+import { Box, FormControl, FormControlLabel, FormGroup, FormLabel, Switch, Button } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
+import { DialogComponent } from '../components/dialogComponent/DialogComponentt';
 import './ChessPage.css';
 
 const ChatBubble = ({ message, isUser }) => (
@@ -105,6 +106,33 @@ const ChatInterface = ({ followChat, toggleFollowChat, messages, sendMessage, to
 );
 
 const ChessPage = () => {
+
+
+  // State to control whether the dialog is open
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // Storing the FEN for the chessboard
+  const [boardFen, setBoardFen] = useState('');
+  // Storing the temporary FEN if the user tries to insert the same FEN more than once in a row
+  const [tempFen, setTempFen] = useState('');
+
+  const openDialog = () => setIsDialogOpen(true);
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const handleFenSubmit = (fen) => {
+    setBoardFen('');  // Reset to force a re-render
+    setTempFen(fen); // Update the FEN state with the submitted notation
+    closeDialog();    // Close the dialog
+  };
+
+
+  useEffect(() => {
+    if (tempFen) {
+      setBoardFen(tempFen);  // Update boardFen to the new FEN
+      setTempFen('');        // Reset temporary FEN
+    }
+  }, [tempFen]);
+
+
   const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
   const [followChat, setFollowChat] = useState(true);
   const [llmUse, setLLMUse] = useState(true);
@@ -163,13 +191,20 @@ const ChessPage = () => {
 
   return (
     <div className="chess-page-container">
-      <ChessComponent lock={lock} onPlayerMove={onPlayerMove} />
+      <ChessComponent lock={lock} onPlayerMove={onPlayerMove} openDialog={openDialog} fen={tempFen}>
+      </ChessComponent>
+
       <ChatInterface
         followChat={followChat}
         toggleFollowChat={toggleFollowChat}
         messages={messages}
         sendMessage={sendUserChat}
         toggleLLMUse={toggleLLMUse}
+      />
+       <DialogComponent
+        isOpen={isDialogOpen}      
+        onClose={closeDialog}      
+        onSubmit={handleFenSubmit} 
       />
     </div>
   );

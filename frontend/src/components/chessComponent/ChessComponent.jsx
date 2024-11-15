@@ -8,7 +8,8 @@ import { formatUciMove } from '../../util/chessUtil';
 import { waitForResponseToast } from '../../util/toasts';
 import './ChessComponent.css';
 
-export const ChessComponent = ({ onPlayerMove, lock }) => {
+
+export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -35,6 +36,15 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
 
   // State to track if the game is over
   const [isGameOver, setIsGameOver] = useState(false);
+
+
+  useEffect(() => {
+    if (fen) {
+      const newGame = new Chess(fen); // Create a new Chess instance with the updated FEN
+      setGame(newGame);
+    }
+  }, [fen])
+
 
   // Tracks moves with separate FEN states for the notation table
   const [notation, setNotation] = useState([]);
@@ -477,6 +487,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
           >
             reset
           </Button>
+          <Button variant="contained" size="large" onClick={openDialog}>Upload Chessboard Setup</Button>
         </Box>
       </Box>
 
