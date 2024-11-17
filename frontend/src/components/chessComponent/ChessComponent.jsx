@@ -8,8 +8,7 @@ import { formatUciMove } from '../../util/chessUtil';
 import { waitForResponseToast } from '../../util/toasts';
 import './ChessComponent.css';
 
-
-export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen }) => {
+export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen, setBoardFen }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -38,13 +37,17 @@ export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen }) => {
   const [isGameOver, setIsGameOver] = useState(false);
 
 
+  // Change the board state whenever a new FEN is submitted
   useEffect(() => {
     if (fen) {
       const newGame = new Chess(fen); // Create a new Chess instance with the updated FEN
       setGame(newGame);
+      setNotation([]); // Clear the move history
+      if (isPaused) { // If the resume button is active when a user enters the notation, set it to pause
+        setIsPaused(false); 
+      }
     }
-  }, [fen])
-
+  }, [fen]);
 
   // Tracks moves with separate FEN states for the notation table
   const [notation, setNotation] = useState([]);
@@ -473,6 +476,7 @@ export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen }) => {
             variant="contained"
             size="large"
             onClick={() => {
+              setBoardFen('');
               safeGameMutate((game) => {
                 game.reset();
               });
@@ -487,7 +491,9 @@ export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen }) => {
           >
             reset
           </Button>
-          <Button variant="contained" size="large" onClick={openDialog}>Upload Chessboard Setup</Button>
+          <Button variant="contained" size="large" onClick={openDialog}>
+            Upload Chessboard Setup
+          </Button>
         </Box>
       </Box>
 

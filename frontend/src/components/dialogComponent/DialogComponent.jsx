@@ -10,9 +10,10 @@ const DialogComponent = ({ isOpen, onClose, onSubmit }) => {
     // Function for handling submiting of FEN
     const handleSubmit = () => {
         const game = new Chess();
-        const isValidFen = game.load(fenInput); // Check if FEN is valid
+        const isValidFen = game.validate_fen(fenInput); // Check if FEN is valid
+        console.log("You entered FEN notation: " + fenInput);
 
-        if (isValidFen) {
+        if (isValidFen.valid) {
             onSubmit(fenInput); // Call the onSubmit prop that is passed to submit the FEN entered
             setError('');       // Clear previous error messages
             setFenInput('');    // Clear input field for FEN
