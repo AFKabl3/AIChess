@@ -22,6 +22,14 @@ class MainCoach(ChatBox):
         return (self.ask(f"""The current state of the board is as follows in FEN notation: \n  {fen} \n
         The user move is {move}. The evaluation of this move by stockfish is {evaluation}.\n
         Provide feedback on this move. Try to limit the response to 150 words. Coach the user by providing explanation to the evaluation."""))
+        
+    def ask_chess_question(self, fen, question):
+        evaluation = self.stockfish.get_evaluation(fen)
+        return (self.ask(f"""The current state of the board is as follows in FEN notation: \n  {fen} \n
+        The user question is {question}. The evaluation of this state by stockfish is {evaluation}.\n
+        Provide a valid answer for this question in a chess context. Try to limit the response to 150 words."""))
+        
+    
 
 
     
