@@ -17,3 +17,8 @@ def is_valid_move(fen, move):
         return is_valid_fen(fen)
     except ValueError:
         return False
+    
+def is_valid_question(question):
+    if len(question) > 200:
+        return False
+    return True
