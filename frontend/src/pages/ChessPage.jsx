@@ -1,9 +1,18 @@
 /* eslint-disable react/prop-types */
-import { Box, FormControl, FormControlLabel, FormGroup, FormLabel, Switch } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Switch,
+  Button,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
+import DialogComponent from '../components/dialogComponent/DialogComponent';
 import './ChessPage.css';
 
 const ChatBubble = ({ message, isUser }) => (
@@ -105,6 +114,21 @@ const ChatInterface = ({ followChat, toggleFollowChat, messages, sendMessage, to
 );
 
 const ChessPage = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [boardFen, setBoardFen] = useState('');
+
+  const openDialog = () => setIsDialogOpen(true);
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const handleFenSubmit = (fen) => {
+    setBoardFen('');
+    // A timeout so the change can be recognised if the user uses the same FEN notation again
+    setTimeout(() => {
+      setBoardFen(fen);
+    }, 0);
+    closeDialog();
+  };
+
   const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
   const [followChat, setFollowChat] = useState(true);
   const [llmUse, setLLMUse] = useState(true);
@@ -163,7 +187,14 @@ const ChessPage = () => {
 
   return (
     <div className="chess-page-container">
-      <ChessComponent lock={lock} onPlayerMove={onPlayerMove} />
+      <ChessComponent
+        lock={lock}
+        onPlayerMove={onPlayerMove}
+        openDialog={openDialog}
+        fen={boardFen}
+        setBoardFen={setBoardFen}
+      ></ChessComponent>
+
       <ChatInterface
         followChat={followChat}
         toggleFollowChat={toggleFollowChat}
@@ -171,6 +202,7 @@ const ChessPage = () => {
         sendMessage={sendUserChat}
         toggleLLMUse={toggleLLMUse}
       />
+      <DialogComponent isOpen={isDialogOpen} onClose={closeDialog} onSubmit={handleFenSubmit} />
     </div>
   );
 };
