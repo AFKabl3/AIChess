@@ -40,10 +40,10 @@ export const ChessComponent = ({ onPlayerMove, lock, openDialog, fen, setBoardFe
   // Change the board state whenever a new FEN is submitted
   useEffect(() => {
     if (fen) {
-      const newGame = new Chess(fen); // Create a new Chess instance with the updated FEN
+      const newGame = new Chess(fen); 
       setGame(newGame);
       setNotation([]); // Clear the move history
-      if (isPaused) { // If the resume button is active when a user enters the notation, set it to pause
+      if (isPaused) { 
         setIsPaused(false); 
       }
     }

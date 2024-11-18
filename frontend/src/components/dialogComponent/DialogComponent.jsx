@@ -4,30 +4,29 @@ import { Chess } from 'chess.js';
 
 
 const DialogComponent = ({ isOpen, onClose, onSubmit }) => {
-    const [fenInput, setFenInput] = useState(''); // State to store FEN input
+    const [fenInput, setFenInput] = useState(''); 
     const [error, setError] = useState(''); // State to store error message if the FEN is invalid
 
     // Function for handling submiting of FEN
     const handleSubmit = () => {
         const game = new Chess();
-        const isValidFen = game.validate_fen(fenInput); // Check if FEN is valid
-        console.log("You entered FEN notation: " + fenInput);
+        const isValidFen = game.validate_fen(fenInput); 
 
         if (isValidFen.valid) {
-            onSubmit(fenInput); // Call the onSubmit prop that is passed to submit the FEN entered
-            setError('');       // Clear previous error messages
-            setFenInput('');    // Clear input field for FEN
-            onClose();          // Call the onClose prop that is passed to close the dialog
+            onSubmit(fenInput); 
+            setError('');      
+            setFenInput('');    
+            onClose();          
         } else {
-            setError("Invalid FEN notation. Please enter a valid FEN."); // Show error message if FEN is invalid
+            setError("Invalid FEN notation. Please enter a valid FEN.");
         }
     };
 
-    // Function for handling the close of dialog
+    
     const handleDialogClose = () => {
-        setFenInput('');  // Clear the input field
-        setError('');     // Clear error messages
-        onClose();        // Call the onClose prop that is passed to actually close the dialog
+        setFenInput('');  
+        setError('');    
+        onClose();
     };
 
 
@@ -41,7 +40,7 @@ const DialogComponent = ({ isOpen, onClose, onSubmit }) => {
                     value={fenInput}
                     onChange={(e) => setFenInput(e.target.value)}
                     error={!!error}       // Shows red underline if the error is set
-                    helperText={error}     // Displays error message below the input field
+                    helperText={error}     
                     autoFocus
                 />
             </DialogContent>

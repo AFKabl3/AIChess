@@ -114,22 +114,19 @@ const ChatInterface = ({ followChat, toggleFollowChat, messages, sendMessage, to
 );
 
 const ChessPage = () => {
-  // State to control whether the dialog is open
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // Storing the FEN for the chessboard
   const [boardFen, setBoardFen] = useState('');
 
   const openDialog = () => setIsDialogOpen(true);
   const closeDialog = () => setIsDialogOpen(false);
 
-  // Function for handling the submit of FEN
   const handleFenSubmit = (fen) => {
-    setBoardFen(''); // Clearing the current FEN
+    setBoardFen('');
     // A timeout so the change can be recognised if the user uses the same FEN notation again
     setTimeout(() => {
-      setBoardFen(fen); // Apply the new FEN
+      setBoardFen(fen);
     }, 0);
-    closeDialog(); // Close the dialog
+    closeDialog();
   };
 
   const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
