@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
 import './ChessPage.css';
+import { waitForResponseToast } from '../util/toasts';
+import { waitForResponseQuestionToast } from '../util/toasts';
 
 const ChatBubble = ({ message, isUser }) => (
   <div className={`chat-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>{message}</div>
@@ -130,7 +132,35 @@ const ChessPage = () => {
     });
   };
 
-  const sendUserChat = (text) => sendMessage(text, true);
+  const sendUserChat = async (text) => {
+    if(lock == true) {
+      waitForResponseQuestionToast(); 
+      return;
+    }
+    if (!llmUse) return;
+
+    const index = sendMessage(text, true);
+
+    setLock(true);
+    try {
+      const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+      const res = await api.answerChessQuestion(fen, text);
+  
+      if (res.ok) {
+        const data = await res.json();
+        const answer = data.answer;
+        addBotChat(answer);
+      } else {
+        const errorData = await res.json();
+        addBotChat(`Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error calling the API:', error);
+      addBotChat('An error occurred while processing your question.');
+    }
+    setLock(false);
+  };
+  
 
   const addBotChat = (text) => sendMessage(text, false);
 
