@@ -46,7 +46,7 @@ function ChessPage() {
           });
         }}
       />
-      <Box className="notation-interface">
+      <Box className="notation-interface" sx={{ display: "none" }}>
         <Typography variant="h6">Notation</Typography>
       </Box>
       <Box className="chat-interface">
