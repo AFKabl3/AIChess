@@ -1,0 +1,23 @@
+name: Notify Discord on PR Creation
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: |
+            A new Pull Request has been created:
+            - PR Title: **{{ github.event.pull_request.title }}**
+            - PR URL: {{ github.event.pull_request.html_url }}
+            - Created by: **@{{ github.event.pull_request.user.login }}**
+
+            <@thorsjursen> <@zenox8647>
