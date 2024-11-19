@@ -2,7 +2,7 @@ name: Notify Discord on PR Creation
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened]
 
 jobs:
   notify-discord:
@@ -16,8 +16,8 @@ jobs:
         with:
           args: |
             A new Pull Request has been created:
-            - PR Title: **{{ github.event.pull_request.title }}**
-            - PR URL: {{ github.event.pull_request.html_url }}
-            - Created by: **@{{ github.event.pull_request.user.login }}**
+            - PR Title: **{{ EVENT_PAYLOAD.pull_request.title }}**
+            - PR URL: {{ EVENT_PAYLOAD.pull_request.html_url }}
+            - Created by: [@{{ EVENT_PAYLOAD.pull_request.user.login }}]({{ EVENT_PAYLOAD.pull_request.user.html_url }})
 
-            <@thorsjursen> <@zenox8647>
+            <@1179551362669883392> <@222019674995425280>
