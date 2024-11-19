@@ -14,40 +14,9 @@ def create_main_app():
     app = Flask(__name__)
     CORS(app)
 
-    stockfish = Stockfish(depth=10) 
+    stockfish = Stockfish(depth=10)
     # chatbox = LLM_engine.ChatBox()
     coach = MainCoach(player_color="w")
-
-    @app.route('/get_bot_move', methods = ['POST'])
-    def get_bot_move():
-        # we retrive the json file sent to this API including:
-        # - fen of the board
-        data = request.get_json()
-        fen = data.get("fen")
-        
-        # we create a chess bot which is nothing else than a Stockfish class instance with certain params
-        # Here the depth is set to 2;
-        # To be customizable we can make settings in UI to modify it and simply pass that paramenter that is stored locally 
-        # Otherwise we have to store it in backend, letting interaction not being stateless and have a class "chess_bot" 
-        # always active for each player and a new API-function to set the strenght of the bot
-        # Probably best is to save it in client and simply pass that parameter, here it will be set to default strenght = 2
-        chess_bot = Stockfish() 
-        try:
-                
-            # Now we call "get evaluation" method from Stockfish class
-            # and as param we pass the fen
-            bot_move = chess_bot.get_next_best_move(fen, 2)
-
-        except Exception as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": str(e)
-            }), 500
-        
-        # We respond to the caller of the API with the move the bot will play
-        return jsonify({
-            "bot_move": bot_move
-        })
 
 
     @app.route('/evaluate_move', methods=['POST'])
