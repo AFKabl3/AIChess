@@ -5,13 +5,18 @@ import chess
 from .stockfish_api import Stockfish  # Import the Stockfish class
 from .LLM_engine.agents.main_coach import MainCoach
 import pdb
+import asyncio
 from flask import request
-
+import re
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 def create_main_app():
-
+    
     app = Flask(__name__)
+
+    CORS(app, origins=["http://localhost:5173"])
     CORS(app)
 
     stockfish = Stockfish(depth=10)
@@ -24,7 +29,8 @@ def create_main_app():
         data = request.get_json()
         fen = data.get("fen")
         move = data.get("move")
-
+        logging.debug(f"Received data: {data}")
+        
         # Validate FEN and move data
         if not fen or not move:
             return jsonify({
@@ -38,36 +44,31 @@ def create_main_app():
                     "message": "Invalid FEN string provided."
                 }),422  # This will create an error if FEN is invalid
 
-
+            # 
         if not check.is_valid_move(fen, move):
             return jsonify({
                 "type": "invalid_move",
                 "message": "Invalid move string provided."
-            }), 422
+            }), 422 # on promotion the error of undefined may be here
         
         try:
-            evaluation_diff = stockfish.evaluate_move_score(fen, move, player_color="w")  # Assuming black's move
+            evaluation_diff = stockfish.evaluate_move_score(fen, move)
             if evaluation_diff == "No score available":
-                return jsonify({
-                    "type": "evaluation_error",
-                    "message": "Could not evaluate the move."
-                }), 500
+                evaluation_diff = 0.0 # let us return a evalution of 0.0 in case the stockfish fails to provide an answer      
         except Exception as e:
             return jsonify({
                 "type": "stockfish_error",
                 "message": str(e)
             }), 500
-
-
-        # Hardcoded responses for demonstration will need to merge with LLM and Stockfish
+        logging.debug(f"EVALUATION DIFF: {evaluation_diff}")
+ 
         evaluation = evaluation_diff  # Evaluation we get from stockfish
         suggested_move = "Nf6"  # Example suggested move
-        # Prepare data for the LLM
-
         # Send the prompt to the LLM via ChatBox
         try:
             # llm_feedback = chatbox.ask(prompt)
-            response = coach.ask_move_feedback(move, fen)
+            response = coach.ask_move_feedback(move, fen, evaluation)
+             
         except Exception as e:
             return jsonify({
                 "type": "llm_error",
@@ -75,11 +76,27 @@ def create_main_app():
             }), 500
 
         # Response to client
-        return jsonify({
+        if evaluation and re.search(r'\d', response):
+            return jsonify({
             "evaluation": evaluation,
             "feedback": response,
             "suggested_move": suggested_move
-        }), 200
+            }), 200
+        else:
+            if not evaluation:
+                logging.debug("Evaluation is empty")
+                return jsonify({
+                "evaluation": evaluation,
+                "feedback": response,
+                "suggested_move": suggested_move
+                }), 200
+            if not re.search(r'\d', response):
+                logging.debug("Response is missing a numeric value")
+            logging.debug(f"Evaluation: {evaluation}, Response: {response}")
+            return jsonify({
+            "type": "invalid_feedback",
+            "message": "Feedback is missing a numeric value or evaluation is empty."
+            }), 400
 
     @app.errorhandler(404)
     def not_found(error):
@@ -91,9 +108,8 @@ def create_main_app():
     
     @app.errorhandler(500)
     def internal_server_error(error):
-        return jsonify({
-            "type": "internal_server_error",
-            "message": "An unexpected error occurred."
-        }), 500
+        logging.error(f"500 Error: {error}")
+        return jsonify({"type": "internal_server_error", "message": str(error)}), 500
+
 
     return app

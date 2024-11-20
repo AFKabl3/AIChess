@@ -3,8 +3,8 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {
-  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
-  "move": "b2b4"
+  "fen": "rnbq1bnr/ppppkp1p/4p1p1/8/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQ - 0 4",
+  "move": "f3e5"
 }
 ### Missing FEN Field
 POST http://127.0.0.1:5000/evaluate_move
