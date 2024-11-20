@@ -19,6 +19,6 @@ def is_valid_move(fen, move):
         return False
     
 def is_valid_question(question):
-    if len(question) > 200:
+    if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
         return False
     return True
