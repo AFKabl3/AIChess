@@ -86,11 +86,11 @@ def create_app():
         fen = data.get("fen")
         question = data.get("question")
         
-            # Validate FEN and move data
+        # Validate FEN and question data
         if not fen or not question:
             return jsonify({
                 "type": "invalid_request",
-                "message": "Both 'fen' and 'move' fields are required."
+                "message": "Both 'fen' and 'question' fields are required."
             }), 400
 
         if not check.is_valid_fen(fen):
@@ -104,10 +104,10 @@ def create_app():
             return jsonify({
                 "type": "invalid_question",
                 "message": "Invalid question string provided."
-            }), 422
+            }), 422 # This will create an error if question is invalid
             
-        try:
-            # llm_feedback = chatbox.ask(prompt)
+        try:       
+            #ask question to the LLM
             answer = coach.ask_chess_question(fen, question)
         except Exception as e:
             return jsonify({
@@ -119,10 +119,6 @@ def create_app():
         return jsonify({
             "answer": answer
         }), 200
-
-            
-        #Ask the question to the LLM
-        
     
     @app.errorhandler(404)
     def not_found(error):
@@ -140,3 +136,4 @@ def create_app():
         }), 500
 
     return app
+
