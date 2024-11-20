@@ -6,7 +6,6 @@ import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
 import './ChessPage.css';
 import { waitForResponseToast } from '../util/toasts';
-import { waitForResponseQuestionToast } from '../util/toasts';
 
 const ChatBubble = ({ message, isUser }) => (
   <div className={`chat-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>{message}</div>
@@ -132,9 +131,15 @@ const ChessPage = () => {
     });
   };
 
+    /**
+   * Handles the player sending a question through the chatbox.
+   *
+   * @param {string} text - The question made by the player that mustn't exceed 200 words.
+   * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
+   */
   const sendUserChat = async (text) => {
     if(lock == true) {
-      waitForResponseQuestionToast(); 
+      waitForResponseToast(); 
       return;
     }
     if (!llmUse) return;
@@ -143,7 +148,7 @@ const ChessPage = () => {
 
     setLock(true);
     try {
-      const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+      const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";  /* example FEN state */
       const res = await api.answerChessQuestion(fen, text);
   
       if (res.ok) {
