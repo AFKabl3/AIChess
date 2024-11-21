@@ -263,6 +263,8 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
     }
   }
 
+
+
   function updateNotation(move, player) {
     setNotation((prevNotation) => {
       const newNotation = [...prevNotation];
@@ -399,6 +401,7 @@ export const ChessComponent = ({ onPlayerMove, lock }) => {
     setTimeout(makeRandomMove, 200);
     return true;
   }
+
 
   function handleNotationClick(fen) {
     const newGame = new Chess(fen);
