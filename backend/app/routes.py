@@ -43,7 +43,7 @@ def create_main_app():
                 "message": str(e)
             }), 500
 
-        current_player = stockfish.get_current_player(fen)
+        current_player = check.get_current_player(fen)
 
         # Response to client
         return jsonify({
@@ -80,7 +80,8 @@ def create_main_app():
             }), 422
         
         try:
-            evaluation = stockfish.evaluate_move_score(fen, move)
+            new_fen = check.move_to_fen(fen, move)
+            evaluation = stockfish.get_evaluation(new_fen)
             if evaluation == "No score available":
                 return jsonify({
                     "type": "evaluation_error",
@@ -92,7 +93,7 @@ def create_main_app():
                 "message": str(e)
             }), 500
 
-        new_fen = check.move_to_fen(fen, move)
+
         try:
             game_status = 100 - stockfish.get_game_status(new_fen)
             if game_status == "No status available":
@@ -125,14 +126,9 @@ def create_main_app():
 
         # Response to client
         return jsonify({
-            "fen": fen,
-            "new_fen": new_fen,
-            "game_status": game_status,
-            "current_player": current_player,
             "player_made_move": player_made_move,
             "evaluation": evaluation,
             "feedback": response,
-            # "suggested_move": suggested_move
         }), 200
 
 
@@ -168,7 +164,8 @@ def create_main_app():
             }), 500
 
         try:
-            evaluation = stockfish.evaluate_move_score(fen, move_suggestion)
+            fen_move_suggestion = check.move_to_fen(fen, move_suggestion)
+            evaluation = stockfish.get_evaluation(fen_move_suggestion)
             if evaluation == "No score available":
                 return jsonify({
                     "type": "evaluation_error",
@@ -196,7 +193,7 @@ def create_main_app():
         new_fen = check.move_to_fen(fen, move_suggestion)
 
         try:
-            new_game_status = 100 - (stockfish.get_game_status(new_fen))
+            new_game_status = stockfish.get_game_status(new_fen)
             if game_status == "No status available":
                 return jsonify({
                     "type": "stockfish_error",
@@ -221,11 +218,7 @@ def create_main_app():
         current_player = check.get_current_player(fen)
 
         return jsonify({
-            "fen": fen,
             "current_player": current_player,
-            "current_game_status": current_game_status,
-            "new_game_status": new_game_status,
-            "evaluation": evaluation,
             "suggested_move": move_suggestion,
             "suggestion": response,
             # "suggested_move": suggested_move

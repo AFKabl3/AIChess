@@ -6,7 +6,7 @@
    - [1. Evaluate Move Endpoint](#1-evaluate-move-endpoint)
    - [2. Answer Chess Question Endpoint](#2-answer-chess-question-endpoint)
    - [3. Get Suggested Move Endpoint](#3-get-suggested-move-endpoint)
-   - [4. Get Suggested Move with Explanation Endpoint](#4-get-suggested-move-with-explanation-endpoint)
+   - [4. Get Game Status Endpointt](#4-get-suggested-move-with-explanation-endpoint)
 2. [Error Handling](#error-handling)
 
 ## Endpoints
@@ -27,6 +27,7 @@
 
 - **200 OK**:
   - **Body (JSON)**:
+    - `player_made_move` (string)
     - `evaluation` (float): Numeric evaluation score for the move.
     - `feedback` (string): Descriptive feedback on the quality of the move.
 
@@ -48,8 +49,9 @@ POST /evaluate_move
 
 ```json
 {
-  "evaluation": -0.3,
-  "feedback": "The move is solid but does not improve black's position significantly."
+  "player_made_move": "w",
+  "evaluation": -1.39,
+  "feedback": " Moving the b-pawn to b4 is not an advantageous move, as it reduces the mobility of your other pieces and creates a weakness on the b3 square, making it difficult to defend. It also further exposes your king, which could be dangerous in the long run. Generally, early in the game, it's ideal to focus on controlling the center of the board and developing your pieces, rather than shuffling pawns around, which can limit the potential of your game. Rethink your strategy and consider moves that prioritize controlling the center with pieces like your knight and bishop, which will promote a stronger, more developed board state. Look to maintain a more solid, stable position and aim for long-term strength in each move you make."
 }
 ```
 
@@ -101,7 +103,7 @@ POST /answer_question
 
 - **Endpoint**: `/suggest_move`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation based on the position.
+- **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation, along with a textual explanation for the move..
 
 #### Request Parameters
 
@@ -112,7 +114,9 @@ POST /answer_question
 
 - **200 OK**:
   - **Body (JSON)**:
-    - `move` (string): The best move in UCI notation.
+      - `current_player` (string)
+      - `move` (string): The best move in UCI notation.
+      - `suggestion` (string): textual descprtion of the suggested move
 
 <details>
 <summary>Example Request</summary>
@@ -131,17 +135,19 @@ POST /suggest_move
 
 ```json
 {
-  "move": "Nf6"
+  "current_player": "w",
+  "suggested_move": "e2e4",
+  "suggestion": " Great move! Advancing your pawn to e4 opens up the center of the board and supports the development of your other pieces. It also puts pressure on your opponent's position, requiring them to respond. These types of moves are fundamental to building a strong foundation in chess. Just keep in mind that your opponent may have different ideas and plans, so stay flexible and be ready to adapt. Keep up the good work and have fun!"
 }
 ```
 
 </details>
 
-### 4. Get Suggested Move with Explanation Endpoint
+### 4. Get Game Status Endpoint
 
-- **Endpoint**: `/suggest_move_with_explanation`
+- **Endpoint**: `/game_status`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation, along with a textual explanation for the move.
+- **Description**: Accepts a chess board in FEN notation and returns the percentage of winning.
 
 #### Request Parameters
 
@@ -152,14 +158,15 @@ POST /suggest_move
 
 - **200 OK**:
   - **Body (JSON)**:
-    - `move` (string): The best move in UCI notation.
-    - `explanation` (string): Explanation for why this move is suggested.
+        -  `current_player` (string): current player that has to play the move
+        - `fen` (string): The FEN string representing the board state.
+        - `game_status` (float): percentage of winning for the white player (for now).
 
 <details>
 <summary>Example Request</summary>
 
 ```json
-POST /suggest_move_with_explanation
+POST /game_status
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
@@ -172,8 +179,9 @@ POST /suggest_move_with_explanation
 
 ```json
 {
-  "move": "Nf6",
-  "explanation": "Nf6 develops a knight to a natural square, supporting the center and preparing for castling."
+  "current_player": "w",
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "game_status": 51.74827500461166
 }
 ```
 
