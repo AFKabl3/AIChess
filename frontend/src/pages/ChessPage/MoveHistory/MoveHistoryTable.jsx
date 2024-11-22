@@ -1,6 +1,16 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, styled } from '@mui/material';
 import { useContext, useEffect, useRef } from 'react';
+import { ContainerTitle } from '../../../components/styledComponents/ContainerTitle';
+import { SideContainer } from '../../../components/styledComponents/SideContainer';
 import { ChessContext } from '../ChessContext';
+
+const NotationLink = styled('span')({
+  cursor: 'pointer',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+  fontWeight: 'bold',
+});
 
 export const MoveHistoryTable = () => {
   const { chess, moveHistory } = useContext(ChessContext);
@@ -39,36 +49,36 @@ export const MoveHistoryTable = () => {
   }
 
   return (
-    <Box sx={{ bgcolor: 'blue', flexGrow: 2, height: '100%' }}>
-      <Typography variant="h6" gutterBottom>
+    <SideContainer
+      sx={{
+        flexGrow: 2,
+        height: '100%',
+        minWidth: '150px',
+        maxWidth: '200px',
+      }}
+    >
+      <ContainerTitle variant="h6" gutterBottom>
         Move History
-      </Typography>
-      <Box className="notation-table">
-        <Stack spacing={1}>
+      </ContainerTitle>
+      <Box sx={{ p: 2, flex: 1 }}>
+        <Stack spacing={1} sx={{ pl: 2, pr: 2 }}>
           {history.map((movePair, index) => (
-            <Typography key={index} className="notation-item">
-              <span
-                className="notation-move clickable"
-                onClick={() => handleNotationClick(movePair.user.fen)}
-              >
+            <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
                 {`${index + 1}. ${movePair.user.san}`}
-              </span>
+              </NotationLink>
               {movePair.bot && (
-                <span
-                  className="notation-move bot-move clickable"
-                  onClick={() => handleNotationClick(movePair.bot.fen)}
-                >
+                <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
                   {movePair.bot.san}
-                </span>
+                </NotationLink>
               )}
-            </Typography>
+            </Box>
           ))}
           <div ref={notationEndRef} /> {/* Reference for scrolling */}
         </Stack>
       </Box>
 
-      {/* Persistent Pause/Resume Button */}
-      <Box className="pause-resume-button">
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
         <Button
           variant="contained"
           color={isPaused ? 'primary' : 'secondary'}
@@ -77,7 +87,7 @@ export const MoveHistoryTable = () => {
           {isPaused ? 'Resume' : 'Pause'}
         </Button>
       </Box>
-    </Box>
+    </SideContainer>
   );
 };
 

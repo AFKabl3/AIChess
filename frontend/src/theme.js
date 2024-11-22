@@ -1,6 +1,5 @@
 import { createTheme } from '@mui/material/styles';
 
-// Note that these are just initial settings and can be changed later
 const theme = createTheme({
   cssVariables: true,
   palette: {
@@ -9,10 +8,14 @@ const theme = createTheme({
       main: '#8B4513',
     },
     secondary: {
-      main: '#f5c400',
+      main: '#ECCBB8',
     },
     background: {
       default: '#413934',
+    },
+    custom: {
+      containerBackground: 'rgba(48, 46, 43, 0.8)',
+      shadow40: 'rgba(0, 0, 0, 0.4)',
     },
   },
 });

@@ -2,62 +2,37 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/api';
-import { ChessComponent } from '../../components/chessComponent/ChessComponent';
-import DialogComponent from '../../components/dialogComponent/DialogComponent';
+import { useChat } from '../../hooks/useChat';
+import { useChess } from '../../hooks/useChess';
+import { useMoveHistory } from '../../hooks/useMoveHistory';
+import { formatUciMove } from '../../util/chessUtil';
 import { Chat } from './Chat/Chat';
+import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
+import { ChessContext } from './ChessContext';
+import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
 
 export const ChessPage = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [boardFen, setBoardFen] = useState('');
-
-  const openDialog = () => setIsDialogOpen(true);
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const handleFenSubmit = (fen) => {
-    setBoardFen('');
-    // A timeout so the change can be recognised if the user uses the same FEN notation again
-    setTimeout(() => {
-      setBoardFen(fen);
-    }, 0);
-    closeDialog();
-  };
-
-  const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
-  const [followChat, setFollowChat] = useState(true);
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
 
-  const toggleFollowChat = () => setFollowChat(!followChat);
-  const toggleLLMUse = () => setLLMUse(!llmUse);
+  const { messages, followChat, toggleFollowChat, sendMessage, addBotChat, modifyMessageText } =
+    useChat();
 
-  const sendMessage = (text, isUser) => {
-    const index = messages.length;
+  const moveHistory = useMoveHistory();
+  const { isPaused, updateNotation } = moveHistory;
 
-    setMessages((prevMessages) => [...prevMessages, { text, isUser }]);
+  const chess = useChess({
+    onPlayerMove: (move, prevFen, currFen) => {
+      onPlayerMove(formatUciMove(move), prevFen);
+      updateNotation(move, currFen, 'user');
+    },
+    onBotMove: (move, _, currFen) => {
+      updateNotation(move, currFen, 'bot');
+    },
+    lock,
+    isPaused,
+  });
 
-    return index;
-  };
-
-  const modifyMessageText = (index, text) => {
-    setMessages((prevMessages) => {
-      const newMessages = [...prevMessages];
-
-      newMessages[index].text = text;
-      return newMessages;
-    });
-  };
-
-  const sendUserChat = (text) => sendMessage(text, true);
-
-  const addBotChat = (text) => sendMessage(text, false);
-
-  /**
-   * Handles the player's move by evaluating it and updating the chat with the result.
-   *
-   * @param {string} move - The move made by the player in standard algebraic notation.
-   * @param {string} fen - The FEN (Forsyth-Edwards Notation) string representing the current board state.
-   * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
-   */
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
 
@@ -77,26 +52,29 @@ export const ChessPage = () => {
     }
     setLock(false);
   };
-
   return (
-    <Box>
-      <ChessComponent
-        lock={lock}
-        onPlayerMove={onPlayerMove}
-        openDialog={openDialog}
-        fen={boardFen}
-        setBoardFen={setBoardFen}
-      />
-
-      <Chat
-        followChat={followChat}
-        toggleFollowChat={toggleFollowChat}
-        messages={messages}
-        sendMessage={sendUserChat}
-        toggleLLMUse={toggleLLMUse}
-      />
-
-      <DialogComponent isOpen={isDialogOpen} onClose={closeDialog} onSubmit={handleFenSubmit} />
-    </Box>
+    <ChessContext.Provider value={{ chess, moveHistory }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          height: '90%',
+          width: '100%',
+          gap: 3,
+          p: 3,
+        }}
+      >
+        <MoveHistoryTable />
+        <ChessBoardWrapper />
+        <Chat
+          followChat={followChat}
+          toggleFollowChat={toggleFollowChat}
+          messages={messages}
+          sendMessage={sendMessage}
+          toggleLLMUse={() => setLLMUse(!llmUse)}
+        />
+      </Box>
+    </ChessContext.Provider>
   );
 };

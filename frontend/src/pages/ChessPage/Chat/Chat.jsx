@@ -1,16 +1,21 @@
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
+import { ContainerTitle } from '../../../components/styledComponents/ContainerTitle';
+import { SideContainer } from '../../../components/styledComponents/SideContainer';
 import { ConfigBox } from '../Config/ConfigBox';
 import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 
 export const Chat = ({ followChat, toggleFollowChat, messages, sendMessage, toggleLLMUse }) => (
-  <Box sx={{ bgcolor: 'blue', flexGrow: 2, height: '100%' }}>
+  <SideContainer sx={{ flexGrow: 2, height: '100%' }}>
+    <ContainerTitle variant="h6" gutterBottom>
+      AI Coach
+    </ContainerTitle>
     <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
     <ChatDisplay messages={messages} followChat={followChat} />
     <ChatInput sendMessage={sendMessage} />
-  </Box>
+  </SideContainer>
 );
 
 export const ChatDisplay = ({ messages, followChat }) => {

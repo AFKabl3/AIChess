@@ -15,29 +15,29 @@ export const ChessBoardWrapper = () => {
 
   const handleFenSubmit = (fen) => {
     chess.setGame(chess.gameFromFen(fen));
+    resetNotation();
     closeDialog();
   };
 
   return (
     <Box>
       <ChessComponent chess={chess} />
-      <Box>
-        <Box className="reset-button">
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => {
-              resetGame();
-              resetNotation();
-              setIsPaused(false); // Reset to resume state
-            }}
-          >
-            reset
-          </Button>
-          <Button variant="contained" size="large" onClick={openDialog}>
-            Upload Chessboard Setup
-          </Button>
-        </Box>
+      <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center', gap: 4, pt: 2 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          onClick={() => {
+            resetGame();
+            resetNotation();
+            setIsPaused(false); // Reset to resume state
+          }}
+        >
+          reset
+        </Button>
+        <Button variant="contained" color="secondary" size="large" onClick={openDialog}>
+          Upload Chessboard Setup
+        </Button>
       </Box>
       <DialogComponent isOpen={isDialogOpen} onClose={closeDialog} onSubmit={handleFenSubmit} />
     </Box>
