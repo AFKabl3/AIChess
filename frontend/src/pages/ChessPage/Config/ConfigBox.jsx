@@ -1,15 +1,12 @@
-import { Box, FormControl, FormControlLabel, FormGroup, FormLabel, Switch } from '@mui/material';
+import { Box, FormControl, FormControlLabel, FormGroup, Switch } from '@mui/material';
 import PropTypes from 'prop-types';
 
 export const ConfigBox = ({ controls }) => {
   const { toggleFollowChat, toggleLLMUse } = controls;
 
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ p: 1, display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
       <FormControl component="fieldset" sx={{ display: 'flex', gap: 1 }}>
-        <FormLabel component="legend" disabled>
-          Settings
-        </FormLabel>
         <FormGroup row>
           {toggleFollowChat && <FollowChatToggle toggleFollowChat={toggleFollowChat} />}
           {toggleLLMUse && <UseLLMToggle toggleLLMUse={toggleLLMUse} />}
@@ -25,7 +22,14 @@ ConfigBox.propTypes = {
 
 const FollowChatToggle = ({ toggleFollowChat }) => (
   <FormControlLabel
-    control={<Switch onChange={toggleFollowChat} defaultValue={true} defaultChecked={true} />}
+    control={
+      <Switch
+        onChange={toggleFollowChat}
+        defaultValue={true}
+        defaultChecked={true}
+        color="success"
+      />
+    }
     label="Follow chat"
     labelPlacement="start"
   />
@@ -37,7 +41,9 @@ FollowChatToggle.propTypes = {
 
 const UseLLMToggle = ({ toggleLLMUse }) => (
   <FormControlLabel
-    control={<Switch onChange={toggleLLMUse} defaultValue={true} defaultChecked={true} />}
+    control={
+      <Switch onChange={toggleLLMUse} defaultValue={true} defaultChecked={true} color="success" />
+    }
     label="Explain moves"
     labelPlacement="start"
   />

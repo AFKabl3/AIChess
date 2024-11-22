@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 import { ContainerTitle } from '../../../components/styledComponents/ContainerTitle';
 import { SideContainer } from '../../../components/styledComponents/SideContainer';
-import { ConfigBox } from '../Config/ConfigBox';
 import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 
-export const Chat = ({ followChat, toggleFollowChat, messages, sendMessage, toggleLLMUse }) => (
-  <SideContainer sx={{ flexGrow: 2, height: '100%' }}>
+export const Chat = ({ followChat, messages, sendMessage }) => (
+  <SideContainer sx={{ flexGrow: 2, height: '100%', minWidth: '200px', maxWidth: '400px' }}>
     <ContainerTitle variant="h6" gutterBottom>
       AI Coach
     </ContainerTitle>
-    <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
-    <ChatDisplay messages={messages} followChat={followChat} />
-    <ChatInput sendMessage={sendMessage} />
+    <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <ChatDisplay messages={messages} followChat={followChat} />
+      <ChatInput sendMessage={sendMessage} />
+    </Box>
   </SideContainer>
 );
 
@@ -28,7 +28,7 @@ export const ChatDisplay = ({ messages, followChat }) => {
   }, [messages, followChat]);
 
   return (
-    <Box>
+    <Box sx={{ flex: 1 }}>
       {messages.map((msg, idx) => (
         <ChatBubble key={idx} message={msg.text} isUser={msg.isUser} />
       ))}
@@ -39,10 +39,8 @@ export const ChatDisplay = ({ messages, followChat }) => {
 
 Chat.propTypes = {
   followChat: PropTypes.bool.isRequired,
-  toggleFollowChat: PropTypes.func.isRequired,
   messages: PropTypes.array.isRequired,
   sendMessage: PropTypes.func.isRequired,
-  toggleLLMUse: PropTypes.func.isRequired,
 };
 
 ChatDisplay.propTypes = {

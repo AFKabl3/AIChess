@@ -1,3 +1,4 @@
+import SendIcon from '@mui/icons-material/Send';
 import { Box, Button, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
@@ -20,14 +21,19 @@ export const ChatInput = ({ sendMessage }) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', gap: 2, width: '100%', justifyContent: 'center' }}>
       <TextField
+        sx={{ flexGrow: 1, bgcolor: '#504E4C', color: 'white' }}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type your message..."
+        variant="outlined"
+        size="small"
       />
-      <Button onClick={handleSend}>Send</Button>
+      <Button startIcon={<SendIcon />} onClick={handleSend} color="inherit" variant="outlined">
+        Send
+      </Button>
     </Box>
   );
 };

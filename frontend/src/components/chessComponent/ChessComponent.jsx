@@ -25,7 +25,7 @@ export const ChessComponent = ({ chess }) => {
   return (
     <Box>
       <Chessboard
-        boardWidth={Math.min(height, width / 1.5) - 175} // Responsive board width
+        boardWidth={Math.min(height - 210, width / 1.5 - 175)} // Responsive board width
         position={position}
         onPieceDrop={onDrop}
         onPieceDragBegin={onPieceDragBegin}

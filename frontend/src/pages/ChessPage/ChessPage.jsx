@@ -61,19 +61,15 @@ export const ChessPage = () => {
           justifyContent: 'center',
           height: '90%',
           width: '100%',
-          gap: 3,
+          gap: 4,
           p: 3,
         }}
       >
         <MoveHistoryTable />
-        <ChessBoardWrapper />
-        <Chat
-          followChat={followChat}
-          toggleFollowChat={toggleFollowChat}
-          messages={messages}
-          sendMessage={sendMessage}
-          toggleLLMUse={() => setLLMUse(!llmUse)}
+        <ChessBoardWrapper
+          settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
         />
+        <Chat followChat={followChat} messages={messages} sendMessage={sendMessage} />
       </Box>
     </ChessContext.Provider>
   );
