@@ -2,26 +2,36 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/api';
-import DialogComponent from '../../components/dialogComponent/DialogComponent';
 import { useChat } from '../../hooks/useChat';
-import { useDialog } from '../../hooks/useDialog';
+import { useChess } from '../../hooks/useChess';
+import { useMoveHistory } from '../../hooks/useMoveHistory';
+import { formatUciMove } from '../../util/chessUtil';
 import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
+import { ChessContext } from './ChessContext';
+import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
 
 export const ChessPage2 = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
 
-  // const { resetGame } = useChess();
-
   const { messages, followChat, toggleFollowChat, sendMessage, addBotChat, modifyMessageText } =
     useChat();
 
-  const { isDialogOpen, openDialog, closeDialog } = useDialog();
+  const moveHistory = useMoveHistory();
+  const { isPaused, updateNotation } = moveHistory;
 
-  const handleFenSubmit = (fen) => {
-    closeDialog();
-  };
+  const chess = useChess({
+    onPlayerMove: (move, prevFen, currFen) => {
+      onPlayerMove(formatUciMove(move), prevFen);
+      updateNotation(move, currFen, 'user');
+    },
+    onBotMove: (move, _, currFen) => {
+      updateNotation(move, currFen, 'bot');
+    },
+    lock,
+    isPaused,
+  });
 
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
@@ -43,27 +53,28 @@ export const ChessPage2 = () => {
     setLock(false);
   };
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        height: '90%',
-        width: '100%',
-        gap: 3,
-        p: 3,
-      }}
-    >
-      <Box sx={{ bgcolor: 'blue', flexGrow: 2, height: '100%' }} />
-      <ChessBoardWrapper lock={lock} onPlayerMove={onPlayerMove} openDialog={openDialog} />
-      <Chat
-        followChat={followChat}
-        toggleFollowChat={toggleFollowChat}
-        messages={messages}
-        sendMessage={sendMessage}
-        toggleLLMUse={() => setLLMUse(!llmUse)}
-      />
-      <DialogComponent isOpen={isDialogOpen} onClose={closeDialog} onSubmit={handleFenSubmit} />
-    </Box>
+    <ChessContext.Provider value={{ chess, moveHistory }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          height: '90%',
+          width: '100%',
+          gap: 3,
+          p: 3,
+        }}
+      >
+        <MoveHistoryTable />
+        <ChessBoardWrapper />
+        <Chat
+          followChat={followChat}
+          toggleFollowChat={toggleFollowChat}
+          messages={messages}
+          sendMessage={sendMessage}
+          toggleLLMUse={() => setLLMUse(!llmUse)}
+        />
+      </Box>
+    </ChessContext.Provider>
   );
 };

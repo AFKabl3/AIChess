@@ -19,7 +19,7 @@ export const useMoveHistory = () => {
   const resetNotation = () => setMoveHistory([]);
 
   return {
-    moveHistory,
+    history: moveHistory,
     isPaused,
     setIsPaused,
     updateNotation,
