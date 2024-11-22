@@ -2,16 +2,17 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/api';
-import { ChessComponent } from '../../components/chessComponent/ChessComponent';
 import DialogComponent from '../../components/dialogComponent/DialogComponent';
 import { useChat } from '../../hooks/useChat';
 import { useDialog } from '../../hooks/useDialog';
 import { Chat } from './Chat/Chat';
+import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 
 export const ChessPage2 = () => {
-  const [boardFen, setBoardFen] = useState('');
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
+
+  // const { resetGame } = useChess();
 
   const { messages, followChat, toggleFollowChat, sendMessage, addBotChat, modifyMessageText } =
     useChat();
@@ -19,12 +20,6 @@ export const ChessPage2 = () => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
   const handleFenSubmit = (fen) => {
-    // TODO: Fikse denne
-    setBoardFen('');
-    // A timeout so the change can be recognised if the user uses the same FEN notation again
-    setTimeout(() => {
-      setBoardFen(fen);
-    }, 0);
     closeDialog();
   };
 
@@ -60,13 +55,7 @@ export const ChessPage2 = () => {
       }}
     >
       <Box sx={{ bgcolor: 'blue', flexGrow: 2, height: '100%' }} />
-      <ChessComponent
-        lock={lock}
-        onPlayerMove={onPlayerMove}
-        openDialog={openDialog}
-        fen={boardFen}
-        setBoardFen={setBoardFen}
-      />
+      <ChessBoardWrapper lock={lock} onPlayerMove={onPlayerMove} openDialog={openDialog} />
       <Chat
         followChat={followChat}
         toggleFollowChat={toggleFollowChat}

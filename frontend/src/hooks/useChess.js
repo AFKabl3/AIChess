@@ -345,5 +345,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     resetGame,
     setGame: (newGame) => setGame(newGame),
     moveTo,
+    gameFromFen: (fen) => new Chess(fen),
   };
 };
