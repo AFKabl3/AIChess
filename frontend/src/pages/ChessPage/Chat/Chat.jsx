@@ -6,7 +6,7 @@ import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 
 export const Chat = ({ followChat, toggleFollowChat, messages, sendMessage, toggleLLMUse }) => (
-  <Box>
+  <Box sx={{ bgcolor: 'blue', flexGrow: 2, height: '100%' }}>
     <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
     <ChatDisplay messages={messages} followChat={followChat} />
     <ChatInput sendMessage={sendMessage} />

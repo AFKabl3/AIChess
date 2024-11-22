@@ -4,16 +4,22 @@ import toast from 'react-hot-toast';
 import { api } from '../../api/api';
 import { ChessComponent } from '../../components/chessComponent/ChessComponent';
 import DialogComponent from '../../components/dialogComponent/DialogComponent';
+import { useChat } from '../../hooks/useChat';
+import { useDialog } from '../../hooks/useDialog';
 import { Chat } from './Chat/Chat';
 
-export const ChessPage = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+export const ChessPage2 = () => {
   const [boardFen, setBoardFen] = useState('');
+  const [llmUse, setLLMUse] = useState(true);
+  const [lock, setLock] = useState(false);
 
-  const openDialog = () => setIsDialogOpen(true);
-  const closeDialog = () => setIsDialogOpen(false);
+  const { messages, followChat, toggleFollowChat, sendMessage, addBotChat, modifyMessageText } =
+    useChat();
+
+  const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
   const handleFenSubmit = (fen) => {
+    // TODO: Fikse denne
     setBoardFen('');
     // A timeout so the change can be recognised if the user uses the same FEN notation again
     setTimeout(() => {
@@ -22,42 +28,6 @@ export const ChessPage = () => {
     closeDialog();
   };
 
-  const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
-  const [followChat, setFollowChat] = useState(true);
-  const [llmUse, setLLMUse] = useState(true);
-  const [lock, setLock] = useState(false);
-
-  const toggleFollowChat = () => setFollowChat(!followChat);
-  const toggleLLMUse = () => setLLMUse(!llmUse);
-
-  const sendMessage = (text, isUser) => {
-    const index = messages.length;
-
-    setMessages((prevMessages) => [...prevMessages, { text, isUser }]);
-
-    return index;
-  };
-
-  const modifyMessageText = (index, text) => {
-    setMessages((prevMessages) => {
-      const newMessages = [...prevMessages];
-
-      newMessages[index].text = text;
-      return newMessages;
-    });
-  };
-
-  const sendUserChat = (text) => sendMessage(text, true);
-
-  const addBotChat = (text) => sendMessage(text, false);
-
-  /**
-   * Handles the player's move by evaluating it and updating the chat with the result.
-   *
-   * @param {string} move - The move made by the player in standard algebraic notation.
-   * @param {string} fen - The FEN (Forsyth-Edwards Notation) string representing the current board state.
-   * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
-   */
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
 
@@ -77,9 +47,19 @@ export const ChessPage = () => {
     }
     setLock(false);
   };
-
   return (
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        height: '90%',
+        width: '100%',
+        gap: 3,
+        p: 3,
+      }}
+    >
+      <Box sx={{ bgcolor: 'blue', flexGrow: 2, height: '100%' }} />
       <ChessComponent
         lock={lock}
         onPlayerMove={onPlayerMove}
@@ -87,15 +67,13 @@ export const ChessPage = () => {
         fen={boardFen}
         setBoardFen={setBoardFen}
       />
-
       <Chat
         followChat={followChat}
         toggleFollowChat={toggleFollowChat}
         messages={messages}
-        sendMessage={sendUserChat}
-        toggleLLMUse={toggleLLMUse}
+        sendMessage={sendMessage}
+        toggleLLMUse={() => setLLMUse(!llmUse)}
       />
-
       <DialogComponent isOpen={isDialogOpen} onClose={closeDialog} onSubmit={handleFenSubmit} />
     </Box>
   );
