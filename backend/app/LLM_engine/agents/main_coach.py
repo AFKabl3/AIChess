@@ -16,12 +16,11 @@ class MainCoach(ChatBox):
         self.conversation_history.append({"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
         self.stockfish = Stockfish(depth=10)
 
-    def ask_move_feedback(self,move,fen):
-        # pdb.set_trace()
-        evaluation = self.stockfish.evaluate_move_score(fen,move,player_color=self.player_color)
-        return (self.ask(f"""The current state of the board is as follows in FEN notation: \n  {fen} \n
-        The user move is {move}. The evaluation of this move by stockfish is {evaluation}.\n
-        Provide feedback on this move. Try to limit the response to 150 words. Coach the user by providing explanation to the evaluation."""))
+    def ask_move_feedback(self,evaluation):
+        fen, move, move_evaluation = evaluation
+        return (self.ask(f"""The current state of the board is as follows in FEN : \n  {fen} \n
+        The move made is {move}. The evaluation provided by Stockfish is: {move_evaluation}.\n
+        Provide feedback on this move. Try to limit the response to 150 words removing all the reference to Stockfish. Coach the user by providing explanation to the evaluation."""))
         
     def ask_chess_question(self, fen, question):
         evaluation = self.stockfish.get_evaluation(fen)
