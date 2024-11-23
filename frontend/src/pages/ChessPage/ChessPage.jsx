@@ -15,8 +15,7 @@ export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
 
-  const { messages, followChat, toggleFollowChat, sendMessage, addBotChat, modifyMessageText } =
-    useChat();
+  const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = useChat();
 
   const moveHistory = useMoveHistory();
   const { isPaused, updateNotation } = moveHistory;
@@ -36,19 +35,19 @@ export const ChessPage = () => {
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
 
-    const index = addBotChat(`You played ${move}. Evaluating the move ...`);
+    const modifyText = addBotChat(`You played ${move}. Evaluating the move ...`);
 
     setLock(true);
     try {
       const res = await api.evaluateMove(fen, move);
       const data = await res.json();
 
-      modifyMessageText(index, `You played ${move}. ${data.feedback}`);
+      modifyText(`You played ${move}. ${data.feedback}`);
     } catch (error) {
       console.error(error);
       toast.error('An error occurred while evaluating the move.');
 
-      modifyMessageText(index, 'An error occurred while evaluating the move.');
+      modifyText('An error occurred while evaluating the move.');
     }
     setLock(false);
   };
@@ -69,7 +68,7 @@ export const ChessPage = () => {
         <ChessBoardWrapper
           settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
         />
-        <Chat followChat={followChat} messages={messages} sendMessage={sendMessage} />
+        <Chat followChat={followChat} messages={messages} sendMessage={sendUserChat} />
       </Box>
     </ChessContext.Provider>
   );

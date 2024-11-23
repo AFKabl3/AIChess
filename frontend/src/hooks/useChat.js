@@ -4,14 +4,6 @@ export const useChat = () => {
   const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
   const [followChat, setFollowChat] = useState(true);
 
-  const sendMessage = (text, isUser) => {
-    const index = messages.length;
-
-    setMessages((prevMessages) => [...prevMessages, { text, isUser }]);
-
-    return index;
-  };
-
   const modifyMessageText = (index, text) => {
     setMessages((prevMessages) => {
       const newMessages = [...prevMessages];
@@ -19,6 +11,14 @@ export const useChat = () => {
       newMessages[index].text = text;
       return newMessages;
     });
+  };
+
+  const sendMessage = (text, isUser) => {
+    const index = messages.length;
+
+    setMessages((prevMessages) => [...prevMessages, { text, isUser }]);
+
+    return (modifiedText) => modifyMessageText(index, modifiedText);
   };
 
   const sendUserChat = (text) => sendMessage(text, true);
@@ -29,9 +29,7 @@ export const useChat = () => {
     messages,
     followChat,
     toggleFollowChat: () => setFollowChat(!followChat),
-    sendMessage,
     sendUserChat,
     addBotChat,
-    modifyMessageText,
   };
 };

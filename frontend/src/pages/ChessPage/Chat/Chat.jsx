@@ -11,7 +11,9 @@ export const Chat = ({ followChat, messages, sendMessage }) => (
     <ContainerTitle variant="h6" gutterBottom>
       AI Coach
     </ContainerTitle>
-    <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <Box
+      sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: 2, pt: 0 }}
+    >
       <ChatDisplay messages={messages} followChat={followChat} />
       <ChatInput sendMessage={sendMessage} />
     </Box>
@@ -28,7 +30,15 @@ export const ChatDisplay = ({ messages, followChat }) => {
   }, [messages, followChat]);
 
   return (
-    <Box sx={{ flex: 1 }}>
+    <Box
+      sx={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'scroll',
+        mt: 1,
+      }}
+    >
       {messages.map((msg, idx) => (
         <ChatBubble key={idx} message={msg.text} isUser={msg.isUser} />
       ))}

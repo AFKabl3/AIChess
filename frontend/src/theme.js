@@ -15,6 +15,7 @@ const theme = createTheme({
     },
     custom: {
       containerBackground: 'rgba(48, 46, 43, 0.8)',
+      shadow20: 'rgba(0, 0, 0, 0.2)',
       shadow40: 'rgba(0, 0, 0, 0.4)',
     },
   },
