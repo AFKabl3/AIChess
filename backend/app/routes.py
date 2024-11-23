@@ -8,7 +8,6 @@ import pdb
 from flask import request
 
 
-
 def create_main_app():
 
     app = Flask(__name__)
@@ -16,8 +15,8 @@ def create_main_app():
 
     stockfish = StockfishAPI(depth=10)
     # chatbox = LLM_engine.ChatBox()
-    coach = MainCoach()
-
+    coach = MainCoach(player_color="w")
+    
     @app.route('/game_status', methods=['POST'])
     def game_status():
         data = request.get_json()
@@ -51,7 +50,6 @@ def create_main_app():
             "game_status": game_status,
             "fen": fen,
         }), 200
-
 
     @app.route('/evaluate_move', methods=['POST'])
     def evaluate_move():
@@ -130,7 +128,6 @@ def create_main_app():
             "evaluation": evaluation,
             "feedback": response,
         }), 200
-
 
     @app.route('/suggest_move', methods=['POST'])
     def move_suggestion():
@@ -225,7 +222,45 @@ def create_main_app():
         }), 200
 
 
-   
+    @app.route('/answer_question', methods=['POST'])
+    def answer_question():
+        data = request.get_json()
+        fen = data.get("fen")
+        question = data.get("question")
+        
+        # Validate FEN and question data
+        if not fen or not question:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'fen' and 'question' fields are required."
+            }), 400
+
+        if not check.is_valid_fen(fen):
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": "Invalid FEN string provided."
+                }),422  # This will create an error if FEN is invalid
+        
+        if not check.is_valid_question(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422 # This will create an error if question is invalid
+            
+        try:       
+            #ask question to the LLM
+            answer = coach.ask_chess_question(fen, question)
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
+
+        # Response to client
+        return jsonify({
+            "answer": answer
+        }), 200
+    
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
@@ -242,3 +277,4 @@ def create_main_app():
         }), 500
 
     return app
+
