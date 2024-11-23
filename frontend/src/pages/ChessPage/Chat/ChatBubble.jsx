@@ -13,6 +13,7 @@ const BaseBubble = styled(Box)(({ theme }) => ({
   maxWidth: '90%',
   minWidth: '50%',
   marginBottom: theme.spacing(2),
+  wordBreak: 'break-word',
 }));
 
 const UserBubble = styled(BaseBubble)(({ theme }) => ({

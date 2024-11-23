@@ -12,9 +12,7 @@ export const Chat = ({ followChat, messages, sendMessage, commands }) => (
     <ContainerTitle variant="h6" gutterBottom>
       AI Coach
     </ContainerTitle>
-    <Box
-      sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: 2, pt: 0 }}
-    >
+    <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, pt: 0 }}>
       {commands && (
         <Box
           sx={{
@@ -23,7 +21,7 @@ export const Chat = ({ followChat, messages, sendMessage, commands }) => (
             flexWrap: 'wrap',
             justifyContent: 'center',
             gap: 3,
-            mt: 2,
+            mt: 1,
           }}
         >
           {commands.map((cmd, idx) => (
@@ -31,15 +29,16 @@ export const Chat = ({ followChat, messages, sendMessage, commands }) => (
           ))}
         </Box>
       )}
-      {commands && <Divider />}
+      {commands && <Divider sx={{ mt: 2 }} />}
 
       <ChatDisplay messages={messages} followChat={followChat} commands={commands} />
+      <Divider sx={{ mb: 1 }} />
       <ChatInput sendMessage={sendMessage} />
     </Box>
   </SideContainer>
 );
 
-export const ChatDisplay = ({ messages, followChat, commands }) => {
+export const ChatDisplay = ({ messages, followChat }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -56,7 +55,7 @@ export const ChatDisplay = ({ messages, followChat, commands }) => {
         flexDirection: 'column',
         scrollbarGutter: 'stable',
         overflowY: 'auto',
-        mt: 1,
+        pt: 2,
         pr: 1,
       }}
     >
