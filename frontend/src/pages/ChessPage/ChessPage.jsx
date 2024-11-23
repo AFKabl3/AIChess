@@ -51,6 +51,12 @@ export const ChessPage = () => {
     }
     setLock(false);
   };
+
+  const commands = [
+    { text: 'Suggest a Move', command: () => console.warn('This command is not implemented yet.') },
+    { text: 'Explain Move', command: () => console.warn('This command is not implemented yet.') },
+  ];
+
   return (
     <ChessContext.Provider value={{ chess, moveHistory }}>
       <Box
@@ -68,7 +74,12 @@ export const ChessPage = () => {
         <ChessBoardWrapper
           settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
         />
-        <Chat followChat={followChat} messages={messages} sendMessage={sendUserChat} />
+        <Chat
+          followChat={followChat}
+          messages={messages}
+          sendMessage={sendUserChat}
+          commands={commands}
+        />
       </Box>
     </ChessContext.Provider>
   );

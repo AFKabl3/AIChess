@@ -1,12 +1,13 @@
-import { Box } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 import { ContainerTitle } from '../../../components/styledComponents/ContainerTitle';
 import { SideContainer } from '../../../components/styledComponents/SideContainer';
 import { ChatBubble } from './ChatBubble';
+import { ChatCommand } from './ChatCommand';
 import { ChatInput } from './ChatInput';
 
-export const Chat = ({ followChat, messages, sendMessage }) => (
+export const Chat = ({ followChat, messages, sendMessage, commands }) => (
   <SideContainer sx={{ flexGrow: 2, height: '100%', minWidth: '200px', maxWidth: '400px' }}>
     <ContainerTitle variant="h6" gutterBottom>
       AI Coach
@@ -14,13 +15,31 @@ export const Chat = ({ followChat, messages, sendMessage }) => (
     <Box
       sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: 2, pt: 0 }}
     >
-      <ChatDisplay messages={messages} followChat={followChat} />
+      {commands && (
+        <Box
+          sx={{
+            width: 'stretch',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: 3,
+            mt: 2,
+          }}
+        >
+          {commands.map((cmd, idx) => (
+            <ChatCommand key={idx} text={cmd.text} command={cmd.command} />
+          ))}
+        </Box>
+      )}
+      {commands && <Divider />}
+
+      <ChatDisplay messages={messages} followChat={followChat} commands={commands} />
       <ChatInput sendMessage={sendMessage} />
     </Box>
   </SideContainer>
 );
 
-export const ChatDisplay = ({ messages, followChat }) => {
+export const ChatDisplay = ({ messages, followChat, commands }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -44,6 +63,7 @@ export const ChatDisplay = ({ messages, followChat }) => {
       {messages.map((msg, idx) => (
         <ChatBubble key={idx} message={msg.text} isUser={msg.isUser} />
       ))}
+
       <div ref={chatEndRef} />
     </Box>
   );
@@ -53,9 +73,11 @@ Chat.propTypes = {
   followChat: PropTypes.bool.isRequired,
   messages: PropTypes.array.isRequired,
   sendMessage: PropTypes.func.isRequired,
+  commands: PropTypes.array,
 };
 
 ChatDisplay.propTypes = {
   messages: PropTypes.array.isRequired,
   followChat: PropTypes.bool.isRequired,
+  commands: PropTypes.array,
 };
