@@ -1,7 +1,7 @@
 import chess # type: ignore
 import requests
 import random
-import LLM_engine.helper_functions as utils
+from .LLM_engine import helper_functions as utils
 
 class StockfishAPI:
     def __init__(self, depth):
