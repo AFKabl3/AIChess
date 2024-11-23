@@ -1,11 +1,10 @@
 import chess # type: ignore
 import requests
 
-from app.LLM_engine.utilities import is_valid_move
-from app.LLM_engine.utilities import is_valid_fen
+import LLM_engine.helper_functions as utils
 
 
-class Stockfish:
+class StockfishAPI:
     def __init__(self,depth=10):
         self.url ="https://chess-api.com/v1"
         self.headers = {

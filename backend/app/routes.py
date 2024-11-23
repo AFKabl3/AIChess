@@ -1,8 +1,8 @@
 from flask import jsonify, Flask
 from flask_cors import CORS
-from .LLM_engine import utilities as check
+from .LLM_engine import helper_functions as check
 import chess
-from .stockfish_api import Stockfish  # Import the Stockfish class
+from .stockfish_api import StockfishAPI  # Import the Stockfish class
 from .LLM_engine.agents.main_coach import MainCoach
 import pdb
 from flask import request
@@ -13,7 +13,7 @@ def create_main_app():
     app = Flask(__name__)
     CORS(app)
 
-    stockfish = Stockfish(depth=10)
+    stockfish = StockfishAPI(depth=10)
     # chatbox = LLM_engine.ChatBox()
     coach = MainCoach(player_color="w")
 
