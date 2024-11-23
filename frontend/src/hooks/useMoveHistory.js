@@ -4,7 +4,7 @@ export const useMoveHistory = () => {
   const [moveHistory, setMoveHistory] = useState([]); // Tracks moves with separate FEN states for the notation table
   const [isPaused, setIsPaused] = useState(false); // Tracks the pause/resume state
 
-  const updateNotation = (move, fen, player) => {
+  const updateHistory = (move, fen, player) => {
     setMoveHistory((prevHistory) => {
       const newHistory = [...prevHistory];
       if (player === 'user') {
@@ -16,13 +16,16 @@ export const useMoveHistory = () => {
     });
   };
 
-  const resetNotation = () => setMoveHistory([]);
+  const resetHistory = () => {
+    setMoveHistory([]);
+    setIsPaused(false);
+  };
 
   return {
     history: moveHistory,
     isPaused,
     setIsPaused,
-    updateNotation,
-    resetNotation,
+    updateHistory,
+    resetHistory,
   };
 };

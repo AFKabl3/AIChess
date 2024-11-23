@@ -14,11 +14,11 @@ export const ChessBoardWrapper = ({ settings }) => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
   const { resetGame } = chess;
-  const { resetNotation, setIsPaused } = moveHistory;
+  const { resetHistory } = moveHistory;
 
   const handleFenSubmit = (fen) => {
     chess.setGame(chess.gameFromFen(fen));
-    resetNotation();
+    resetHistory();
     closeDialog();
   };
 
@@ -39,8 +39,7 @@ export const ChessBoardWrapper = ({ settings }) => {
           size="large"
           onClick={() => {
             resetGame();
-            resetNotation();
-            setIsPaused(false); // Reset to resume state
+            resetHistory();
           }}
         >
           reset

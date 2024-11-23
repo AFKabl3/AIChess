@@ -18,15 +18,15 @@ export const ChessPage = () => {
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = useChat();
 
   const moveHistory = useMoveHistory();
-  const { isPaused, updateNotation } = moveHistory;
+  const { isPaused, updateHistory } = moveHistory;
 
   const chess = useChess({
     onPlayerMove: (move, prevFen, currFen) => {
       onPlayerMove(formatUciMove(move), prevFen);
-      updateNotation(move, currFen, 'user');
+      updateHistory(move, currFen, 'user');
     },
     onBotMove: (move, _, currFen) => {
-      updateNotation(move, currFen, 'bot');
+      updateHistory(move, currFen, 'bot');
     },
     lock,
     isPaused,
