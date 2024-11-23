@@ -1,4 +1,4 @@
-from app.stockfish_api import Stockfish
+from ...stockfish_api import StockfishAPI
 from .chatbox import ChatBox
 import pdb
 
