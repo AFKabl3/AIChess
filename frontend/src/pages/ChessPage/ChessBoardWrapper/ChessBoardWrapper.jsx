@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useContext } from 'react';
 import { ChessComponent } from '../../../components/chessComponent/ChessComponent';
 import DialogComponent from '../../../components/dialogComponent/DialogComponent';
+import { InfoBox } from '../../../components/InfoBox/InfoBox';
 import { useDialog } from '../../../hooks/useDialog';
 import { ChessContext } from '../ChessContext';
 import { ConfigBox } from '../Config/ConfigBox';
@@ -25,7 +26,11 @@ export const ChessBoardWrapper = ({ settings }) => {
 
   return (
     <Box>
-      <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+        {/* TODO: Create system for selecting difficulty */}
+        <InfoBox title="Bot" subtitle="(205)" image="/bot.png" />
+        <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
+      </Box>
       <ChessComponent chess={chess} />
       <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center', gap: 4, pt: 2 }}>
         <Button

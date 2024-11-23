@@ -17,7 +17,6 @@ export const ChessComponent = ({ chess }) => {
     showPromotionDialog,
     optionSquares,
     rightClickedSquares,
-    isGameOver,
     statusMessage,
     moveTo,
   } = chess;

@@ -35,8 +35,10 @@ export const ChatDisplay = ({ messages, followChat }) => {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        overflowY: 'scroll',
+        scrollbarGutter: 'stable',
+        overflowY: 'auto',
         mt: 1,
+        pr: 1,
       }}
     >
       {messages.map((msg, idx) => (

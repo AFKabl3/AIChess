@@ -60,7 +60,7 @@ export const MoveHistoryTable = () => {
       <ContainerTitle variant="h6" gutterBottom>
         Move History
       </ContainerTitle>
-      <Box sx={{ p: 2, flex: 1, minHeight: 0, overflowY: 'scroll' }}>
+      <Box sx={{ p: 2, flex: 1, minHeight: 0, overflowY: 'auto', scrollbarGutter: 'stable' }}>
         <Stack spacing={1} sx={{ pl: 2, pr: 2 }}>
           {history.map((movePair, index) => (
             <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>

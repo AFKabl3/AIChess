@@ -5,7 +5,7 @@ export const ConfigBox = ({ controls }) => {
   const { toggleFollowChat, toggleLLMUse } = controls;
 
   return (
-    <Box sx={{ p: 1, display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
+    <Box sx={{ display: 'flex', flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end' }}>
       <FormControl component="fieldset" sx={{ display: 'flex', gap: 1 }}>
         <FormGroup row>
           {toggleFollowChat && <FollowChatToggle toggleFollowChat={toggleFollowChat} />}
