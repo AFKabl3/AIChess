@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useWindowSize } from '@uidotdev/usehooks';
 import PropTypes from 'prop-types';
 import { Chessboard } from 'react-chessboard';
@@ -23,7 +23,7 @@ export const ChessComponent = ({ chess }) => {
   } = chess;
 
   return (
-    <Box>
+    <Box sx={{ position: 'relative' }}>
       <Chessboard
         boardWidth={Math.min(height - 210, width / 1.5 - 175)} // Responsive board width
         position={position}
@@ -48,12 +48,22 @@ export const ChessComponent = ({ chess }) => {
         customLightSquareStyle={{ backgroundColor: '#FFE8D1' }}
       />
 
-      {isGameOver && (
-        <Stack className="game-over-message">
+      {statusMessage && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            bgcolor: 'custom.shadow40',
+            p: 2,
+            borderRadius: 2,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
             {statusMessage}
           </Typography>
-        </Stack>
+        </Box>
       )}
     </Box>
   );

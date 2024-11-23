@@ -1,4 +1,6 @@
 export const formatUciMove = (move) => {
+  if (move === null) return null;
+
   let uciMove = `${move.from}${move.to}`;
 
   if ('promotion' in move) {

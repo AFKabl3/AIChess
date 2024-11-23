@@ -38,6 +38,14 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     setIsGameOver(false);
   };
 
+  const showStatusMessage = (message) => {
+    setStatusMessage(message);
+
+    setTimeout(() => {
+      setStatusMessage('');
+    }, 2500);
+  };
+
   // Effect to check the game's status whenever the game state changes
   useEffect(() => {
     if (game.game_over()) {
@@ -46,7 +54,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
           ? 'Black wins!'
           : 'White wins!'
         : 'Draw!';
-      setStatusMessage(winner);
+      showStatusMessage(winner);
       setIsGameOver(true);
       console.log(winner);
     } else if (game.in_check()) {
