@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { api } from '../../api/api';
 import { useChat } from '../../hooks/useChat';
 import { useChess } from '../../hooks/useChess';
+import { useConfig } from '../../hooks/useConfig';
 import { useMoveHistory } from '../../hooks/useMoveHistory';
 import { formatUciMove, parseArrow } from '../../util/chessUtil';
 import { Chat } from './Chat/Chat';
@@ -14,6 +15,7 @@ import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
+  const [config, setConfigValue] = useConfig();
 
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = useChat();
 
@@ -30,6 +32,7 @@ export const ChessPage = () => {
     },
     lock,
     isPaused,
+    config,
   });
 
   const { position, addArrow } = chess;
@@ -83,7 +86,7 @@ export const ChessPage = () => {
   ];
 
   return (
-    <ChessContext.Provider value={{ chess, moveHistory }}>
+    <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue }}>
       <Box
         sx={{
           display: 'flex',

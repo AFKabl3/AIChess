@@ -39,19 +39,13 @@ class StockfishAPI:
             "variants": 1
         }
 
-        # retrieve the response
-        response = self._send_request(payload)
+        # retrieve the response and extract the data
+        data = self._send_request(payload)
 
-        # We extract the data from the response
-        data = response.json()
-
-        # We isolate the "continuationArr", array that contains all the Stockfish 
-        # suggestions for best next moves
-        continuation_array = data.get("continuationArr", [])
+        move = data.get("move", None)
 
         # We retrieve the first element = bot move
-        return continuation_array[0]
-        
+        return move
 
     # return the game status percentage of the white player
     def get_game_status(self, fen):
@@ -119,4 +113,3 @@ class StockfishAPI:
             return evaluation_after - evaluation_before
         else:
             return evaluation_before - evaluation_after
-

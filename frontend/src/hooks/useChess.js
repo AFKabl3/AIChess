@@ -1,9 +1,10 @@
 import { Chess } from 'chess.js';
 import { useEffect, useState } from 'react';
+import { api } from '../api/api';
 import { getKingPosition } from '../util/chessUtil';
 import { waitForResponseToast } from '../util/toasts';
 
-export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
+export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -132,6 +133,39 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     return true;
   };
 
+  const makeBotMove = async () => {
+    const depth = config.depth;
+
+    if (depth === 0) {
+      setTimeout(makeRandomMove, 150);
+      return;
+    }
+
+    const fetchMove = async () => {
+      const res = await api.getBotMove(game.fen(), depth);
+      const data = await res.json();
+
+      return data.bot_move;
+    };
+
+    try {
+      const move = await fetchMove();
+      if (move) {
+        const prevFen = game.fen();
+
+        const successfulMove = safeGameMutate((game) => {
+          return game.move(move, { sloppy: true });
+        });
+        if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
+      } else {
+        setTimeout(makeRandomMove, 150);
+      }
+    } catch (error) {
+      console.error(error);
+      setTimeout(makeRandomMove, 150);
+    }
+  };
+
   const addArrow = (arrow) => {
     setArrows([...arrows, arrow]);
   };
@@ -219,7 +253,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
       resetArrows();
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       setGame(gameCopy);
-      setTimeout(makeRandomMove, 300);
+      makeBotMove();
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
@@ -261,7 +295,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       resetArrows();
 
-      setTimeout(makeRandomMove, 300);
+      makeBotMove();
     }
 
     // Clear selected moves and reset dialog and highlighting states
@@ -348,7 +382,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     resetArrows();
 
     // If the move is valid, trigger a random computer move after a 200ms delay
-    setTimeout(makeRandomMove, 200);
+    makeBotMove();
     return true;
   };
 
