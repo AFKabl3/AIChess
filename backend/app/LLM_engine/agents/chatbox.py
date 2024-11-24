@@ -1,9 +1,9 @@
 from huggingface_hub import InferenceClient
 import os
 import pdb
-from dotenv import load_dotenv # type: ignore
+from dotenv import load_dotenv  # type: ignore
 
-#Load the environment variables
+# Load the environment variables
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -13,29 +13,14 @@ client = InferenceClient(api_key=SECRET_KEY)
 
 class ChatBox:
     def __init__(self):
-        self.conversation_history = []
         self.client = InferenceClient(api_key=SECRET_KEY)
+        self.systemPrompt = ""
 
-    def ask(self,question):
-        # Add the new question to the conversation history
-        self.conversation_history.append({"role": "user", "content": question})
-        
-        # Stream the response
-        stream = client.chat.completions.create(
-            model="mistralai/Mixtral-8x7B-Instruct-v0.1", 
-            messages=self.conversation_history, 
-            max_tokens=500,
-            stream=True
+    def ask(self, question):
+        response = client.text_generation(
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            prompt=f"System: {self.systemPrompt}\nUser: {question}",
+            max_new_tokens=300,
         )
-        
-        answer = ""
-        for chunk in stream:
-            answer += chunk.choices[0].delta.content
-        
-        # Add the assistant's response to the conversation history
-        self.conversation_history.append({"role": "assistant", "content": answer})
-        
-        return answer
 
-    def reset_memory(self):
-        self.conversation_history = []
+        return response
