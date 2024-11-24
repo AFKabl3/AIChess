@@ -16,7 +16,7 @@ export const MoveHistoryTable = () => {
   const { chess, moveHistory } = useContext(ChessContext);
 
   const notationEndRef = useRef(null);
-  const { position, setGame, gameFromFen } = chess;
+  const { position, loadGame } = chess;
 
   const { isPaused, setIsPaused, history } = moveHistory;
 
@@ -28,8 +28,7 @@ export const MoveHistoryTable = () => {
   }, [history]);
 
   function handleNotationClick(fen) {
-    const newGame = gameFromFen(fen);
-    setGame(newGame);
+    loadGame(fen);
     setIsPaused(true);
   }
 
@@ -39,8 +38,7 @@ export const MoveHistoryTable = () => {
       const latestFEN = history.length
         ? history[history.length - 1].bot?.fen || history[history.length - 1].user.fen
         : position;
-      const newGame = gameFromFen(latestFEN);
-      setGame(newGame);
+      loadGame(latestFEN);
       setIsPaused(false);
     } else {
       // Pause: disable moves

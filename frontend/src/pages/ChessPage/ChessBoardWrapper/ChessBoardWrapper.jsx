@@ -17,7 +17,9 @@ export const ChessBoardWrapper = ({ settings }) => {
   const { resetHistory } = moveHistory;
 
   const handleFenSubmit = (fen) => {
-    chess.setGame(chess.gameFromFen(fen));
+    const { loadGame } = chess;
+
+    loadGame(fen);
     resetHistory();
     closeDialog();
   };

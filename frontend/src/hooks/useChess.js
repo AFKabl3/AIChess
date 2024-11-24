@@ -39,6 +39,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     setRightClickedSquares({});
     setStatusMessage('');
     setIsGameOver(false);
+    setArrows([]);
   };
 
   const showStatusMessage = (message) => {
@@ -351,6 +352,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     return true;
   };
 
+  const loadGame = (fen) => {
+    setGame(new Chess(fen));
+    resetArrows();
+  };
+
   return {
     position: game.fen(),
     onDrop,
@@ -365,9 +371,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     isGameOver,
     statusMessage,
     resetGame,
-    setGame: (newGame) => setGame(newGame),
     moveTo,
-    gameFromFen: (fen) => new Chess(fen),
+    loadGame,
     arrows,
     addArrow,
     resetArrows,
