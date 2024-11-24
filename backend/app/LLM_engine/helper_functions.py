@@ -24,3 +24,9 @@ def move_to_fen(fen, move):
 def get_current_player(fen):
     return fen.split()[1]
 
+def is_valid_question(question):
+    if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
+        return False
+    return True
+
+
