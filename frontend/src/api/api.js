@@ -1,17 +1,18 @@
 import {
   answerChessQuestion,
   evaluateMove,
+  getBotMove,
   getSuggestedMove,
   getSuggestedMoveWithExplanation,
-} from "./chess";
-import { example } from "./example";
+} from './chess';
+import { example } from './example';
 
 export const Method = {
-  GET: "GET",
-  POST: "POST",
-  DELETE: "DELETE",
-  PUT: "PUT",
-  PATCH: "PATCH",
+  GET: 'GET',
+  POST: 'POST',
+  DELETE: 'DELETE',
+  PUT: 'PUT',
+  PATCH: 'PATCH',
 };
 
 export const api = {
@@ -20,4 +21,5 @@ export const api = {
   answerChessQuestion,
   getSuggestedMove,
   getSuggestedMoveWithExplanation,
+  getBotMove,
 };
