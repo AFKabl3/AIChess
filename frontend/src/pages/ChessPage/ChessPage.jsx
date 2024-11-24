@@ -7,6 +7,7 @@ import { useChess } from '../../hooks/useChess';
 import { useConfig } from '../../hooks/useConfig';
 import { useMoveHistory } from '../../hooks/useMoveHistory';
 import { formatUciMove, parseArrow } from '../../util/chessUtil';
+import { waitForResponseToast } from '../../util/toasts';
 import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
@@ -40,6 +41,11 @@ export const ChessPage = () => {
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
 
+    if (lock) {
+      waitForResponseToast();
+      return;
+    }
+
     const modifyText = addBotChat(`You played ${move}. Evaluating the move ...`);
 
     setLock(true);
@@ -58,6 +64,11 @@ export const ChessPage = () => {
   };
 
   const onSuggestionRequest = async () => {
+    if (lock) {
+      waitForResponseToast();
+      return;
+    }
+
     const modifyText = addBotChat('Suggesting a move ...');
 
     setLock(true);
