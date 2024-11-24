@@ -25,7 +25,7 @@ export const Chat = ({ followChat, messages, sendMessage, commands }) => (
           }}
         >
           {commands.map((cmd, idx) => (
-            <ChatCommand key={idx} text={cmd.text} command={cmd.command} />
+            <ChatCommand key={idx} text={cmd.text} command={cmd.command} disabled={cmd.disabled} />
           ))}
         </Box>
       )}

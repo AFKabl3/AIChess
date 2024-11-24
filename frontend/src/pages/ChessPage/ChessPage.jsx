@@ -75,7 +75,11 @@ export const ChessPage = () => {
 
   const commands = [
     { text: 'Suggest a Move', command: onSuggestionRequest },
-    { text: 'Explain Move', command: () => console.warn('This command is not implemented yet.') },
+    {
+      text: 'Explain game status',
+      command: () => console.warn('This command is not implemented yet.'),
+      disabled: true,
+    },
   ];
 
   return (
