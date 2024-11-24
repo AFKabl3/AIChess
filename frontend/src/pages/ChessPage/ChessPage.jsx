@@ -32,6 +32,7 @@ export const ChessPage = () => {
     },
     lock,
     isPaused,
+    config,
   });
 
   const onPlayerMove = async (move, fen) => {
