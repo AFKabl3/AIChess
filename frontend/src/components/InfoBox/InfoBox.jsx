@@ -1,7 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
+import { DifficultySelect } from '../difficultySelect/DifficultySelect';
 
-export const InfoBox = ({ title, subtitle, image }) => {
+export const InfoBox = ({ title, image }) => {
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
       <Box
@@ -19,7 +20,7 @@ export const InfoBox = ({ title, subtitle, image }) => {
         <Typography variant="subtitle1" fontWeight="bold">
           {title}
         </Typography>
-        <Typography variant="subtitle2">{subtitle}</Typography>
+        <DifficultySelect />
       </Box>
     </Box>
   );
@@ -27,6 +28,6 @@ export const InfoBox = ({ title, subtitle, image }) => {
 
 InfoBox.propTypes = {
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
+  subComponent: PropTypes.node,
   image: PropTypes.string.isRequired,
 };

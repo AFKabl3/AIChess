@@ -6,7 +6,9 @@ const store = (key, value) => {
 
 const read = (key) => {
   const storage = JSON.parse(localStorage.getItem('chess-storage')) || {};
-  return storage[key] || null;
+  if (storage[key] === undefined) return null;
+
+  return storage[key];
 };
 
 const readAndParse = (key, type) => {
