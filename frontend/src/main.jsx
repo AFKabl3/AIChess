@@ -11,7 +11,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { Typography } from '@mui/material';
-import ChessPage from './pages/ChessPage.jsx';
+import { ChessPage } from './pages/ChessPage/ChessPage.jsx';
 import { ExamplePage } from './pages/ExamplePage.jsx';
 import Root from './Root.jsx';
 import theme from './theme.js';

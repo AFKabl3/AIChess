@@ -1,11 +1,12 @@
-import { Method } from "./api";
-import { request } from "./request";
+import { Method } from './api';
+import { request } from './request';
 
 const ChessEndpoint = {
-  EVALUATE_MOVE: "/evaluate_move",
-  ANSWER_QUESTION: "/answer_question",
-  SUGGEST_MOVE: "/suggest_move",
-  SUGGEST_MOVE_WITH_EXPLANATION: "/suggest_move_with_explanation",
+  EVALUATE_MOVE: '/evaluate_move',
+  ANSWER_QUESTION: '/answer_question',
+  SUGGEST_MOVE: '/suggest_move',
+  SUGGEST_MOVE_WITH_EXPLANATION: '/suggest_move_with_explanation',
+  GET_BOT_MOVE: '/get_bot_move',
 };
 
 /**
@@ -55,3 +56,15 @@ export const getSuggestedMove = async (fen) =>
  */
 export const getSuggestedMoveWithExplanation = async (fen) =>
   request(ChessEndpoint.SUGGEST_MOVE_WITH_EXPLANATION, Method.POST, { fen });
+
+/**
+ * Gets the bot's move for a given board position.
+ *
+ * @param {string} fen The FEN string representing the board state.
+ * @param {number} depth The depth to search for the best move.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *  - `bot_move` (string): The best move for the given depth.
+ *  or rejects with an error message.
+ */
+export const getBotMove = async (fen, depth) =>
+  request(ChessEndpoint.GET_BOT_MOVE, Method.POST, { fen, depth });
