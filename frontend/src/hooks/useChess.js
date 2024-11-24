@@ -28,6 +28,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
   // State to track if the game is over
   const [isGameOver, setIsGameOver] = useState(false);
 
+  // State to track custom arrows, are on the form [[from, to], [from, to], ...]
+  const [arrows, setArrows] = useState([]);
+
   const resetGame = () => {
     safeGameMutate((game) => {
       game.reset();
@@ -128,6 +131,14 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     return true;
   };
 
+  const addArrow = (arrow) => {
+    setArrows([...arrows, arrow]);
+  };
+
+  const resetArrows = () => {
+    setArrows([]);
+  };
+
   /**
    * Handles the logic when a square is clicked on the chessboard, determining valid moves, highlights,
    * and actions such as move validation and promotion dialog display.
@@ -204,6 +215,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
       }
 
       // Update game state, reset variables, and trigger AI move (for the moment a Random move)
+      resetArrows();
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       setGame(gameCopy);
       setTimeout(makeRandomMove, 300);
@@ -246,6 +258,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
       });
 
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+      resetArrows();
 
       setTimeout(makeRandomMove, 300);
     }
@@ -331,6 +344,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     if (move == null) return false;
 
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+    resetArrows();
 
     // If the move is valid, trigger a random computer move after a 200ms delay
     setTimeout(makeRandomMove, 200);
@@ -354,5 +368,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused }) => {
     setGame: (newGame) => setGame(newGame),
     moveTo,
     gameFromFen: (fen) => new Chess(fen),
+    arrows,
+    addArrow,
+    resetArrows,
   };
 };

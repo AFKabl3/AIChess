@@ -5,7 +5,7 @@ import { api } from '../../api/api';
 import { useChat } from '../../hooks/useChat';
 import { useChess } from '../../hooks/useChess';
 import { useMoveHistory } from '../../hooks/useMoveHistory';
-import { formatUciMove } from '../../util/chessUtil';
+import { formatUciMove, parseArrow } from '../../util/chessUtil';
 import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
@@ -32,6 +32,8 @@ export const ChessPage = () => {
     isPaused,
   });
 
+  const { position, addArrow } = chess;
+
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
 
@@ -52,8 +54,27 @@ export const ChessPage = () => {
     setLock(false);
   };
 
+  const onSuggestionRequest = async () => {
+    const modifyText = addBotChat('Suggesting a move ...');
+
+    setLock(true);
+    try {
+      const res = await api.getSuggestedMove(position);
+      const data = await res.json();
+
+      modifyText(`${data.suggestion}.`);
+      addArrow(parseArrow(data.suggested_move));
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred while suggesting a move.');
+
+      modifyText('An error occurred while suggesting a move.');
+    }
+    setLock(false);
+  };
+
   const commands = [
-    { text: 'Suggest a Move', command: () => console.warn('This command is not implemented yet.') },
+    { text: 'Suggest a Move', command: onSuggestionRequest },
     { text: 'Explain Move', command: () => console.warn('This command is not implemented yet.') },
   ];
 

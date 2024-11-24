@@ -33,3 +33,18 @@ export const getKingPosition = (game) => {
   // Return null if the king is not found
   return null;
 };
+
+/**
+ * Parses a move string into an tuple containing the starting and ending positions.
+ *
+ * @param {string} move - The move string in the format 'fromto' (e.g., 'e2e4') or null.
+ * @returns {Array<string>} The arrow tuple containing the starting and ending positions.
+ */
+export const parseArrow = (move) => {
+  if (move === null) return null;
+
+  const from = move.slice(0, 2);
+  const to = move.slice(2, 4);
+
+  return [from, to, '#66bb6a'];
+};
