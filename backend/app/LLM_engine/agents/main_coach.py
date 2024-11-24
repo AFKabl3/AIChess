@@ -1,8 +1,5 @@
-from app.stockfish_api import Stockfish
-from app.LLM_engine.LLM_engine import ChatBox
 from ...stockfish_api import StockfishAPI
 from .chatbox import ChatBox
-import pdb
 
 
 class MainCoach(ChatBox):
@@ -14,7 +11,7 @@ class MainCoach(ChatBox):
         For the provided move you evaluate the user’s move and provide feedback on it, using the provided evaluation by Stockfish to guide your assessments.
         You will try to limit your responses to 200 characters. You can provide feedback on the move, suggest an alternative move, or provide general advice on the game."""
 
-        self.stockfish = Stockfish()
+        self.stockfish = StockfishAPI(10)
 
     def ask_move_feedback(self, move, fen):
         evaluation = self.stockfish.evaluate_move_score(
