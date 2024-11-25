@@ -1,8 +1,18 @@
 /* eslint-disable react/prop-types */
+import {
+  Box,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Switch,
+  Button,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../api/api';
 import { ChessComponent } from '../components/chessComponent/ChessComponent';
+import DialogComponent from '../components/dialogComponent/DialogComponent';
 import './ChessPage.css';
 
 const ChatBubble = ({ message, isUser }) => (
@@ -61,29 +71,71 @@ const ChatInput = ({ sendMessage }) => {
   );
 };
 
-const FollowChatToggle = ({ followChat, toggleFollowChat }) => (
-  <div className="follow-chat-toggle">
-    <span>Follow Chat</span>
-    <div className={`toggle-switch ${followChat ? 'on' : 'off'}`} onClick={toggleFollowChat}>
-      <div className="toggle-circle"></div>
-    </div>
-  </div>
+const ConfigBox = ({ controls }) => {
+  const { toggleFollowChat, toggleLLMUse } = controls;
+
+  return (
+    <Box sx={{ p: 1 }}>
+      <FormControl component="fieldset" sx={{ display: 'flex', gap: 1 }}>
+        <FormLabel component="legend" disabled>
+          Settings
+        </FormLabel>
+        <FormGroup row>
+          {toggleFollowChat && <FollowChatToggle toggleFollowChat={toggleFollowChat} />}
+          {toggleLLMUse && <UseLLMToggle toggleLLMUse={toggleLLMUse} />}
+        </FormGroup>
+      </FormControl>
+    </Box>
+  );
+};
+
+const FollowChatToggle = ({ toggleFollowChat }) => (
+  <FormControlLabel
+    control={<Switch onChange={toggleFollowChat} defaultValue={true} defaultChecked={true} />}
+    label="Follow chat"
+    labelPlacement="start"
+  />
 );
 
-const ChatInterface = ({ followChat, toggleFollowChat, messages, sendMessage }) => (
+const UseLLMToggle = ({ toggleLLMUse }) => (
+  <FormControlLabel
+    control={<Switch onChange={toggleLLMUse} defaultValue={true} defaultChecked={true} />}
+    label="Explain moves"
+    labelPlacement="start"
+  />
+);
+
+const ChatInterface = ({ followChat, toggleFollowChat, messages, sendMessage, toggleLLMUse }) => (
   <div className="chat-interface">
-    <FollowChatToggle followChat={followChat} toggleFollowChat={toggleFollowChat} />
+    <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
     <ChatDisplay messages={messages} followChat={followChat} />
     <ChatInput sendMessage={sendMessage} />
   </div>
 );
 
 const ChessPage = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [boardFen, setBoardFen] = useState('');
+
+  const openDialog = () => setIsDialogOpen(true);
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const handleFenSubmit = (fen) => {
+    setBoardFen('');
+    // A timeout so the change can be recognised if the user uses the same FEN notation again
+    setTimeout(() => {
+      setBoardFen(fen);
+    }, 0);
+    closeDialog();
+  };
+
   const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
   const [followChat, setFollowChat] = useState(true);
+  const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
 
   const toggleFollowChat = () => setFollowChat(!followChat);
+  const toggleLLMUse = () => setLLMUse(!llmUse);
 
   const sendMessage = (text, isUser) => {
     const index = messages.length;
@@ -114,6 +166,8 @@ const ChessPage = () => {
    * @returns {Promise<void>} - A promise that resolves when the move evaluation is complete.
    */
   const onPlayerMove = async (move, fen) => {
+    if (!llmUse) return;
+
     const index = addBotChat(`You played ${move}. Evaluating the move ...`);
 
     setLock(true);
@@ -133,13 +187,22 @@ const ChessPage = () => {
 
   return (
     <div className="chess-page-container">
-      <ChessComponent lock={lock} onPlayerMove={onPlayerMove} />
+      <ChessComponent
+        lock={lock}
+        onPlayerMove={onPlayerMove}
+        openDialog={openDialog}
+        fen={boardFen}
+        setBoardFen={setBoardFen}
+      ></ChessComponent>
+
       <ChatInterface
         followChat={followChat}
         toggleFollowChat={toggleFollowChat}
         messages={messages}
         sendMessage={sendUserChat}
+        toggleLLMUse={toggleLLMUse}
       />
+      <DialogComponent isOpen={isDialogOpen} onClose={closeDialog} onSubmit={handleFenSubmit} />
     </div>
   );
 };
