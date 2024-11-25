@@ -13,13 +13,11 @@ class MainCoach(ChatBox):
 
         self.stockfish = StockfishAPI(10)
 
-    def ask_move_feedback(self, move, fen):
-        evaluation = self.stockfish.evaluate_move_score(
-            fen, move, player_color=self.player_color
-        )
+    def ask_move_feedback(self, evaluation):
+        fen, move, move_evaluation = evaluation
 
         return (self.ask(f"""The current state of the board is as follows in FEN notation: \n  {fen} \n
-        The move made by the user is {move}. The evaluation of this move by Stockfish is {evaluation}.\n
+        The move made by the user is {move}. The evaluation of this move by Stockfish is {move_evaluation}.\n
         Provide feedback on this move. Coach the user by providing a explanation of the evaluation. You should also explicitly state the evaluation when referred to."""))
 
     def ask_move_suggestion(self, suggestion):
