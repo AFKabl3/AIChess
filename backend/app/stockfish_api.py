@@ -2,8 +2,6 @@ import chess # type: ignore
 import requests
 import random
 from .LLM_engine import helper_functions as utils
-import logging
-
 
 class StockfishAPI:
     def __init__(self, depth):
@@ -23,6 +21,31 @@ class StockfishAPI:
             return response.json()
         else:
             raise Exception(f"Request failed with status code {response.status_code}")
+
+    # Method to retrieve the next best move stockfish suggests / would make
+    def get_next_best_move(self, fen, depth):
+        # Modify the parameters for the chess_bot, then brought back to standard
+        # after call of the method to not mess with further evaluations
+        self.parameters = {
+            "maxThinkingTime": 100,
+            "depth": depth
+        }
+
+        # we define the other parameters:
+        # passing fen the frontend sent to us
+        # setting number of variants (responses from stockfish as "best continuations") to 1
+        payload = {
+            "fen": fen,
+            "variants": 1
+        }
+
+        # retrieve the response and extract the data
+        data = self._send_request(payload)
+
+        move = data.get("move", None)
+
+        # We retrieve the first element = bot move
+        return move
 
     # return the game status percentage of the white player
     def get_game_status(self, fen):
