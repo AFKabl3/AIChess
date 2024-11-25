@@ -1,0 +1,23 @@
+name: Notify Discord on PR Creation
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: |
+            A new Pull Request has been created:
+            - PR Title: **{{ EVENT_PAYLOAD.pull_request.title }}**
+            - PR URL: {{ EVENT_PAYLOAD.pull_request.html_url }}
+            - Created by: [@{{ EVENT_PAYLOAD.pull_request.user.login }}]({{ EVENT_PAYLOAD.pull_request.user.html_url }})
+
+            <@1179551362669883392> <@222019674995425280>
