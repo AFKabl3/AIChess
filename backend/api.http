@@ -112,3 +112,75 @@ Content-Type: text/plain
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
 }
+
+### Valid Request
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
+  "question": string
+}
+
+Response:
+{
+   "answer": string
+}
+
+### Missing FEN field
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "question": string
+}
+
+Response:
+{
+    "message": "Both 'fen' and 'question' fields are required.",
+    "type": "invalid_request"
+}
+
+### Missing question field
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
+}
+
+Response:
+{
+    "message": "Both 'fen' and 'question' fields are required.",
+    "type": "invalid_request"
+}
+
+### Invalid FEN string
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "invalid_fen_string",
+  "question": string
+}
+
+Response:
+{
+   "message": "Invalid FEN string provided" 
+   "type": "invalid_fen_notation"
+}
+
+### Invalid question string
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
+  "question": "invalid_question_string"
+}
+
+Response:
+{
+   "message": "Invalid question string provided" 
+   "type": "invalid_question"
+}

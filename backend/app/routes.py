@@ -251,6 +251,45 @@ def create_main_app():
             "suggestion": response,
             # "suggested_move": suggested_move
         }), 200
+        
+    @app.route('/answer_question', methods=['POST'])
+    def answer_question():
+        data = request.get_json()
+        fen = data.get("fen")
+        question = data.get("question")
+        
+        # Validate FEN and question data
+        if not fen or not question:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'fen' and 'question' fields are required."
+            }), 400
+
+        if not check.is_valid_fen(fen):
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": "Invalid FEN string provided."
+                }),422  # This will create an error if FEN is invalid
+        
+        if not check.is_valid_question(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422 # This will create an error if question is invalid
+            
+        try:       
+            #ask question to the LLM
+            answer = coach.ask_chess_question(fen, question)
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
+
+        # Response to client
+        return jsonify({
+            "answer": answer
+        }), 200
 
     @app.errorhandler(404)
     def not_found(error):
