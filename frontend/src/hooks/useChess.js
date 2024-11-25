@@ -29,6 +29,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
   // State to track if the game is over
   const [isGameOver, setIsGameOver] = useState(false);
 
+  // State to track custom arrows, are on the form [[from, to], [from, to], ...]
+  const [arrows, setArrows] = useState([]);
+
   const resetGame = () => {
     safeGameMutate((game) => {
       game.reset();
@@ -37,6 +40,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
     setRightClickedSquares({});
     setStatusMessage('');
     setIsGameOver(false);
+    setArrows([]);
   };
 
   const showStatusMessage = (message) => {
@@ -162,6 +166,14 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
     }
   };
 
+  const addArrow = (arrow) => {
+    setArrows([...arrows, arrow]);
+  };
+
+  const resetArrows = () => {
+    setArrows([]);
+  };
+
   /**
    * Handles the logic when a square is clicked on the chessboard, determining valid moves, highlights,
    * and actions such as move validation and promotion dialog display.
@@ -238,6 +250,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       }
 
       // Update game state, reset variables, and trigger AI move (for the moment a Random move)
+      resetArrows();
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       setGame(gameCopy);
       makeBotMove();
@@ -280,6 +293,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       });
 
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+      resetArrows();
 
       makeBotMove();
     }
@@ -365,10 +379,16 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
     if (move == null) return false;
 
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+    resetArrows();
 
     // If the move is valid, trigger a random computer move after a 200ms delay
     makeBotMove();
     return true;
+  };
+
+  const loadGame = (fen) => {
+    setGame(new Chess(fen));
+    resetArrows();
   };
 
   return {
@@ -385,8 +405,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
     isGameOver,
     statusMessage,
     resetGame,
-    setGame: (newGame) => setGame(newGame),
     moveTo,
-    gameFromFen: (fen) => new Chess(fen),
+    loadGame,
+    arrows,
+    addArrow,
+    resetArrows,
   };
 };

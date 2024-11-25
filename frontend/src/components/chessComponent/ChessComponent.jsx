@@ -19,6 +19,7 @@ export const ChessComponent = ({ chess }) => {
     rightClickedSquares,
     statusMessage,
     moveTo,
+    arrows,
   } = chess;
 
   return (
@@ -45,6 +46,7 @@ export const ChessComponent = ({ chess }) => {
         }}
         customDarkSquareStyle={{ backgroundColor: '#D68B5E' }}
         customLightSquareStyle={{ backgroundColor: '#FFE8D1' }}
+        customArrows={arrows}
       />
 
       {statusMessage && (

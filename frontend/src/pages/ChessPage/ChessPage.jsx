@@ -6,7 +6,8 @@ import { useChat } from '../../hooks/useChat';
 import { useChess } from '../../hooks/useChess';
 import { useConfig } from '../../hooks/useConfig';
 import { useMoveHistory } from '../../hooks/useMoveHistory';
-import { formatUciMove } from '../../util/chessUtil';
+import { formatUciMove, parseArrow } from '../../util/chessUtil';
+import { waitForResponseToast } from '../../util/toasts';
 import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
@@ -35,8 +36,15 @@ export const ChessPage = () => {
     config,
   });
 
+  const { position, addArrow } = chess;
+
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
+
+    if (lock) {
+      waitForResponseToast();
+      return;
+    }
 
     const modifyText = addBotChat(`You played ${move}. Evaluating the move ...`);
 
@@ -55,9 +63,37 @@ export const ChessPage = () => {
     setLock(false);
   };
 
+  const onSuggestionRequest = async () => {
+    if (lock) {
+      waitForResponseToast();
+      return;
+    }
+
+    const modifyText = addBotChat('Suggesting a move ...');
+
+    setLock(true);
+    try {
+      const res = await api.getSuggestedMove(position);
+      const data = await res.json();
+
+      modifyText(`${data.suggestion}.`);
+      addArrow(parseArrow(data.suggested_move));
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred while suggesting a move.');
+
+      modifyText('An error occurred while suggesting a move.');
+    }
+    setLock(false);
+  };
+
   const commands = [
-    { text: 'Suggest a Move', command: () => console.warn('This command is not implemented yet.') },
-    { text: 'Explain Move', command: () => console.warn('This command is not implemented yet.') },
+    { text: 'Suggest a Move', command: onSuggestionRequest },
+    {
+      text: 'Explain game status',
+      command: () => console.warn('This command is not implemented yet.'),
+      disabled: true,
+    },
   ];
 
   return (
