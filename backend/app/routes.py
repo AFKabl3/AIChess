@@ -93,7 +93,6 @@ def create_main_app():
         fen = data.get("fen")
         move = data.get("move")
         fixed_fen = ""
-        logging.debug(f"Received data: {data}")
         
         # Validate FEN and move data
         if not fen or not move:
@@ -127,11 +126,8 @@ def create_main_app():
         
         try:
             new_fen = check.move_to_fen(fixed_fen, move)
-            logging.debug("Fixed FEN is : "+ new_fen)
-            logging.debug("FEN notation in line 90, on routes.py: "+ fen)
             evaluation = stockfish.get_evaluation(new_fen)
             # This line does not seem to execute, thus here is the stockfish error again
-            logging.debug(f"Received Evaluation after stockfish function call: {evaluation}")
             if evaluation == "No score available":
                 return jsonify({
                     "type": "evaluation_error",
@@ -281,7 +277,6 @@ def create_main_app():
 
     @app.errorhandler(500)
     def internal_server_error(error):
-        logging.error(f"500 Error: {error}")
         return jsonify({"type": "internal_server_error", "message": str(error)}), 500
 
 
