@@ -4,21 +4,17 @@ export const useChat = () => {
   const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
   const [followChat, setFollowChat] = useState(true);
 
-  const modifyMessageText = (index, text) => {
-    setMessages((prevMessages) => {
-      const newMessages = [...prevMessages];
-
-      newMessages[index].text = text;
-      return newMessages;
-    });
+  const modifyMessageText = (obj, text) => {
+    obj.text = text;
+    setMessages((prevMessages) => [...prevMessages]); // force re-render since obj is a reference
   };
 
   const sendMessage = (text, isUser) => {
-    const index = messages.length;
+    const obj = { text, isUser };
 
-    setMessages((prevMessages) => [...prevMessages, { text, isUser }]);
+    setMessages((prevMessages) => [...prevMessages, obj]);
 
-    return (modifiedText) => modifyMessageText(index, modifiedText);
+    return (modifiedText) => modifyMessageText(obj, modifiedText);
   };
 
   const sendUserChat = (text) => sendMessage(text, true);

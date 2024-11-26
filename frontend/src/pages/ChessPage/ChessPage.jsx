@@ -87,6 +87,31 @@ export const ChessPage = () => {
     setLock(false);
   };
 
+  const onQuestionAsked = async (question) => {
+    if (lock) {
+      waitForResponseToast();
+      return;
+    }
+
+    sendUserChat(question);
+    setTimeout(() => {}, 1000);
+    const modifyText = addBotChat('Waiting for response ...');
+
+    setLock(true);
+    try {
+      const res = await api.answerChessQuestion(position, question);
+      const data = await res.json();
+
+      modifyText(data.answer);
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred while waiting for an answer.');
+
+      modifyText('An error occurred while waiting for an answer.');
+    }
+    setLock(false);
+  };
+
   const commands = [
     { text: 'Suggest a Move', command: onSuggestionRequest },
     {
@@ -116,7 +141,7 @@ export const ChessPage = () => {
         <Chat
           followChat={followChat}
           messages={messages}
-          sendMessage={sendUserChat}
+          sendMessage={onQuestionAsked}
           commands={commands}
         />
       </Box>
