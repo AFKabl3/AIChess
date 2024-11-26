@@ -21,6 +21,9 @@ def move_to_fen(fen, move):
     board.push(chess_move)
     return board.fen()
 
+def is_valid_depth(depth):
+    return isinstance(depth, int) and depth >= 2
+
 def get_current_player(fen):
     return fen.split()[1]
 

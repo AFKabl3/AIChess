@@ -198,8 +198,8 @@ Return the best move according to the Stockfish and the input depth.
 #### Request Parameters
 
 - **Body (JSON)**:
-  - `fen` (string, required): The FEN string representing the board state.
-  - `depth` (int): integer value representing the level of the bot
+  - `fen` (string, required): The FEN string representing the board state after the player move.
+  - `depth` (int, required): integer value representing the level of the bot
 
 #### Response
 

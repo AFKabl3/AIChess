@@ -23,6 +23,12 @@ def create_main_app():
         data = request.get_json()
         fen = data.get("fen")
 
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "'fen'  field is required."
+            }), 400
+
         # Validate FEN
         if not check.is_valid_fen(fen):
             return jsonify({
@@ -58,7 +64,25 @@ def create_main_app():
         # - fen of the board
         data = request.get_json()
         fen = data.get("fen")
-        depth = data.get("depth") or 2
+        depth = data.get("depth")
+
+        if not fen and not depth:
+                return jsonify({
+                    "type": "invalid_request",
+                    "message": "Both 'fen' and 'depth' fields are required."
+                }), 400
+
+        if not check.is_valid_fen(fen):
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422  # This will create an error if FEN is invalid
+
+        if not check.is_valid_depth(depth):
+            return jsonify({
+                "type": "invalid_depth",
+                "message": "Invalid depth provided."
+            }), 422
 
         # we create a chess bot which is nothing else than a Stockfish class instance with certain params
         # Here the depth is set to 2 if not specified in the request;
@@ -66,12 +90,18 @@ def create_main_app():
         # Otherwise we have to store it in backend, letting interaction not being stateless and have a class "chess_bot"
         # always active for each player and a new API-function to set the strenght of the bot
         # Probably best is to save it in client and simply pass that parameter, here it will be set to default strenght = 2
-        chess_bot = StockfishAPI(depth=depth)
+
         try:
 
             # Now we call "get evaluation" method from Stockfish class
             # and as param we pass the fen
+            chess_bot = StockfishAPI(depth=depth)
             bot_move = chess_bot.get_next_best_move(fen, depth)
+            if bot_move == "No score available":
+                return jsonify({
+                    "type": "stockfish_error",
+                    "message": "Could not generate the move."
+                }), 500
 
         except Exception as e:
             return jsonify({
@@ -183,7 +213,7 @@ def create_main_app():
             if move_suggestion == "No suggestion available":
                 return jsonify({
                     "type": "stockfish_error",
-                    "message": "Could not evaluate the move."
+                    "message": "Could not generate the move."
                 }), 500
         except Exception as e:
             return jsonify({
