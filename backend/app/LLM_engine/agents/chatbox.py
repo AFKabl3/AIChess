@@ -16,8 +16,14 @@ class ChatBox:
     def __init__(self):
         self.conversation_history = [] 
         self.client = InferenceClient(api_key=SECRET_KEY)
-
+        self.max_messages = 10
     def ask(self,question):
+        #Stores a maximum of messages and then cleans the older messages so it doesn't store too much data.
+        if len(self.conversation_history) > self.max_messages:
+            self.conversation_history = (
+                self.conversation_history[:2] + self.conversation_history[6:] 
+            )
+
         # Add the new question to the conversation history
         # Stream the response
         stream = client.chat.completions.create(
