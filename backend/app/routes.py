@@ -97,7 +97,7 @@ def create_main_app():
             # and as param we pass the fen
             chess_bot = StockfishAPI(depth=depth)
             bot_move = chess_bot.get_next_best_move(fen, depth)
-            if bot_move == "No score available":
+            if bot_move == "No status available":
                 return jsonify({
                     "type": "stockfish_error",
                     "message": "Could not generate the move."
