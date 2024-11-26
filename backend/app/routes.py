@@ -130,7 +130,6 @@ def create_main_app():
                 "type": "invalid_request",
                 "message": "Both 'fen' and 'move' fields are required."
             }), 400
-        # pdb.set_trace()
         try:
             fen = check.is_valid_input_notation(fen)  # Call function to correct invalid input notation
         except ValueError as e:
