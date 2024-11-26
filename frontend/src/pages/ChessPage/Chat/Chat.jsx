@@ -60,7 +60,7 @@ export const ChatDisplay = ({ messages, followChat }) => {
       }}
     >
       {messages.map((msg, idx) => (
-        <ChatBubble key={idx} message={msg.text} isUser={msg.isUser} />
+        <ChatBubble key={idx} message={msg.text} isUser={msg.isUser} loading={msg.loading} />
       ))}
 
       <div ref={chatEndRef} />
