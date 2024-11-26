@@ -90,24 +90,23 @@ export const ChessPage = () => {
   const onQuestionAsked = async (question) => {
     if (lock) {
       waitForResponseToast();
-      return;
     }
 
     sendUserChat(question);
-    setTimeout(() => {}, 1000);
-    const modifyText = addBotChat('Waiting for response ...');
+
+    const addResponseFunc = addBotChat('Waiting for response ...', true);
 
     setLock(true);
     try {
       const res = await api.answerChessQuestion(position, question);
       const data = await res.json();
 
-      modifyText(data.answer);
+      addResponseFunc(data.answer);
     } catch (error) {
       console.error(error);
       toast.error('An error occurred while waiting for an answer.');
 
-      modifyText('An error occurred while waiting for an answer.');
+      addResponseFunc('An error occurred while waiting for an answer.');
     }
     setLock(false);
   };
