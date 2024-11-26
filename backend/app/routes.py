@@ -7,6 +7,7 @@ from .LLM_engine.agents.main_coach import MainCoach
 import pdb
 import asyncio
 from flask import request
+import logging as logging
 
 
 def create_main_app():
@@ -91,8 +92,7 @@ def create_main_app():
     def evaluate_move():
         data = request.get_json()
         fen = data.get("fen")
-        move = data.get("move")
-        fixed_fen = ""
+        move = data.get("move") 
         
         # Validate FEN and move data
         if not fen or not move:
@@ -102,8 +102,7 @@ def create_main_app():
             }), 400
         # pdb.set_trace()
         try:
-            fixed_fen = check.fix_fen(fen)  # Apply fix_fen to correct invalid en passant fields
-           
+            fen = check.is_valid_input_notation(fen)  # Call function to correct invalid input notation
         except ValueError as e:
             return jsonify({
                 "type": "invalid_fen_notation",
@@ -111,23 +110,22 @@ def create_main_app():
             }), 422
 
 
-        if not check.is_valid_fen(fixed_fen):
+        if not check.is_valid_fen(fen):
                 return jsonify({
                     "type": "invalid_fen_notation",
                     "message": "Invalid FEN string provided."
                 }),422  # This will create an error if FEN is invalid
 
             # 
-        if not check.is_valid_move(fixed_fen, move):
+        if not check.is_valid_move(fen, move):
             return jsonify({
                 "type": "invalid_move",
                 "message": "Invalid move string provided."
             }), 422 # on promotion the error of undefined may be here
         
         try:
-            new_fen = check.move_to_fen(fixed_fen, move)
+            new_fen = check.move_to_fen(fen, move)
             evaluation = stockfish.get_evaluation(new_fen)
-            # This line does not seem to execute, thus here is the stockfish error again
             if evaluation == "No score available":
                 return jsonify({
                     "type": "evaluation_error",
@@ -265,7 +263,6 @@ def create_main_app():
             "current_player": current_player,
             "suggested_move": move_suggestion,
             "suggestion": response,
-            # "suggested_move": suggested_move
         }), 200
 
     @app.errorhandler(404)
