@@ -4,8 +4,9 @@ import random
 from .LLM_engine import helper_functions as utils
 
 class StockfishAPI:
-    def __init__(self, depth):
+    def __init__(self, depth=2):
         self.url = "https://chess-api.com/v1"
+        self.depth = depth
         self.headers = {
             "Content-Type": "application/json"
         }
@@ -13,6 +14,12 @@ class StockfishAPI:
             "maxThinkingTime": 100,
             "depth": depth
         }
+
+    # function that modify the depth attribute and also the 'depth' field in
+    # parameters
+    def modify_depth(self, depth=2):
+        self.depth = depth
+        self.parameters["depth"] = depth
 
     def _send_request(self, payload):
         payload = {**self.parameters, **payload}
@@ -22,39 +29,21 @@ class StockfishAPI:
         else:
             raise Exception(f"Request failed with status code {response.status_code}")
 
-    # Method to retrieve the next best move stockfish suggests / would make
-    def get_next_best_move(self, fen, depth):
-        # Modify the parameters for the chess_bot, then brought back to standard
-        # after call of the method to not mess with further evaluations
-        if not utils.is_valid_fen(fen) or not utils.is_valid_depth(depth):
-            return "No status available"
-        self.parameters = {
-            "maxThinkingTime": 100,
-            "depth": depth
-        }
-        # we define the other parameters:
-        # passing fen the frontend sent to us
-        # setting number of variants (responses from stockfish as "best continuations") to 1
-        variant = random.randint(1,5)
-        payload = {
-            "fen": fen,
-            "variants": variant
-        }
-        # retrieve the response and extract the data
-        data = self._send_request(payload)
-        response = data.get("move", "No status available")
-        # We retrieve the first element = bot move
-        return response
-
-    # return the game status percentage of the white player
-    def get_game_status(self, fen):
+    # return the winning percentage of the current player
+    def get_player_winning_chance(self, fen):
         if not utils.is_valid_fen(fen):
             return "No status available"
         payload = {
             "fen": fen,
         }
         response = self._send_request(payload)
-        return response.get("winChance", "No status available")
+        win_chance = response.get("winChance", "No status available")
+        if win_chance == "No status available":
+            return "No status available"
+        current_player = utils.get_current_player(fen)
+        if current_player == "w":
+            return win_chance
+        return 100 - win_chance
 
     # return an array of next moves to be played
     def get_evaluation(self, fen):
@@ -70,9 +59,10 @@ class StockfishAPI:
     def get_next_moves(self, fen):
         if not utils.is_valid_fen(fen):
             return "No evaluation available"
+        variant = (random.randint(1, 5))
         payload = {
             "fen": fen,
-            "variants:": (random.randint(1, 5))
+            "variants:": variant
         }
         response = self._send_request(payload)
         next_moves = response.get("continuationArr", "No suggestions available")
@@ -80,19 +70,18 @@ class StockfishAPI:
             return "No suggestions available"
         return next_moves
 
-    # return one suggested move for the current player
-    def get_move_suggestion(self, fen):
+    # return the next best move for the current player
+    def get_best_move(self, fen):
         if not utils.is_valid_fen(fen):
             return "No evaluation available"
+        variant = random.randint(1,5)
         payload = {
             "fen": fen,
-            "variants:": (random.randint(1, 5))
+            "variants:": variant
         }
         response = self._send_request(payload)
-        suggested_move = response.get("move", "No suggestions available")
-        if suggested_move == "No suggestions available":
-            return "No suggestions available"
-        return suggested_move
+        best_move = response.get("move", "No move available")
+        return best_move
 
     # return the delta of the evaluation of the board state without the move and with the move
     def evaluate_move_score(self, fen, move):
@@ -108,7 +97,8 @@ class StockfishAPI:
         if evaluation_after == "No evaluation available":
             return "No score available"
 
-        if utils.get_current_player(fen) == "w":
+        current_player = utils.get_current_player(fen)
+        if current_player == "w":
             return evaluation_after - evaluation_before
         else:
             return evaluation_before - evaluation_after

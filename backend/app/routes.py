@@ -13,11 +13,14 @@ def create_main_app():
     app = Flask(__name__)
     CORS(app)
 
-    stockfish = StockfishAPI(depth=10)
+    #stockfishAPI
+    default_depth = 10
+    stockfish = StockfishAPI(depth=default_depth)
 
     # chatbox = LLM_engine.ChatBox()
     coach = MainCoach()
 
+    # TODO
     @app.route('/game_status', methods=['POST'])
     def game_status():
         data = request.get_json()
@@ -58,18 +61,17 @@ def create_main_app():
             "fen": fen,
         }), 200
 
-    @app.route('/get_bot_move', methods=['POST'])
-    def get_bot_move():
-        # we retrive the json file sent to this API including:
-        # - fen of the board
+    @app.route('/get_next_move', methods=['POST'])
+    def get_next_move():
+
         data = request.get_json()
         fen = data.get("fen")
         depth = data.get("depth")
 
-        if not fen and not depth:
+        if not fen:
                 return jsonify({
                     "type": "invalid_request",
-                    "message": "Both 'fen' and 'depth' fields are required."
+                    "message": "'fen' field is required."
                 }), 400
 
         if not check.is_valid_fen(fen):
@@ -78,41 +80,33 @@ def create_main_app():
                 "message": "Invalid FEN string provided."
             }), 422  # This will create an error if FEN is invalid
 
-        if not check.is_valid_depth(depth):
-            return jsonify({
-                "type": "invalid_depth",
-                "message": "Invalid depth provided."
-            }), 422
-
-        # we create a chess bot which is nothing else than a Stockfish class instance with certain params
-        # Here the depth is set to 2 if not specified in the request;
-        # To be customizable we can make settings in UI to modify it and simply pass that paramenter that is stored locally
-        # Otherwise we have to store it in backend, letting interaction not being stateless and have a class "chess_bot"
-        # always active for each player and a new API-function to set the strenght of the bot
-        # Probably best is to save it in client and simply pass that parameter, here it will be set to default strenght = 2
+        if depth:
+            if not check.is_valid_depth(depth):
+                return jsonify({
+                    "type": "invalid_depth",
+                    "message": "Invalid depth provided."
+                }), 422
+            stockfish.modify_depth(depth)
 
         try:
-
-            # Now we call "get evaluation" method from Stockfish class
-            # and as param we pass the fen
-            chess_bot = StockfishAPI(depth=depth)
-            bot_move = chess_bot.get_next_best_move(fen, depth)
-            if bot_move == "No status available":
+            best_move = stockfish.get_best_move(fen)
+            if best_move == "No move available":
                 return jsonify({
                     "type": "stockfish_error",
                     "message": "Could not generate the move."
                 }), 500
-
+            current_player= check.get_current_player(fen)
+            return jsonify({
+                "current_player": current_player,
+                "best_move": best_move
+            }), 200
         except Exception as e:
             return jsonify({
                 "type": "stockfish_error",
                 "message": str(e)
             }), 500
 
-        # We respond to the caller of the API with the move the bot will play
-        return jsonify({
-            "bot_move": bot_move
-        })
+
 
     @app.route('/evaluate_move', methods=['POST'])
     def evaluate_move():
@@ -146,19 +140,6 @@ def create_main_app():
                 return jsonify({
                     "type": "evaluation_error",
                     "message": "Could not evaluate the move."
-                }), 500
-        except Exception as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": str(e)
-            }), 500
-
-        try:
-            game_status = 100 - stockfish.get_game_status(new_fen)
-            if game_status == "No status available":
-                return jsonify({
-                    "type": "stockfish_error",
-                    "message": "No status available."
                 }), 500
         except Exception as e:
             return jsonify({
