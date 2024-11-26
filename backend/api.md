@@ -6,7 +6,8 @@
    - [1. Evaluate Move Endpoint](#1-evaluate-move-endpoint)
    - [2. Answer Chess Question Endpoint](#2-answer-chess-question-endpoint)
    - [3. Get Suggested Move Endpoint](#3-get-suggested-move-endpoint)
-   - [4. Get Game Status Endpointt](#4-get-suggested-move-with-explanation-endpoint)
+   - [4. Get Game Status Endpoint](#4-get-suggested-move-with-explanation-endpoint)
+   - [5. Get Bot Move Endpoint](#4-get-suggested-move-with-explanation-endpoint)
 2. [Error Handling](#error-handling)
 
 ## Endpoints
@@ -158,9 +159,9 @@ POST /suggest_move
 
 - **200 OK**:
   - **Body (JSON)**:
-        -  `current_player` (string): current player that has to play the move
-        - `fen` (string): The FEN string representing the board state.
-        - `game_status` (float): percentage of winning for the white player (for now).
+    -  `current_player` (string): current player that has to play the move.
+    - `fen` (string): The FEN string representing the board state.
+    - `game_status` (float): percentage of winning for the white player (for now).
 
 <details>
 <summary>Example Request</summary>
@@ -182,6 +183,49 @@ POST /game_status
   "current_player": "w",
   "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   "game_status": 51.74827500461166
+}
+```
+
+</details>
+
+### 3. Get Suggested Move Endpoint
+
+- **Endpoint**: `/get_bot_move`
+- **Method**: `POST`
+- **Description**: Accepts a chess board in FEN notation and an integer value representing the depth (represents also a possible bot level). 
+Return the best move according to the Stockfish and the input depth.
+
+#### Request Parameters
+
+- **Body (JSON)**:
+  - `fen` (string, required): The FEN string representing the board state.
+  - `depth` (int): integer value representing the level of the bot
+
+#### Response
+
+- **200 OK**:
+  - **Body (JSON)**:
+      - `bot_move` (string): bot_move
+
+<details>
+<summary>Example Request</summary>
+
+```json
+POST /get_bot_move
+{
+  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
+  "depth": 10
+}
+```
+
+</details>
+
+<details>
+<summary>Example Response</summary>
+
+```json
+{
+  "bot_move": "e4f5"
 }
 ```
 
