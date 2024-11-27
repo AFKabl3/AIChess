@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { ChessComponent } from '../../../components/chessComponent/ChessComponent';
 import DialogComponent from '../../../components/dialogComponent/DialogComponent';
 import { InfoBox } from '../../../components/InfoBox/InfoBox';
+import { ResetDialog } from '../../../components/resetDialog/ResetDialog';
 import { useDialog } from '../../../hooks/useDialog';
 import { ChessContext } from '../ChessContext';
 import { ConfigBox } from '../Config/ConfigBox';
@@ -13,7 +14,6 @@ export const ChessBoardWrapper = ({ settings }) => {
 
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
-  const { resetGame } = chess;
   const { resetHistory } = moveHistory;
 
   const handleFenSubmit = (fen) => {
@@ -35,17 +35,7 @@ export const ChessBoardWrapper = ({ settings }) => {
       </Box>
       <ChessComponent chess={chess} />
       <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center', gap: 4, pt: 2 }}>
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          onClick={() => {
-            resetGame();
-            resetHistory();
-          }}
-        >
-          reset
-        </Button>
+        <ResetDialog />
         <Button variant="contained" color="secondary" size="large" onClick={openDialog}>
           Upload Chessboard Setup
         </Button>
