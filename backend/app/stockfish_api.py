@@ -2,6 +2,7 @@ import chess # type: ignore
 import requests
 import random
 from .LLM_engine import helper_functions as utils
+import pdb
 
 class StockfishAPI:
     def __init__(self, depth):
@@ -28,18 +29,20 @@ class StockfishAPI:
         # after call of the method to not mess with further evaluations
         if not utils.is_valid_fen(fen) or not utils.is_valid_depth(depth):
             return "No status available"
-        self.parameters = {
-            "maxThinkingTime": 100,
-            "depth": depth
-        }
+        # self.parameters = {
+        #     "maxThinkingTime": 100,
+        #     "depth": depth
+        # }
         # we define the other parameters:
         # passing fen the frontend sent to us
         # setting number of variants (responses from stockfish as "best continuations") to 1
-        variant = random.randint(1,5)
+        # variant = random.randint(1,5)
         payload = {
             "fen": fen,
-            "variants": variant
+            "depth": depth
+            # "variants": variant
         }
+        # pdb.set_trace()
         # retrieve the response and extract the data
         data = self._send_request(payload)
         response = data.get("move", "No status available")

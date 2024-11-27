@@ -3,7 +3,7 @@ POST https://chess-api.com/v1
 Content-Type: application/json
 
 {
-  "fen": "rnbqkbnr/p1pppppp/8/1p6/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+  "fen": "rn1qkb1r/pp2pppp/5n2/2ppN3/6b1/2NP4/PPP1PP1P/R1BQKB1R b KQkq - 1 5",
   "maxThinkingTime": 100,
   "depth" : 10
 }
@@ -14,8 +14,8 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {
-  "fen": "rnbqkbnr/p1pppppp/8/1p6/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2",
-  "move": "b2b4"
+  "fen": "rn1qkbnr/pp2pp1p/4b1p1/2pNN3/3pP3/3P4/PPP2PBP/R1BQK2R w KQkq - 0 9",
+  "move": "d5f4"
 }
 ### Missing FEN Field
 POST http://127.0.0.1:5000/evaluate_move
