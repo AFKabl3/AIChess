@@ -18,7 +18,8 @@ export const ChessPage = () => {
   const [lock, setLock] = useState(false);
   const [config, setConfigValue] = useConfig();
 
-  const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = useChat();
+  const chat = useChat();
+  const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = chat;
 
   const moveHistory = useMoveHistory();
   const { isPaused, updateHistory } = moveHistory;
@@ -121,7 +122,7 @@ export const ChessPage = () => {
   ];
 
   return (
-    <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue }}>
+    <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
       <Box
         sx={{
           display: 'flex',
