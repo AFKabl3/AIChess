@@ -1,4 +1,27 @@
+import os
+import platform
 import chess
+
+
+def get_stockfish_binary_path():
+    system = platform.system().lower()
+    architecture = platform.machine().lower()
+
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stockfish_binaries")
+    if system == 'windows':
+        return os.path.join(base_dir, "windows", "stockfish.exe")
+    elif system == 'linux':
+        if architecture == 'x86_64':
+            return os.path.join(base_dir, "linux", "x86_64", "stockfish-linux-x86-64")
+        elif architecture == 'arm':
+            return os.path.join(base_dir, "linux", "arm", "stockfish-linux-arm")
+    elif system == 'darwin':
+        if architecture == 'x86_64':
+            return os.path.join(base_dir, "mac", "x_86_64", "stockfish-macos-arm")
+        elif architecture == 'arm':
+            return os.path.join(base_dir, "mac", "arm", "stockfish-macos-arm")
+    else:
+        raise OSError(f"Unsupported system: {system}")
 
 def is_valid_fen(fen):
     try:

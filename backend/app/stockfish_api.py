@@ -22,7 +22,7 @@ class StockfishAPI:
         else:
             raise Exception(f"Request failed with status code {response.status_code}")
 
-    # Method to retrieve the next best move stockfish suggests / would make
+    # Method to retrieve the next best move stockfish_binaries suggests / would make
     def get_next_best_move(self, fen, depth):
         # Modify the parameters for the chess_bot, then brought back to standard
         # after call of the method to not mess with further evaluations
@@ -34,7 +34,7 @@ class StockfishAPI:
         }
         # we define the other parameters:
         # passing fen the frontend sent to us
-        # setting number of variants (responses from stockfish as "best continuations") to 1
+        # setting number of variants (responses from stockfish_binaries as "best continuations") to 1
         variant = random.randint(1,5)
         payload = {
             "fen": fen,
