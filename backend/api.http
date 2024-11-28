@@ -101,7 +101,7 @@ Response:
 <h1>Unsupported Media Type</h1>
 <p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
 
-### Valide request
+### Valid request
 POST http://127.0.0.1:5000/suggest_move
 Content-Type: application/json
 
@@ -157,7 +157,7 @@ Response:
 <h1>Unsupported Media Type</h1>
 <p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
 
-### Valide request
+### Valid request
 POST http://127.0.0.1:5000/game_status
 Content-Type: application/json
 

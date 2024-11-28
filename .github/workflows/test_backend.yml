@@ -1,0 +1,46 @@
+name: Run Tests on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "last"
+
+      - name: Install dependencies
+        run: |
+          cd backend 
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run flask app
+        run: |
+          cd backend
+          nohup python run.py &
+
+      - name: Wait for Flask to be ready
+        run: |
+          for i in {1..30}; do
+            curl --silent http://127.0.0.1:5000/ && break
+            echo "Waiting for Flask to start..."
+            sleep 2
+          done
+
+      - name: Run tests
+        run: |
+          cd backend
+          python test_runner.py
