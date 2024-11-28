@@ -1,5 +1,4 @@
 #flask modules
-from AIChess.backend.app.routes_utils.helper_functions import delta_evaluation
 from flask import jsonify, Flask
 from flask_cors import CORS
 from flask import request
@@ -51,6 +50,7 @@ def create_main_app():
             }), 422
 
         try:
+            stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             evaluation_fen_before = stockfish.get_evaluation().get('value', None)
 
@@ -84,7 +84,7 @@ def create_main_app():
             "feedback": response,
         }), 200
 
-    @app.route('/suggest_move', methods=['POST'])
+    @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
     def move_suggestion():
         data = request.get_json()
         fen = data.get("fen")
@@ -102,6 +102,7 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
         try:
+            stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             evaluation_fen_before = stockfish.get_evaluation().get('value', None)
 
@@ -165,6 +166,7 @@ def create_main_app():
             }), 422 # This will create an error if question is invalid
 
         try:
+            stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             evaluation_fen = stockfish.get_evaluation().get('value', None)
             if evaluation_fen is None:
@@ -197,9 +199,9 @@ def create_main_app():
 
         data = request.get_json()
         fen = data.get("fen")
-        depth = data.get("depth")
+        skill_level = data.get("skill_level")
 
-        if not fen and not depth:
+        if not fen and not skill_level:
             return jsonify({
                 "type": "invalid_request",
                 "message": "Both 'fen' and 'depth' fields are required."
@@ -211,7 +213,7 @@ def create_main_app():
                 "message": "Invalid FEN string provided."
             }), 422  # This will create an error if FEN is invalid
 
-        if not utils.is_valid_depth(depth):
+        if not utils.is_valid_num(skill_level):
             return jsonify({
                 "type": "invalid_depth",
                 "message": "Invalid depth provided."
@@ -219,6 +221,7 @@ def create_main_app():
 
         try:
             stockfish.set_fen_position(fen)
+            stockfish.set_skill_level(skill_level)
             bot_move = stockfish.get_best_move()
 
         except StockfishException as e:
@@ -229,6 +232,39 @@ def create_main_app():
 
         return jsonify({
             "bot_move": bot_move
+        }), 200
+
+    @app.route('/get_best_move', methods=['POST'])
+    def get_best_move():
+
+        data = request.get_json()
+        fen = data.get("fen")
+
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'fen' and 'depth' fields are required."
+            }), 400
+
+        if not stockfish.is_valid_fen(fen):
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422  # This will create an error if FEN is invalid
+
+        try:
+            stockfish.reset_engine_parameters()
+            stockfish.set_fen_position(fen)
+            suggested_move = stockfish.get_best_move()
+
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500
+
+        return jsonify({
+            "suggested_move": suggested_move
         }), 200
 
 
