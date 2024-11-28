@@ -1,14 +1,15 @@
 #flask modules
+from AIChess.backend.app.routes_utils.helper_functions import delta_evaluation
 from flask import jsonify, Flask
 from flask_cors import CORS
 from flask import request
 #route_utils module
-from  routes_utils import helper_functions as utils
+from . routes_utils import helper_functions as utils
 #stockfish modules
 from stockfish import Stockfish
 from stockfish import StockfishException
 #Assistant module
-from LLM_engine.main_coach import MainCoach
+from .LLM_engine.main_coach import MainCoach
 
 
 def create_main_app():
@@ -17,7 +18,7 @@ def create_main_app():
     CORS(app)
 
 
-    stockfish_path = utils.get_stockfish_path()
+    stockfish_path = utils.get_stockfish_binary_path()
     stockfish = Stockfish(path=stockfish_path)
     coach = MainCoach()
 
@@ -41,23 +42,59 @@ def create_main_app():
                 "message": "Invalid FEN string provided."
             }), 422  # This will create an error if FEN is invalid
 
-        stockfish.set_fen_position()
 
-        if not stockfish.is_move_correct(move):
+        if not utils.is_valid_move(fen, move):
             return jsonify({
                 "type": "invalid_move",
-                "message": "Invalid move string provided."
+                "message": "Invalid/illegal string move provided."
             }), 422
 
         try:
-            stockfish.set_position(move)
-            evaluation = stockfish.get_evaluation()
+            stockfish.set_fen_position(fen)
+            evaluation_fen_before = stockfish.get_evaluation().get('value', None)
+
+            after_move_fen = utils.move_to_fen(fen, move)
+            stockfish.set_fen_position(after_move_fen)
+            evaluation_fen_after = stockfish.get_evaluation().get('value', None)
+
+            if evaluation_fen_before  is None or evaluation_fen_after is None:
+                raise StockfishException("no evaluation for the current fen")
+
+            delta_evaluation = utils.delta_evaluation(fen, evaluation_fen_before, evaluation_fen_after)
+            board_str = utils.get_board(after_move_fen)
+            input = (board_str, move, delta_evaluation)
+            try:
+                response = coach.ask_move_feedback(input)
+            except Exception as e:
+                return jsonify({
+                    "type": "llm_error",
+                    "message": f"Failed to get a response from the LLM: {str(e)}"
+                }), 500
 
         except StockfishException as e:
             return jsonify({
                 "type": "stockfish_error",
-                "message": str(e)
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
+
+        finally:
+            player_made_move = utils.get_current_player(fen)
+            return jsonify({
+                "player_made_move": player_made_move,
+                "feedback": response,
+            }), 200
+
+    @app.route('/suggest_move', methods=['POST'])
+    def move_suggestion():
+        data = request.get_json()
+        fen = data.get("fen")
+
+
+
+
+
+
+
 
 
 
