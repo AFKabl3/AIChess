@@ -36,8 +36,7 @@ def is_valid_move(fen, move):
     except (IllegalMoveError, InvalidMoveError, AmbiguousMoveError):
         return False
 
-
-def is_valid_depth(depth):
+def is_valid_num(depth):
     return isinstance(depth, int) and depth >= 0
 
 def get_current_player(fen):
@@ -49,13 +48,9 @@ def delta_evaluation(fen, evaluation_before, evaluation_after):
     else:
         return evaluation_before - evaluation_after
 
-
 def get_board(fen):
     return fen.split()[0]
 
-
 def is_valid_question(question):
-    if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
-        return False
-    return True
+    return isinstance(question, str)
 

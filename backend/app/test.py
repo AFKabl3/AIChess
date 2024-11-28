@@ -18,11 +18,6 @@ move = "e2e4"
 is_valid_move = utils.is_valid_move(fen, move)
 
 stockfish.set_fen_position(fen)
-print(stockfish.get_evaluation().get('value', None))
-
-new_fen = utils.move_to_fen(fen, move)
-
-stockfish.set_fen_position(new_fen)
-print(stockfish.get_evaluation().get('value', None))
+print(type(stockfish.get_best_move()), stockfish.get_best_move())
 
 
