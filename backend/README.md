@@ -25,6 +25,10 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
    ```bash
    python -m venv venv
    ```
+   or
+   ```bash
+   python3 -m venv venv
+   ```
 
    Activate the virtual environment:
    - On **Linux/Mac**:
