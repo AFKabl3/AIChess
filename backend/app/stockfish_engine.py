@@ -3,7 +3,6 @@ from stockfish import Stockfish
 
 
 stockfish_path = get_stockfish_binary_path()
-print(stockfish_path)
 stockfish = Stockfish(path=stockfish_path)
 
 '''

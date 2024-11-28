@@ -1,27 +1,41 @@
 import os
-import platform
 import chess
+from dotenv import load_dotenv
 
-
+'''
+method to retrieve the stockfish path from .env because it load_dotenv doesn't work in a correct way
+'''
 def get_stockfish_binary_path():
-    system = platform.system().lower()
-    architecture = platform.machine().lower()
+    current_file_path = os.path.abspath(__file__)
+    backend_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
+    dotenv_path = os.path.join(backend_path, "env", ".env")
 
-    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stockfish_binaries")
-    if system == 'windows':
-        return os.path.join(base_dir, "windows", "stockfish.exe")
-    elif system == 'linux':
-        if architecture == 'x86_64':
-            return os.path.join(base_dir, "linux", "x86_64", "stockfish-linux-x86-64")
-        elif architecture == 'arm':
-            return os.path.join(base_dir, "linux", "arm", "stockfish-linux-arm")
-    elif system == 'darwin':
-        if architecture == 'x86_64':
-            return os.path.join(base_dir, "mac", "x_86_64", "stockfish-macos-arm")
-        elif architecture == 'arm':
-            return os.path.join(base_dir, "mac", "arm", "stockfish-macos-arm")
-    else:
-        raise OSError(f"Unsupported system: {system}")
+    with open(dotenv_path, 'r') as file:
+        str = file.read().split("\n")
+        for line in str:
+            env_var = line.split("=")
+            if env_var[0] == 'STOCKFISH':
+                return backend_path + env_var[1]
+
+'''
+method to retrieve the huggingface API from .env because it load_dotenv doesn't work in a correct way
+'''
+
+def get_LLM_API():
+    current_file_path = os.path.abspath(__file__)
+    backend_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
+    dotenv_path = os.path.join(backend_path, "env", ".env")
+
+    with open(dotenv_path, 'r') as file:
+        str = file.read().split("\n")
+        for line in str:
+            env_var = line.split("=")
+            if env_var[0] == 'SECRET_KEY':
+                return env_var[1]
+
+
+
+
 
 def is_valid_fen(fen):
     try:
@@ -54,5 +68,4 @@ def is_valid_question(question):
     if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
         return False
     return True
-
 
