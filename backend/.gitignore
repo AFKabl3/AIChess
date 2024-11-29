@@ -3,3 +3,4 @@ __pycache__
 .env
 stockfish_binaries
 env
+.DS_Store
