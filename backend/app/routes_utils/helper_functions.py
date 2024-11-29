@@ -1,7 +1,7 @@
 import os
 from chess import IllegalMoveError, InvalidMoveError, AmbiguousMoveError
 from chess import Board
-import dotenv
+from dotenv import load_dotenv
 
 '''
 method to retrieve the stockfish path from .env because it load_dotenv doesn't work in a correct way
@@ -9,8 +9,8 @@ method to retrieve the stockfish path from .env because it load_dotenv doesn't w
 def get_stockfish_binary_path():
     current_file_path = os.path.abspath(__file__)
     backend_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
-    dotenv_path = os.path.join(backend_path, "env", ".env")
-    stockfish_relative_path = dotenv.get_key(dotenv_path=dotenv_path, key_to_get="STOCKFISH_EXECUTABLE")
+    load_dotenv()
+    stockfish_relative_path = os.getenv("STOCKFISH_EXECUTABLE")
     return backend_path + stockfish_relative_path
 
 
@@ -50,3 +50,4 @@ def get_board(fen):
 def is_valid_question(question):
     return isinstance(question, str)
 
+get_stockfish_binary_path()

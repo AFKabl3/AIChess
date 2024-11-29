@@ -59,8 +59,7 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
 
 5. **Environment Variables**
 
-   Create a folder named `env` in the backend root directory, and inside it, 
-   create a `.env` file to define environment-specific variables:
+   Create a file `.env` in the backend root directory to define environment-specific variables:
    - `LLM_API_KEY` contain the `API KEY` of the LLM
    - `STOCKFISH_EXECUTABLE` contain the relative path from 
       backend in order to reach the `executable`
@@ -90,9 +89,8 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
    Here the final structure of the backend
    ```plain text
    backend/
+   ├── .env
    ├── app/
-   ├── env/
-   │   └── .env
    ├── stockfish_binaries/
    │   └── stockfish_executable
    ```
