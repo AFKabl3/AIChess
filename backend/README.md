@@ -91,7 +91,7 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
    backend/
    ├── .env
    ├── app/
-   ├── stockfish_binaries/
+   ├── stockfish-binaries/
    │   └── stockfish_executable
    ```
 
