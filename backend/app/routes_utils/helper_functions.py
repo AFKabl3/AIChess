@@ -1,6 +1,7 @@
 import os
 from chess import IllegalMoveError, InvalidMoveError, AmbiguousMoveError
 from chess import Board
+import dotenv
 
 '''
 method to retrieve the stockfish path from .env because it load_dotenv doesn't work in a correct way
@@ -9,13 +10,8 @@ def get_stockfish_binary_path():
     current_file_path = os.path.abspath(__file__)
     backend_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
     dotenv_path = os.path.join(backend_path, "env", ".env")
-
-    with open(dotenv_path, 'r') as file:
-        lines = file.read().split("\n")
-        for line in lines:
-            env_var = line.split("=")
-            if env_var[0] == 'STOCKFISH_EXECUTABLE':
-                return backend_path + env_var[1]
+    stockfish_relative_path = dotenv.get_key(dotenv_path=dotenv_path, key_to_get="STOCKFISH_EXECUTABLE")
+    return backend_path + stockfish_relative_path
 
 
 # make the move using the current board state and generate the fen

@@ -19,7 +19,6 @@ def create_main_app():
 
     stockfish_path = utils.get_stockfish_binary_path()
     stockfish = Stockfish(path=stockfish_path)
-    bot = Stockfish(path=stockfish_path)
     coach = MainCoach()
 
 
