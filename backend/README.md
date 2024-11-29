@@ -65,23 +65,16 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
       backend in order to reach the `executable`
 
    Below are examples of a `.env` file for different `OS`:
-   <details>
-   <summary>Example .env for unix OS</summary>
-   
-   ```plain text
-   LLM_API_KEY=your_secret_key_here
-   STOCKFISH_EXECUTABLE=stockfish_binaries/stockfish-executable
-   ```
-   </details>
-
-   <details>
-   <summary>Example .env for windows OS</summary>
-   
-   ```plain text
-   LLM_API_KEY=your_secret_key_here
-   STOCKFISH_EXECUTABLE=stockfish_binaries\stockfish-executable.exe
-   ```
-   </details>
+   - On **Linux/Mac**:
+      ```plain text
+      LLM_API_KEY=your_secret_key_here
+      STOCKFISH_EXECUTABLE=stockfish_binaries/stockfish-executable
+      ```
+   - On **Windows**:
+      ```plain text
+      LLM_API_KEY=your_secret_key_here
+      STOCKFISH_EXECUTABLE=stockfish_binaries\stockfish-executable.exe
+      ```
 
 
 6. **Final backend structure**
