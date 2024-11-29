@@ -206,6 +206,9 @@ def run_tests(test_cases):
             print(f"Request body sent: {body}")
     print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}")
     print(f"Summary: {Fore.GREEN}{passed_tests}{Style.RESET_ALL}/{Fore.YELLOW}{total_tests}{Style.RESET_ALL} tests passed.")
+    if passed_tests != total_tests:
+        raise Exception(f"{total_tests - passed_tests} tests failed.")
+
 
 if __name__ == '__main__':
     init()
