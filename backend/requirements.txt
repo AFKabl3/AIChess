@@ -5,3 +5,5 @@ chess
 python-dotenv
 requests
 huggingface-hub
+colorama
+pyyaml

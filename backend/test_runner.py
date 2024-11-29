@@ -1,6 +1,8 @@
 import requests
 import re
+import yaml
 import json
+from colorama import Fore, Style, init
 
 def parse_test_file(file_path):
     with open(file_path, 'r') as file:
@@ -64,16 +66,16 @@ def parse_test_file(file_path):
         })
     return test_cases
 
-def parse_json_with_types(raw_json):
-    raw_json = re.sub(r",\s*([\]}])", r"\1", raw_json)
-    raw_json = re.sub(r'(?<=:\s)(string|integer|float|boolean|null)(?=[,\s}])', r'"\1"', raw_json)
+def parse_json_with_types(raw_input):
+    raw_input = re.sub(r",\s*([\]}])", r"\1", raw_input)
+    raw_input = re.sub(r'(?<=:\s)(string|integer|float|boolean|null)(?=[,\s}])', r'"\1"', raw_input)
     try:
-        data = json.loads(raw_json)
+        data = yaml.safe_load(raw_input)
         data = mark_placeholders(data)
         return data
-    except json.JSONDecodeError as e:
-        print(f"JSON parsing error: {e}")
-        return raw_json.strip()
+    except yaml.YAMLError as e:
+        print(f"YAML parsing error: {e}")
+        return raw_input.strip()
 
 def mark_placeholders(data):
     if isinstance(data, dict):
@@ -90,21 +92,21 @@ def mark_placeholders(data):
 def compare_responses(actual, expected, path=''):
     if isinstance(expected, dict):
         if not isinstance(actual, dict):
-            print(f"Type mismatch at {path}: expected dict, got {type(actual).__name__}")
+            print(f"{Fore.RED}Type mismatch at {path}: expected dict, got {type(actual).__name__}{Style.RESET_ALL}")
             return False
         for key in expected:
             if key not in actual:
-                print(f"Missing key at {path}: '{key}' not found in actual response")
+                print(f"{Fore.RED}Missing key at {path}: '{key}' not found in actual response{Style.RESET_ALL}")
                 return False
             if not compare_responses(actual[key], expected[key], path=path+'.'+key):
                 return False
         return True
     elif isinstance(expected, list):
         if not isinstance(actual, list):
-            print(f"Type mismatch at {path}: expected list, got {type(actual).__name__}")
+            print(f"{Fore.RED}Type mismatch at {path}: expected list, got {type(actual).__name__}{Style.RESET_ALL}")
             return False
         if len(actual) != len(expected):
-            print(f"Length mismatch at {path}: expected {len(expected)}, got {len(actual)}")
+            print(f"{Fore.RED}Length mismatch at {path}: expected {len(expected)}, got {len(actual)}{Style.RESET_ALL}")
             return False
         for idx, (a_item, e_item) in enumerate(zip(actual, expected)):
             if not compare_responses(a_item, e_item, path=f"{path}[{idx}]"):
@@ -122,16 +124,16 @@ def compare_responses(actual, expected, path=''):
             }
             result = type_checks.get(expected_type, lambda x: False)(actual)
             if not result:
-                print(f"Type mismatch at {path}: expected {expected_type}, got {type(actual).__name__}")
+                print(f"{Fore.RED}Type mismatch at {path}: expected {expected_type}, got {type(actual).__name__}{Style.RESET_ALL}")
             return result
         else:
             if actual != expected:
-                print(f"Value mismatch at {path}: expected '{expected}', got '{actual}'")
+                print(f"{Fore.RED}Value mismatch at {path}: expected '{expected}', got '{actual}'{Style.RESET_ALL}")
                 return False
             return True
     elif isinstance(expected, (int, float)):
         if not isinstance(actual, (int, float)):
-            print(f"Type mismatch at {path}: expected numeric, got {type(actual).__name__}")
+            print(f"{Fore.RED}Type mismatch at {path}: expected numeric, got {type(actual).__name__}{Style.RESET_ALL}")
             return False
         if expected == 0:
             result = actual == 0
@@ -140,25 +142,29 @@ def compare_responses(actual, expected, path=''):
             difference = abs(actual - expected)
             result = difference <= tolerance
             if not result:
-                print(f"Value mismatch at {path}: expected {expected} ± {tolerance}, got {actual} (difference {difference})")
+                print(f"{Fore.RED}Value mismatch at {path}: expected {expected} ± {tolerance}, got {actual} (difference {difference}){Style.RESET_ALL}")
         return result
     else:
         result = actual == expected
         if not result:
-            print(f"Value mismatch at {path}: expected '{expected}', got '{actual}'")
+            print(f"{Fore.RED}Value mismatch at {path}: expected '{expected}', got '{actual}'{Style.RESET_ALL}")
         return result
+
+def normalize_whitespace(s):
+    return ' '.join(s.strip().split())
 
 def run_tests(test_cases):
     total_tests = len(test_cases)
     passed_tests = 0
-    for test in test_cases:
+    for i, test in enumerate(test_cases, start=1):
         description = test['description']
         method = test['method']
         url = test['url']
         headers = test['headers']
         body = test['body']
         expected_response = test['expected_response']
-        print(f"Running test: {description}")
+        print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}")
+        print(f"Test {i}/{total_tests}: {description}")
         print(f"URL: {url}")
         try:
             if method.upper() == 'POST':
@@ -166,7 +172,7 @@ def run_tests(test_cases):
             elif method.upper() == 'GET':
                 response = requests.get(url, headers=headers)
             else:
-                print(f"{description}: UNSUPPORTED METHOD {method}")
+                print(f"{Fore.YELLOW}{description}: UNSUPPORTED METHOD {method}{Style.RESET_ALL}")
                 continue
             if 'application/json' in response.headers.get('Content-Type', ''):
                 actual_response = response.json()
@@ -175,24 +181,34 @@ def run_tests(test_cases):
             if isinstance(expected_response, dict):
                 print("Comparing responses...")
                 if compare_responses(actual_response, expected_response):
-                    print(f"{description}: PASS\n")
+                    print(f"{Fore.GREEN}{description}: PASS{Style.RESET_ALL}")
                     passed_tests += 1
                 else:
-                    print(f"{description}: FAIL")
-                    print(f"Expected: {expected_response}\nGot: {actual_response}\n")
+                    print(f"{Fore.RED}{description}: FAIL{Style.RESET_ALL}")
+                    print(f"Expected: {expected_response}\nGot: {actual_response}")
+                    print(f"Request headers sent: {headers}")
+                    print(f"Request body sent: {body}")
             else:
-                if expected_response == actual_response:
-                    print(f"{description}: PASS\n")
+                expected_normalized = normalize_whitespace(expected_response)
+                actual_normalized = normalize_whitespace(actual_response)
+                if expected_normalized == actual_normalized:
+                    print(f"{Fore.GREEN}{description}: PASS{Style.RESET_ALL}")
                     passed_tests += 1
                 else:
-                    print(f"{description}: FAIL")
-                    print(f"Expected: {expected_response}\nGot: {actual_response}\n")
+                    print(f"{Fore.RED}{description}: FAIL{Style.RESET_ALL}")
+                    print(f"Expected: {expected_response}\nGot: {actual_response}")
+                    print(f"Request headers sent: {headers}")
+                    print(f"Request body sent: {body}")
         except Exception as e:
-            print(f"{description}: ERROR")
-            print(f"Error: {e}\n")
-    print(f"Summary: {passed_tests}/{total_tests} tests passed.")
+            print(f"{Fore.RED}{description}: ERROR{Style.RESET_ALL}")
+            print(f"Error: {e}")
+            print(f"Request headers sent: {headers}")
+            print(f"Request body sent: {body}")
+    print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}")
+    print(f"Summary: {Fore.GREEN}{passed_tests}{Style.RESET_ALL}/{Fore.YELLOW}{total_tests}{Style.RESET_ALL} tests passed.")
 
 if __name__ == '__main__':
+    init()
     test_file = 'api.http'
     test_cases = parse_test_file(test_file)
     run_tests(test_cases)
