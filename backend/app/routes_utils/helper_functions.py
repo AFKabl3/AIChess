@@ -11,7 +11,7 @@ def get_stockfish_binary_path():
     backend_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
     load_dotenv()
     stockfish_relative_path = os.getenv("STOCKFISH_EXECUTABLE")
-    return backend_path + stockfish_relative_path
+    return os.path.join(backend_path, stockfish_relative_path)
 
 
 # make the move using the current board state and generate the fen
@@ -49,5 +49,3 @@ def get_board(fen):
 
 def is_valid_question(question):
     return isinstance(question, str)
-
-get_stockfish_binary_path()

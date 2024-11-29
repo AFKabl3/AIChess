@@ -79,7 +79,7 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
    
    ```plain text
    LLM_API_KEY=your_secret_key_here
-   STOCKFISH_EXECUTABLE=stockfish_binaries/stockfish-executable.exe
+   STOCKFISH_EXECUTABLE=stockfish_binaries\stockfish-executable.exe
    ```
    </details>
 
