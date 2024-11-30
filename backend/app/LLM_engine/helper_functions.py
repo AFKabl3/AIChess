@@ -31,21 +31,15 @@ def get_current_player(fen):
 def  is_valid_input_notation(fen):
     # split the FEN string into parts
     parts = fen.split()
-    
-    # Check if the FEN is valid
-    if len(parts) != 6:
-        # Will make a proper error handling, if needed
-        raise ValueError(f"Invalid FEN format: {fen}. Expected 6 fields, got {len(parts)}.")
-    
+     
     # Check if the en passant field is valid
-    en_passant = parts[3]
-    if en_passant != "-":
+   
+    if parts[3] != "-":
         parts[3] = "-" 
-    
-    return ' '.join(parts)
+    return ' '. join(parts)
+
 def is_valid_question(question):
     if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
         return False
     return True
-
 

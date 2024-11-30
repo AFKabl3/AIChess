@@ -2,7 +2,6 @@ import chess # type: ignore
 import requests
 import random
 from .LLM_engine import helper_functions as utils
-import pdb
 
 class StockfishAPI:
     def __init__(self, depth):
@@ -16,12 +15,13 @@ class StockfishAPI:
         }
 
     def _send_request(self, payload):
-        payload = {**self.parameters, **payload}
-        response = requests.post(self.url, headers=self.headers, json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise Exception(f"Request failed with status code {response.status_code}")
+     payload = {**self.parameters, **payload}
+     response = requests.post(self.url, headers=self.headers, json=payload)
+     if response.status_code == 200:
+        return response.json()
+     else:
+        raise Exception(f"Request failed with status code {response.status_code}")
+
 
     # Method to retrieve the next best move stockfish suggests / would make
     def get_next_best_move(self, fen, depth):
@@ -29,20 +29,12 @@ class StockfishAPI:
         # after call of the method to not mess with further evaluations
         if not utils.is_valid_fen(fen) or not utils.is_valid_depth(depth):
             return "No status available"
-        # self.parameters = {
-        #     "maxThinkingTime": 100,
-        #     "depth": depth
-        # }
         # we define the other parameters:
         # passing fen the frontend sent to us
-        # setting number of variants (responses from stockfish as "best continuations") to 1
-        # variant = random.randint(1,5)
         payload = {
             "fen": fen,
-            "depth": depth
-            # "variants": variant
+            "depth": depth 
         }
-        # pdb.set_trace()
         # retrieve the response and extract the data
         data = self._send_request(payload)
         response = data.get("move", "No status available")
