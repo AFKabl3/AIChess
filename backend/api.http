@@ -1,21 +1,17 @@
-
 POST https://chess-api.com/v1
 Content-Type: application/json
 
 {
-  "fen": "rn1qkb1r/pp2pppp/5n2/2ppN3/6b1/2NP4/PPP1PP1P/R1BQKB1R b KQkq - 1 5",
-  "maxThinkingTime": 100,
-  "depth" : 10
+  "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3"
 }
 
 
 ### Valid Request
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
-
 {
-  "fen": "rn1qkbnr/pp2pp1p/4b1p1/2pNN3/3pP3/3P4/PPP2PBP/R1BQK2R w KQkq - 0 9",
-  "move": "d5f4"
+  "fen": "rnbqkbnr/p1pppppp/8/1p6/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2",
+  "move": "b2b4"
 }
 ### Missing FEN Field
 POST http://127.0.0.1:5000/evaluate_move
@@ -74,7 +70,6 @@ Content-Type: application/json
 ### Invalid FEN String
 POST http://127.0.0.1:5000/suggest_move
 Content-Type: application/json
-
 {
   "fen": "invalid_fen_string"
 }
@@ -248,3 +243,32 @@ Content-Type: text/plain
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
   "depth": "10"
 }}
+
+
+# Test PR #31
+# evaluate_move Payload/Request
+
+{
+fen: "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
+move: "g1f3"
+}
+
+# evaluate_move Response
+{
+    evaluation: 0.26,
+    feedback: " Based on the current state of the board, as requested, the move then...",
+    player_made_move: "w"
+}
+
+#Payload sent to Stockfish
+# Original Payload (this one will give error if sent to the stockfish)
+{fen: "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3", 
+depth: 6}
+
+# New Changed fen Payload, which the Stockfish will accept
+{fen: "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3", 
+depth: 6}
+
+
+# Stockfish Response:
+{bot_move:"e7e6"}

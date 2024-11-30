@@ -4,28 +4,19 @@ from .LLM_engine import helper_functions as check
 import chess
 from .stockfish_api import StockfishAPI  # Import the Stockfish class
 from .LLM_engine.agents.main_coach import MainCoach
-import pdb
-import asyncio
 from flask import request
-import logging as logging
-logging.basicConfig(level=logging.DEBUG)
 import time
+
+
 def create_main_app():
-    
+
     app = Flask(__name__)
-    CORS(app, origins=["http://localhost:5173"])
     CORS(app)
 
     stockfish = StockfishAPI(depth=10)
 
     # chatbox = LLM_engine.ChatBox()
     coach = MainCoach()
-
-    # @app.before_request
-    # def log_request():
-    #     # pdb.set_trace()
-    #     request_data = request.get_json()
-    #     logging.debug(f"Endpoint: {request.endpoint}")
 
     @app.route('/game_status', methods=['POST'])
     def game_status():
@@ -74,7 +65,7 @@ def create_main_app():
         data = request.get_json()
         fen = data.get("fen")
         depth = data.get("depth")
-        logging.debug(f"1. FEN that is sent to BOT : {fen}")
+
         if not fen and not depth:
                 return jsonify({
                     "type": "invalid_request",
@@ -105,7 +96,6 @@ def create_main_app():
             # Now we call "get evaluation" method from Stockfish class
             # and as param we pass the fen
             fen = check.is_valid_input_notation(fen)
-            logging.debug(f"1. FEN after the Validation input: {fen}")
             chess_bot = StockfishAPI(depth=depth)
             bot_move = chess_bot.get_next_best_move(fen, depth)
             if bot_move == "No status available":
@@ -124,96 +114,65 @@ def create_main_app():
         return jsonify({
             "bot_move": bot_move
         })
-    
-
 
     @app.route('/evaluate_move', methods=['POST'])
     def evaluate_move():
-        time.sleep(0.3)
+        time.sleep(0.2)
         data = request.get_json()
         fen = data.get("fen")
-        move = data.get("move") 
-        
-        # Validate FEN and move data
+        move = data.get("move")
+
         if not fen or not move:
             return jsonify({
                 "type": "invalid_request",
                 "message": "Both 'fen' and 'move' fields are required."
             }), 400
-        try:
-            fen = check.is_valid_input_notation(fen)  # Call function to correct invalid input notation 
-        except ValueError as e:
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": f"Invalid FEN format: {str(e)}"
-            }), 422
-
 
         if not check.is_valid_fen(fen):
-                return jsonify({
-                    "type": "invalid_fen_notation",
-                    "message": "Invalid FEN string provided."
-                }),422  # This will create an error if FEN is invalid
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422
 
-            # 
         if not check.is_valid_move(fen, move):
             return jsonify({
                 "type": "invalid_move",
                 "message": "Invalid move string provided."
-            }), 422 # on promotion the error of undefined may be here
-        
+            }), 422
+
         try:
             new_fen = check.move_to_fen(fen, move)
-            logging.debug(f"2. NEW_FEN variable: {new_fen}")
-            new_fen = check.is_valid_input_notation(new_fen)
-        
+            new_fen = check.is_valid_input_notation(fen)
             evaluation = stockfish.get_evaluation(new_fen)
-            logging.debug(f"New FEN: {new_fen}, Evaluation: {evaluation}")
+
             if evaluation == "No score available":
+                logging.error("Evaluation not available for FEN")
                 return jsonify({
                     "type": "evaluation_error",
                     "message": "Could not evaluate the move."
                 }), 500
-        except Exception as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": str(e)
-            }), 500
-        
-        time.sleep(0.3)
 
-        try:
+           
             game_status = 100 - stockfish.get_game_status(new_fen)
             if game_status == "No status available":
+                logging.error("No game status available")
                 return jsonify({
                     "type": "stockfish_error",
                     "message": "No status available."
                 }), 500
+
+            input = (new_fen, move, evaluation)
+            response = coach.ask_move_feedback(input)
+
         except Exception as e:
             return jsonify({
                 "type": "stockfish_error",
                 "message": str(e)
-            }), 500
-
-        input = (
-            new_fen,
-            move,
-            evaluation)
-
-        # Send the prompt to the LLM via ChatBox
-        try:
-            response = coach.ask_move_feedback(input)
-        except Exception as e:
-            return jsonify({
-                "type": "llm_error",
-                "message": f"Failed to get a response from the LLM: {str(e)}"
             }), 500
 
         player_made_move = check.get_current_player(fen)
         current_player = check.get_current_player(new_fen)
 
-        # Response to client
-        time.sleep(0.3)
         return jsonify({
             "player_made_move": player_made_move,
             "evaluation": evaluation,
@@ -221,12 +180,10 @@ def create_main_app():
         }), 200
 
 
-
     @app.route('/suggest_move', methods=['POST'])
     def move_suggestion():
         data = request.get_json()
         fen = data.get("fen")
-
         # Validate FEN
         if not fen:
             return jsonify({
@@ -241,6 +198,7 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
         try:
+            fen = check.is_valid_input_notation(fen)
             move_suggestion = stockfish.get_move_suggestion(fen)
             if move_suggestion == "No suggestion available":
                 return jsonify({
@@ -255,7 +213,6 @@ def create_main_app():
 
         try:
             fen_move_suggestion = check.move_to_fen(fen, move_suggestion)
-            fen_move_suggestion = check.is_valid_input_notation(fen_move_suggestion)
             evaluation = stockfish.get_evaluation(fen_move_suggestion)
             if evaluation == "No score available":
                 return jsonify({
@@ -280,7 +237,6 @@ def create_main_app():
                 "type": "stockfish_error",
                 "message": str(e)
             }), 500
-
         new_fen = check.move_to_fen(fen, move_suggestion)
 
         try:
@@ -312,6 +268,7 @@ def create_main_app():
             "current_player": current_player,
             "suggested_move": move_suggestion,
             "suggestion": response,
+            # "suggested_move": suggested_move
         }), 200
         
     @app.route('/answer_question', methods=['POST'])
@@ -362,7 +319,9 @@ def create_main_app():
 
     @app.errorhandler(500)
     def internal_server_error(error):
-        return jsonify({"type": "internal_server_error", "message": str(error)}), 500
-
+        return jsonify({
+            "type": "internal_server_error",
+            "message": "An unexpected error occurred."
+        }), 500
 
     return app
