@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
+const initialMessages = [{ text: 'Welcome to the game chat!', isUser: false }];
+
 export const useChat = () => {
-  const [messages, setMessages] = useState([{ text: 'Welcome to the game chat!', isUser: false }]);
+  const [messages, setMessages] = useState(initialMessages);
   const [followChat, setFollowChat] = useState(true);
 
   const addResponse = (obj, text) => {
@@ -29,5 +31,6 @@ export const useChat = () => {
     toggleFollowChat: () => setFollowChat(!followChat),
     sendUserChat,
     addBotChat,
+    resetChat: () => setMessages(initialMessages),
   };
 };
