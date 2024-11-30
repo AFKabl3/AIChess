@@ -241,7 +241,8 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
         try:
-            move_suggestion = stockfish.get_move_suggestion(fen)
+            temporary_fen = check.is_valid_input_notation(fen)
+            move_suggestion = stockfish.get_move_suggestion(temporary_fen)
             if move_suggestion == "No suggestion available":
                 return jsonify({
                     "type": "stockfish_error",
