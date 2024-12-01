@@ -134,7 +134,7 @@ export const ChessPage = () => {
           p: 3,
         }}
       >
-        <MoveHistoryTable />
+        <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
         <ChessBoardWrapper
           settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
         />
