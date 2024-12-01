@@ -34,6 +34,6 @@ export const useMoveHistory = () => {
     setIsPaused,
     updateHistory,
     resetHistory,
-    undoLastMove, // Expose the undo function
+    undoLastMove,
   };
 };
