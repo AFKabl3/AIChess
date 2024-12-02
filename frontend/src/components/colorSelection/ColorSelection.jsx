@@ -1,24 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useConfig } from '../../hooks/useConfig';
+import React, { useContext } from 'react';
+import { ChessContext } from '../../pages/ChessPage/ChessContext';
 
-const ColorSelection = ({ startedGame, setStartedGame }) => {
-  const [config, updateConfigValue] = useConfig();
+const ColorSelection = () => {
+  const { config, updateConfigValue } = useContext(ChessContext);
 
   const handleSelection = (color) => {
     updateConfigValue('selectedColor', color);
-    setStartedGame(true);
+    updateConfigValue('startedGame', true);
   };
-
-  // debug
-  useEffect(() => {
-    console.log("ColorSelection config: ", config);
-    console.log("ColorSelection startedGame:", startedGame);  
-  }, [startedGame]);  
-  
 
   return (
     <div>
-      <h3>Select Your Color:</h3>
+      <h1>Select Your Color:</h1>
       <button 
         onClick={() => handleSelection('w')} 
         style={{ backgroundColor: config.selectedColor === 'w' ? 'lightgray' : '' }}

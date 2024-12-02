@@ -4,7 +4,7 @@ import { api } from '../api/api';
 import { getKingPosition } from '../util/chessUtil';
 import { waitForResponseToast } from '../util/toasts';
 
-export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, startedGame, setStartedGame }) => {
+export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -69,11 +69,12 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, star
     } else {
       setOptionSquares({});
     }
-    console.log("turn: ", game.turn());
-    if (startedGame && config.selectedColor !==  game.turn()) {
-      setTimeout(makeBotMove, 500); 
-    }
+    
   }, [game]);
+
+  useEffect(() => {
+    if (config.startedGame && config.selectedColor !==  game.turn()) setTimeout(makeBotMove, 500); 
+  }, [game, config.startedGame]);
 
   /**
    * Safely mutates the current game state by applying a modification function.

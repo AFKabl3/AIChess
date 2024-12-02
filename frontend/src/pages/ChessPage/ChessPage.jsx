@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/api';
 import { useChat } from '../../hooks/useChat';
@@ -17,14 +17,12 @@ import ColorSelection from '../../components/colorSelection/ColorSelection';
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
-  //const [config, updateConfigValue] = useConfig();
-  const [config, setConfigValue] = useConfig();
-  const [startedGame, setStartedGame] = useState(false);
+  const [config, updateConfigValue] = useConfig();
 
   const chat = useChat();
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = chat;
 
-  const moveHistory = useMoveHistory();
+  const moveHistory = useMoveHistory(config);
   const { isPaused, updateHistory } = moveHistory;
 
   const chess = useChess({
@@ -38,8 +36,6 @@ export const ChessPage = () => {
     lock,
     isPaused,
     config,
-    startedGame, 
-    setStartedGame,
   });
 
   const { position, addArrow } = chess;
@@ -79,6 +75,7 @@ export const ChessPage = () => {
 
     setLock(true);
     try {
+      console.log(position);
       const res = await api.getSuggestedMove(position);
       const data = await res.json();
 
@@ -125,63 +122,47 @@ export const ChessPage = () => {
       disabled: true,
     },
   ];
-  /*
-  const startGame = () => {
-    if (config.selectedColor !== 'undefined') {
-      console.log("color ChessPage: ", config.selectedColor);
-    }
-      };
-    */
-
-  useEffect (() => {
-    setConfigValue('startedGame', startedGame);
-    console.log("ChessPage config: ", config);
-    console.log('ChessPage startedGame', startedGame);
-  }, [startedGame, setStartedGame]);
-      
-  
-  
-  if (!startedGame) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-        }}
-      >
-        <h1>Select Your Color</h1>
-        <ColorSelection startedGame={startedGame} setStartedGame={setStartedGame}/>
-      </Box>
-    );
-  }
+   
+  const content = !config.startedGame ? (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+      }}
+    >
+      <ColorSelection/>
+    </Box>
+  ) : (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        height: '90%',
+        width: '100%',
+        gap: 4,
+        p: 3,
+      }}
+    >
+      <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+      <ChessBoardWrapper
+        settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
+      />
+      <Chat
+        followChat={followChat}
+        messages={messages}
+        sendMessage={onQuestionAsked}
+        commands={commands}
+      />
+    </Box>
+  );
 
   return (
-    <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          height: '90%',
-          width: '100%',
-          gap: 4,
-          p: 3,
-        }}
-      >
-        <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
-        <ChessBoardWrapper
-          settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
-        />
-        <Chat
-          followChat={followChat}
-          messages={messages}
-          sendMessage={onQuestionAsked}
-          commands={commands}
-        />
-      </Box>
+    <ChessContext.Provider value={{ chess, moveHistory, config, updateConfigValue, chat }}>
+      {content}
     </ChessContext.Provider>
   );
 };

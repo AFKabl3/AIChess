@@ -13,7 +13,7 @@ const NotationLink = styled('span')({
 });
 
 export const MoveHistoryTable = () => {
-  const { chess, moveHistory } = useContext(ChessContext);
+  const { chess, moveHistory, config } = useContext(ChessContext);
 
   const notationEndRef = useRef(null);
   const { position, loadGame } = chess;
@@ -62,16 +62,16 @@ export const MoveHistoryTable = () => {
         <Stack spacing={1} sx={{ pl: 2, pr: 2 }}>
           {history.map((movePair, index) => (
             <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              {movePair.user && (
-                <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
-                  {`${index + 1}. ${movePair.user.san}`}
-                </NotationLink>
-              )}
-              {movePair.bot && (
-                <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
-                  {movePair.bot.san}
-                </NotationLink>
-              )}
+              <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
+                {config.selectedColor === 'w' ? 
+                (movePair.user ? `${index + 1}. ${movePair.user.san}` : ``) : 
+                (movePair.bot ? `${index + 1}. ${movePair.bot.san}` : ``)}
+              </NotationLink>
+              <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
+                {config.selectedColor === 'w' ? 
+                (movePair.bot ? movePair.bot.san : ``) : 
+                (movePair.user ? movePair.user.san : ``)}
+              </NotationLink>
             </Box>
           ))}
           <div ref={notationEndRef} /> {/* Reference for scrolling */}
