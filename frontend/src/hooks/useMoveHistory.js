@@ -21,11 +21,19 @@ export const useMoveHistory = () => {
     setIsPaused(false);
   };
 
+  const undoLastMove = () => {
+    setMoveHistory((prevHistory) => {
+      if (prevHistory.length < 2) return []; // If less than 2 moves, reset to default
+      return prevHistory.slice(0, -1); // Remove the last two moves
+    });
+  };
+
   return {
     history: moveHistory,
     isPaused,
     setIsPaused,
     updateHistory,
     resetHistory,
+    undoLastMove,
   };
 };
