@@ -1,18 +1,3 @@
-### Valid Request
-POST http://127.0.0.1:5000/evaluate_move
-Content-Type: application/json
-
-{
-  "fen": "rnbqkbnr/p1pppppp/8/1p6/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2",
-  "move": "g8f6"
-}
-
-Response:
-{
-    "evaluation": 2.32,
-    "feedback": string,
-    "player_made_move": "b"
-}
 ### Missing FEN Field
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -384,23 +369,6 @@ Response:
 <p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
 
 
-# evaluate_move Payload/Request
-
-POST http://127.0.0.1:5000/evaluate_move
-Content-Type: application/json
-
-{
-  "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
-  "move": "g1f3"
-}
-
-Response:
-{
-  'evaluation': 1.06,
-  'feedback': " The move g8f6 is not the best move for this position. After this move, white has a significant advantage. I recommend retracting it and considering other options.\n\nThe position features an open e-file, providing white with a potent attack against the black king. To exploit this, a better move for white would be g4. This move prepares to push the g-pawn, further weakening black's kingside and increasing the pressure on f6. Granting white a strong initiative and potential endgame advantage.\n\nAdditionally, white can also consider moves such as Qh5 or Rg1, developing the rook with tempo, also putting further pressure on the f6 pawn and restricting black's knight.\n\nRemember, every move should contribute to a strategic plan or idea. Here, g4 supports the pawn storm on the kingside, a typical strategy in these type of open positions.\n\nKeep refining your understanding of chess concepts and tactics to improve your play. Analyzing games and studying master games are ways to do this.\n\nChess.com is a great resource to analyze your games and receive suggestions from strong players and the Stockfish engine. happy chessing!",
-  'player_made_move': "b"
-}
-
 # "Invalid" Payload sent to Stockfish, the error prior the fix, this is what we sent it, so it gave us the error as response
 
 POST https://chess-api.com/v1
@@ -423,11 +391,11 @@ POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
 
 {
-  "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3",
+  "fen": "r1bqkbnr/pppp1ppp/2n5/4N3/4P3/8/PPPP1PPP/RNBQKB1R b KQkq - 0 1",
   "depth": 6
 }
 
 Response:
 {
-  'bot_move':"d5c4"
+  'bot_move':"string"
 }
