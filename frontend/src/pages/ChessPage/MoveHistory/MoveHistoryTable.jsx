@@ -62,9 +62,11 @@ export const MoveHistoryTable = () => {
         <Stack spacing={1} sx={{ pl: 2, pr: 2 }}>
           {history.map((movePair, index) => (
             <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
-                {`${index + 1}. ${movePair.user.san}`}
-              </NotationLink>
+              {movePair.user && (
+                <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
+                  {`${index + 1}. ${movePair.user.san}`}
+                </NotationLink>
+              )}
               {movePair.bot && (
                 <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
                   {movePair.bot.san}

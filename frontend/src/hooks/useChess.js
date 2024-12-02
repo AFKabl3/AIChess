@@ -4,7 +4,7 @@ import { api } from '../api/api';
 import { getKingPosition } from '../util/chessUtil';
 import { waitForResponseToast } from '../util/toasts';
 
-export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) => {
+export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, startedGame, setStartedGame }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -68,6 +68,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       setOptionSquares({ [kingPos]: { backgroundColor: 'rgba(255, 0, 0, 0.5)' } });
     } else {
       setOptionSquares({});
+    }
+    console.log("turn: ", game.turn());
+    if (startedGame && config.selectedColor !==  game.turn()) {
+      setTimeout(makeBotMove, 500); 
     }
   }, [game]);
 
@@ -253,7 +257,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       resetArrows();
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       setGame(gameCopy);
-      makeBotMove();
+      //makeBotMove();
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
@@ -295,7 +299,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       resetArrows();
 
-      makeBotMove();
+      //makeBotMove();
     }
 
     // Clear selected moves and reset dialog and highlighting states
@@ -382,7 +386,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
     resetArrows();
 
     // If the move is valid, trigger a random computer move after a 200ms delay
-    makeBotMove();
+    //makeBotMove();
     return true;
   };
 

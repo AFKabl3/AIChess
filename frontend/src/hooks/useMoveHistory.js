@@ -10,7 +10,11 @@ export const useMoveHistory = () => {
       if (player === 'user') {
         newHistory.push({ user: { san: move.san, fen }, bot: null });
       } else {
-        newHistory[newHistory.length - 1].bot = { san: move.san, fen };
+        if (newHistory.length === 0 || newHistory[newHistory.length - 1].bot !== null) {
+          newHistory.push({ user: null, bot: { san: move.san, fen } });
+        } else {
+          newHistory[newHistory.length - 1].bot = { san: move.san, fen };
+        }
       }
       return newHistory;
     });

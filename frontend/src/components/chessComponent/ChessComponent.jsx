@@ -2,9 +2,11 @@ import { Box, Typography } from '@mui/material';
 import { useWindowSize } from '@uidotdev/usehooks';
 import PropTypes from 'prop-types';
 import { Chessboard } from 'react-chessboard';
+import { useConfig } from '../../hooks/useConfig';
 
 export const ChessComponent = ({ chess }) => {
   const { height, width } = useWindowSize();
+  const [config, setConfigValue] = useConfig();
 
   const {
     position,
@@ -36,6 +38,8 @@ export const ChessComponent = ({ chess }) => {
         onPromotionPieceSelect={onPromotionPieceSelect}
         promotionToSquare={moveTo}
         showPromotionDialog={showPromotionDialog}
+        boardOrientation={config.selectedColor}                                              // <--
+        //boardOrientation={isWhiteTurn ? 'white' : 'black'}
         customBoardStyle={{
           borderRadius: '10px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',

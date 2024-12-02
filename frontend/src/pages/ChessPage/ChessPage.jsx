@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/api';
 import { useChat } from '../../hooks/useChat';
@@ -12,11 +12,14 @@ import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
 import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
+import ColorSelection from '../../components/colorSelection/ColorSelection';
 
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
+  //const [config, updateConfigValue] = useConfig();
   const [config, setConfigValue] = useConfig();
+  const [startedGame, setStartedGame] = useState(false);
 
   const chat = useChat();
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = chat;
@@ -35,6 +38,8 @@ export const ChessPage = () => {
     lock,
     isPaused,
     config,
+    startedGame, 
+    setStartedGame,
   });
 
   const { position, addArrow } = chess;
@@ -120,6 +125,38 @@ export const ChessPage = () => {
       disabled: true,
     },
   ];
+  /*
+  const startGame = () => {
+    if (config.selectedColor !== 'undefined') {
+      console.log("color ChessPage: ", config.selectedColor);
+    }
+      };
+    */
+
+  useEffect (() => {
+    setConfigValue('startedGame', startedGame);
+    console.log("ChessPage config: ", config);
+    console.log('ChessPage startedGame', startedGame);
+  }, [startedGame, setStartedGame]);
+      
+  
+  
+  if (!startedGame) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+        }}
+      >
+        <h1>Select Your Color</h1>
+        <ColorSelection startedGame={startedGame} setStartedGame={setStartedGame}/>
+      </Box>
+    );
+  }
 
   return (
     <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
