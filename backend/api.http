@@ -1,17 +1,17 @@
-POST https://chess-api.com/v1
-Content-Type: application/json
-
-{
-  "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3"
-}
-
-
 ### Valid Request
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
+
 {
   "fen": "rnbqkbnr/p1pppppp/8/1p6/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2",
-  "move": "b2b4"
+  "move": "g8f6"
+}
+
+Response:
+{
+    "evaluation": 2.32,
+    "feedback": string,
+    "player_made_move": "b"
 }
 ### Missing FEN Field
 POST http://127.0.0.1:5000/evaluate_move
@@ -20,6 +20,13 @@ Content-Type: application/json
 {
   "move": "e7e5"
 }
+
+Response:
+{
+    "message": "Both 'fen' and 'move' fields are required.",
+    "type": "invalid_request"
+}
+
 ### Missing Move Field
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -27,6 +34,14 @@ Content-Type: application/json
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
+
+Response:
+{
+    "message": "Both 'fen' and 'move' fields are required.",
+    "type": "invalid_request"
+}
+
+
 ### Invalid FEN String
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -35,6 +50,13 @@ Content-Type: application/json
   "fen": "invalid_fen_string",
   "move": "e7e5"
 }
+
+Response:
+{
+    "message": "Invalid FEN string provided.",
+    "type": "invalid_fen_notation"
+}
+
 ### Invalid Move Notation
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -44,11 +66,23 @@ Content-Type: application/json
   "move": "Kb4"
 }
 
+Response:
+{
+    "message": "Invalid move string provided.",
+    "type": "invalid_move"
+}
+
 ### Empty Request Body
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {}
+
+Response:
+{
+    "message": "Both 'fen' and 'move' fields are required.",
+    "type": "invalid_request"
+}
 
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/evaluate_move
@@ -59,12 +93,26 @@ Content-Type: text/plain
   "move": "e7e5"
 }
 
-### Valide request
+Response:
+<!doctype html>
+<html lang=en>
+<title>415 Unsupported Media Type</title>
+<h1>Unsupported Media Type</h1>
+<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+
+### Valid request
 POST http://127.0.0.1:5000/suggest_move
 Content-Type: application/json
 
 {
-  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  "fen": "r1bqkbnr/pppp1ppp/2n5/4N3/4P3/8/PPPP1PPP/RNBQKB1R b KQkq - 0 1"
+}
+
+Response:
+{
+    "current_player": "b",
+    "suggested_move": "c6e5",
+    "suggestion": string
 }
 
 ### Invalid FEN String
@@ -74,11 +122,23 @@ Content-Type: application/json
   "fen": "invalid_fen_string"
 }
 
+Response:
+{
+    "message": "Invalid FEN string provided.",
+    "type": "invalid_fen_notation"
+}
+
 ### Empty Request Body
 POST http://127.0.0.1:5000/suggest_move
 Content-Type: application/json
 
 {}
+
+Response:
+{
+    "message": "Both 'fen' and 'move' fields are required.",
+    "type": "invalid_request"
+}
 
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/suggest_move
@@ -88,12 +148,26 @@ Content-Type: text/plain
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
 }
 
-### Valide request
+Response:
+<!doctype html>
+<html lang=en>
+<title>415 Unsupported Media Type</title>
+<h1>Unsupported Media Type</h1>
+<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+
+### Valid request
 POST http://127.0.0.1:5000/game_status
 Content-Type: application/json
 
 {
   "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+Response:
+{
+    "current_player": "w",
+    "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    "game_status": 52.29967635676993
 }
 
 ### Invalid FEN String
@@ -104,11 +178,23 @@ Content-Type: application/json
   "fen": "invalid_fen_string"
 }
 
+Response:
+{
+    "message": "Invalid FEN string provided.",
+    "type": "invalid_fen_notation"
+}
+
 ### Empty Request Body
 POST http://127.0.0.1:5000/game_status
 Content-Type: application/json
 
 {}
+
+Response:
+{
+  'message': "'fen'  field is required.", 
+  'type': 'invalid_request'
+}
 
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/game_status
@@ -117,6 +203,13 @@ Content-Type: text/plain
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
 }
+
+Response:
+<!doctype html>
+<html lang=en>
+<title>415 Unsupported Media Type</title>
+<h1>Unsupported Media Type</h1>
+<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
 
 ### Valid Request
 POST http://127.0.0.1:5000/answer_question
@@ -171,7 +264,7 @@ Content-Type: application/json
 
 Response:
 {
-   "message": "Invalid FEN string provided"
+   "message": "Invalid FEN string provided.",
    "type": "invalid_fen_notation"
 }
 
@@ -181,12 +274,12 @@ Content-Type: application/json
 
 {
   "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
-  "question": "invalid_question_string"
+  "question": 1
 }
 
 Response:
 {
-   "message": "Invalid question string provided" 
+   "message": "Invalid question string provided.",
    "type": "invalid_question"
 }
 
@@ -198,6 +291,12 @@ Content-Type: application/json
   "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
   "depth": 10
 }
+
+Response:
+{
+  'bot_move':'e4f5'
+}
+
 ### Missing FEN Field
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
@@ -205,6 +304,13 @@ Content-Type: application/json
 {
   "depth": 10
 }
+
+Response:
+{
+  'message': 'Invalid FEN string provided.', 
+  'type': 'invalid_fen_notation'
+}
+
 ### Missing Depth Field
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
@@ -212,6 +318,13 @@ Content-Type: application/json
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
+
+Response:
+{
+  'message': 'Invalid depth provided.', 
+  'type': 'invalid_depth'
+}
+
 ### Invalid FEN String
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
@@ -220,6 +333,13 @@ Content-Type: application/json
   "fen": "invalid_fen_string",
   "depth": 10
 }
+
+Response:
+{
+  'message': 'Invalid FEN string provided.', 
+  'type': 'invalid_fen_notation'
+}
+
 ### Invalid Depth Notation
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
@@ -229,11 +349,23 @@ Content-Type: application/json
   "depth": "10"
 }
 
+Response:
+{
+  'message': 'Invalid depth provided.', 
+  'type': 'invalid_depth'
+}
+
 ### Empty Request Body
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
 
 {}
+
+Response:
+{
+  'message': "Both 'fen' and 'depth' fields are required.", 
+  'type': 'invalid_request'
+}
 
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/get_bot_move
@@ -242,33 +374,60 @@ Content-Type: text/plain
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
   "depth": "10"
-}}
+}
+
+Response:
+<!doctype html>
+<html lang=en>
+<title>415 Unsupported Media Type</title>
+<h1>Unsupported Media Type</h1>
+<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
 
 
-# Test PR #31
 # evaluate_move Payload/Request
 
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
 {
-fen: "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
-move: "g1f3"
+  "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
+  "move": "g1f3"
 }
 
-# evaluate_move Response
+Response:
 {
-    evaluation: 0.26,
-    feedback: " Based on the current state of the board, as requested, the move then...",
-    player_made_move: "w"
+  'evaluation': 1.06,
+  'feedback': " The move g8f6 is not the best move for this position. After this move, white has a significant advantage. I recommend retracting it and considering other options.\n\nThe position features an open e-file, providing white with a potent attack against the black king. To exploit this, a better move for white would be g4. This move prepares to push the g-pawn, further weakening black's kingside and increasing the pressure on f6. Granting white a strong initiative and potential endgame advantage.\n\nAdditionally, white can also consider moves such as Qh5 or Rg1, developing the rook with tempo, also putting further pressure on the f6 pawn and restricting black's knight.\n\nRemember, every move should contribute to a strategic plan or idea. Here, g4 supports the pawn storm on the kingside, a typical strategy in these type of open positions.\n\nKeep refining your understanding of chess concepts and tactics to improve your play. Analyzing games and studying master games are ways to do this.\n\nChess.com is a great resource to analyze your games and receive suggestions from strong players and the Stockfish engine. happy chessing!",
+  'player_made_move': "b"
 }
 
-#Payload sent to Stockfish
-# Original Payload (this one will give error if sent to the stockfish)
-{fen: "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3", 
-depth: 6}
+# "Invalid" Payload sent to Stockfish, the error prior the fix, this is what we sent it, so it gave us the error as response
 
-# New Changed fen Payload, which the Stockfish will accept
-{fen: "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3", 
-depth: 6}
+POST https://chess-api.com/v1
+Content-Type: application/json
 
+{
+  "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3"
+}
 
-# Stockfish Response:
-{bot_move:"e7e6"}
+Response:
+{
+  'type': "error",
+  'error': "INVALID_FEN_VALIDATION_ERROR",
+  'text': "Cannot evaluate given position - wrong FEN."
+}
+
+# New Changed fen Payload (this fen is the same as last one, only now Stockfish will accept it)
+
+POST http://127.0.0.1:5000/get_bot_move
+Content-Type: application/json
+
+{
+  "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3",
+  "depth": 6
+}
+
+Response:
+{
+  'bot_move':"d5c4"
+}

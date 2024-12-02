@@ -39,7 +39,9 @@ def  is_valid_input_notation(fen):
     return ' '. join(parts)
 
 def is_valid_question(question):
-    if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
+    if type(question) != str:
+        return False
+    if len(question) > 200:
         return False
     return True
 
