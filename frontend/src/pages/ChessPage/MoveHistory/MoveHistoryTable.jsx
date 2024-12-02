@@ -78,13 +78,27 @@ export const MoveHistoryTable = () => {
         </Stack>
       </Box>
 
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
         <Button
           variant="contained"
           color={isPaused ? 'primary' : 'secondary'}
           onClick={togglePauseResume}
         >
           {isPaused ? 'Resume' : 'Pause'}
+        </Button>
+        <Button
+          variant="contained"
+          color="warning"
+          onClick={() => {
+            moveHistory.undoLastMove();
+            const fen = moveHistory.history.length >= 2
+              ? moveHistory.history[moveHistory.history.length - 2].bot.fen
+              : chess.defaultPosition;
+            chess.loadGame(fen);
+          }}
+          disabled={!moveHistory.history.length}
+        >
+          Undo
         </Button>
       </Box>
     </SideContainer>
