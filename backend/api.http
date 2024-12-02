@@ -103,6 +103,7 @@ Response:
 ### Invalid FEN String
 POST http://127.0.0.1:5000/suggest_move
 Content-Type: application/json
+
 {
   "fen": "invalid_fen_string"
 }
@@ -369,7 +370,7 @@ Response:
 <p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
 
 
-# "Invalid" Payload sent to Stockfish, the error prior the fix, this is what we sent it, so it gave us the error as response
+### "Invalid" Payload sent to Stockfish, the error prior the fix, this is what we sent it, so it gave us the error as response
 
 POST https://chess-api.com/v1
 Content-Type: application/json
@@ -385,7 +386,7 @@ Response:
   'text': "Cannot evaluate given position - wrong FEN."
 }
 
-# New Changed fen Payload (this fen is the same as last one, only now Stockfish will accept it)
+### New Changed fen Payload (this fen is the same as last one, only now Stockfish will accept it)
 
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
