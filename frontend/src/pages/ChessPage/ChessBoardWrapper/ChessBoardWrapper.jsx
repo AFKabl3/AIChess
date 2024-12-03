@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { ChessComponent } from '../../../components/chessComponent/ChessComponent';
 import DialogComponent from '../../../components/dialogComponent/DialogComponent';
 import { InfoBox } from '../../../components/InfoBox/InfoBox';
@@ -8,20 +8,33 @@ import { ResetDialog } from '../../../components/resetDialog/ResetDialog';
 import { useDialog } from '../../../hooks/useDialog';
 import { ChessContext } from '../ChessContext';
 import { ConfigBox } from '../Config/ConfigBox';
+import { NewGameDialog } from '../../../components/newGameDialog/newGameDialog';
 
 export const ChessBoardWrapper = ({ settings }) => {
-  const { chess, moveHistory } = useContext(ChessContext);
+  const { chess, moveHistory, updateConfigValue } = useContext(ChessContext);
 
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
-  const { resetHistory } = moveHistory;
+  const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
 
+  const { resetHistory } = moveHistory;
+  const { resetGame } = chess;
   const handleFenSubmit = (fen) => {
     const { loadGame } = chess;
 
     loadGame(fen);
     resetHistory();
     closeDialog();
+  };
+
+  const handleDialogData = ({ selectedMode, selectedColor, selectedMinutes, selectedSeconds }) => {
+    console.log('mode: ' + selectedMode + ' color: ' + selectedColor);
+    updateConfigValue('selectedColor', selectedColor);
+    updateConfigValue('startedGame', true);
+    resetGame();
+
+    const minutes = parseInt(selectedMinutes, 10);
+    const seconds = parseInt(selectedSeconds, 10);
   };
 
   const { toggleFollowChat, toggleLLMUse } = settings;
@@ -35,7 +48,12 @@ export const ChessBoardWrapper = ({ settings }) => {
       </Box>
       <ChessComponent chess={chess} />
       <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center', gap: 4, pt: 2 }}>
-        <ResetDialog />
+        <ResetDialog onResetComplete={() => setIsNewGameDialogOpen(true)} />
+        <NewGameDialog
+          onConfirm={handleDialogData}
+          open={isNewGameDialogOpen}
+          onClose={() => setIsNewGameDialogOpen(false)}
+        />
         <Button variant="contained" color="secondary" size="large" onClick={openDialog}>
           Upload Chessboard Setup
         </Button>
