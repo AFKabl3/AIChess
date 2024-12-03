@@ -82,7 +82,19 @@ export const MoveHistoryTable = () => {
       <Box sx={{ p: 2, flex: 1, minHeight: 0, overflowY: 'auto', scrollbarGutter: 'stable' }}>
         <Stack spacing={1} sx={{ pl: 2, pr: 2 }}>
           {history.map((movePair, index) => (
-            <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box
+              key={index}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                backgroundColor:
+                  movePair.user?.fen === savedFEN || movePair.bot?.fen === savedFEN
+                    ? 'rgba(0, 255, 0, 0.2)' // Highlight the saved FEN
+                    : 'transparent',
+                borderRadius: '4px',
+                padding: '4px',
+              }}
+            >
               <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
                 {`${index + 1}. ${movePair.user.san}`}
               </NotationLink>
