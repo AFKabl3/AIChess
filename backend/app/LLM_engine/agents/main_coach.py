@@ -35,9 +35,9 @@ class MainCoach(ChatBox):
         Limit the answer to 70 words and suggest to the user the move"""))
         return response
 
-    def ask_chess_question(self, fen, question, evaluation):
+    def ask_chess_question(self, fen, question):
         self.reset_memory()
-        response =  (self.direct_question(f"""The current state of the board is as follows in FEN notation: {fen} \n
-        The evaluation of the state is {evaluation}.\n
-        {question}"""))
+        response =  (self.ask(f"""The current state of the board is as follows in FEN notation: {fen}.\n
+        {question}.
+        Provide an aswer to the user limite it to 70 words."""))
         return response
