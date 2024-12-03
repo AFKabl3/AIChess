@@ -27,11 +27,21 @@ def is_valid_depth(depth):
 def get_current_player(fen):
     return fen.split()[1]
 
+
+def  is_valid_input_notation(fen):
+    # split the FEN string into parts
+    parts = fen.split()
+     
+    # Check if the en passant field is valid
+   
+    if parts[3] != "-":
+        parts[3] = "-" 
+    return ' '. join(parts)
+
 def is_valid_question(question):
     if type(question) != str:
         return False
     if len(question) > 200:
         return False
     return True
-
 
