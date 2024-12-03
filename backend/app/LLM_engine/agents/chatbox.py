@@ -13,7 +13,6 @@ client = InferenceClient(api_key=SECRET_KEY)
 
 class ChatBox:
     def __init__(self):
-        self.conversation_history = []
         self.automatic_conversation = []
         self.direct_conversation_history = []
         self.client = InferenceClient(api_key=SECRET_KEY)
@@ -21,18 +20,18 @@ class ChatBox:
 
     def ask(self,question):
         #Stores a maximum of messages and then cleans the older messages so it doesn't store too much data.
-        if len(self.conversation_history) > self.max_messages:
-            self.conversation_history = (
-                self.conversation_history[:2] + self.conversation_history[6:] 
+        if len(self.automatic_conversation) > self.max_messages:
+            self.automatic_conversation = (
+                self.automatic_conversation[:2] + self.automatic_conversation[6:] 
             )
 
         # Add the new question to the conversation history
-        self.conversation_history.append({"role": "user", "content": question})
+        self.automatic_conversation.append({"role": "user", "content": question})
         
         # Stream the response
         stream = client.chat.completions.create(
             model="mistralai/Mixtral-8x7B-Instruct-v0.1", 
-            messages=self.conversation_history, 
+            messages=self.automatic_conversation, 
             max_tokens=500,
             stream=True
         )
@@ -42,7 +41,7 @@ class ChatBox:
             answer += chunk.choices[0].delta.content
         
         # Add the assistant's response to the conversation history
-        self.conversation_history.append({"role": "assistant", "content": answer})
+        self.automatic_conversation.append({"role": "assistant", "content": answer})
         
         return answer
     
