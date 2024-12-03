@@ -131,7 +131,9 @@ export const MoveHistoryTable = () => {
           variant="contained"
           color={isPaused ? 'secondary' : 'success'}
           onClick={handleSaveOrLoad}
-          disabled={isPaused}
+          disabled={
+            isPaused || position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+          } // Disable for default FEN
           sx={{ flex: 0 }}
         >
           {saveMode ? 'Save' : 'Load'}
