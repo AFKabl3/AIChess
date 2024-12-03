@@ -4,3 +4,4 @@ python-chess
 chess
 python-dotenv
 requests
+huggingface_hub

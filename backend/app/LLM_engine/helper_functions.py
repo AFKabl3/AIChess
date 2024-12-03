@@ -1,4 +1,5 @@
 import chess
+from chess import IllegalMoveError, InvalidMoveError, AmbiguousMoveError
 
 def is_valid_fen(fen):
     try:
@@ -12,6 +13,17 @@ def is_valid_move(fen, move):
         move_to_fen(fen, move)
         return is_valid_fen(fen)
     except ValueError:
+        return False
+    
+def is_valid_move(fen, move):
+    board = chess.Board(fen)
+    try:
+        chess_move = board.parse_san(move) if len(move) <= 3 else board.parse_uci(move)
+        if chess_move in board.legal_moves:
+            return True
+        else:
+            return False
+    except (IllegalMoveError, InvalidMoveError, AmbiguousMoveError):
         return False
 
 # make the move using the current board state and generate the fen
@@ -27,7 +39,18 @@ def is_valid_depth(depth):
 def get_current_player(fen):
     return fen.split()[1]
 
+def  is_valid_input_notation(fen):
+    # split the FEN string into parts
+    parts = fen.split()
+
+    # Check if the en passant field is valid
+    if parts[3] != "-":
+        parts[3] = "-" 
+    return ' '. join(parts)
+
 def is_valid_question(question):
+    if not type(question, str):
+        return False
     if len(question) > 200: #provisional error control, checks the question is not more than 200 characters long
         return False
     return True

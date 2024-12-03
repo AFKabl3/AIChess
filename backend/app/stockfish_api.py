@@ -104,6 +104,8 @@ class StockfishAPI:
             return "No score available"
 
         new_fen = utils.move_to_fen(fen, move)
+        new_fen = utils.is_valid_input_notation(new_fen)
+        
         evaluation_after = self.get_evaluation(new_fen)
         if evaluation_after == "No evaluation available":
             return "No score available"
