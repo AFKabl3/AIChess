@@ -9,6 +9,7 @@ import { useDialog } from '../../../hooks/useDialog';
 import { ChessContext } from '../ChessContext';
 import { ConfigBox } from '../Config/ConfigBox';
 import { NewGameDialog } from '../../../components/newGameDialog/newGameDialog';
+import { Timer } from '../../../components/timer/Timer';
 
 export const ChessBoardWrapper = ({ settings }) => {
   const { chess, moveHistory, updateConfigValue } = useContext(ChessContext);
@@ -16,6 +17,8 @@ export const ChessBoardWrapper = ({ settings }) => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
   const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
+  const [selectedMode, setSelectedMode] = useState();
+  const [selectedMinutes, setSelectedMinutes] = useState();
 
   const { resetHistory } = moveHistory;
   const { resetGame } = chess;
@@ -28,13 +31,13 @@ export const ChessBoardWrapper = ({ settings }) => {
   };
 
   const handleDialogData = ({ selectedMode, selectedColor, selectedMinutes, selectedSeconds }) => {
-    console.log('mode: ' + selectedMode + ' color: ' + selectedColor);
+    
+    setSelectedMode(selectedMode);
+    setSelectedMinutes(selectedMinutes);
     updateConfigValue('selectedColor', selectedColor);
     updateConfigValue('startedGame', true);
     resetGame();
 
-    const minutes = parseInt(selectedMinutes, 10);
-    const seconds = parseInt(selectedSeconds, 10);
   };
 
   const { toggleFollowChat, toggleLLMUse } = settings;
@@ -44,6 +47,18 @@ export const ChessBoardWrapper = ({ settings }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         {/* TODO: Create system for selecting difficulty */}
         <InfoBox title="Bot" subtitle="(205)" image="/bot.png" />
+        {selectedMode === 'timed' && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Timer time={selectedMinutes} color="white" />
+            <Timer time={selectedMinutes} color="black" />
+          </Box>
+        )}
         <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
       </Box>
       <ChessComponent chess={chess} />
