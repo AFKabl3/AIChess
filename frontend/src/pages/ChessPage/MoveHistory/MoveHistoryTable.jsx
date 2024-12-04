@@ -79,7 +79,7 @@ export const MoveHistoryTable = () => {
       <ContainerTitle variant="h6" gutterBottom>
         Move History
       </ContainerTitle>
-      <Box sx={{ p: 2, flex: 1, minHeight: 0, overflowY: 'auto', scrollbarGutter: 'stable' }}>
+      <Box sx={{ p: 1, flex: 1, minHeight: 0, overflowY: 'auto', scrollbarGutter: 'stable' }}>
         <Stack spacing={1} sx={{ pl: 2, pr: 2 }}>
           {history.map((movePair, index) => (
             <Box
@@ -89,7 +89,7 @@ export const MoveHistoryTable = () => {
                 justifyContent: 'space-between',
                 backgroundColor:
                   movePair.user?.fen === savedFEN || movePair.bot?.fen === savedFEN
-                    ? 'rgba(0, 255, 0, 0.2)' // Highlight the saved FEN
+                    ? 'rgba(0, 255, 0, 0.2)'
                     : 'transparent',
                 borderRadius: '4px',
                 padding: '4px',
@@ -111,7 +111,7 @@ export const MoveHistoryTable = () => {
 
       <Box
         sx={{
-          p: 2,
+          p: 1,
           display: 'flex',
           justifyContent: 'space-between',
           gap: 1,
@@ -120,31 +120,12 @@ export const MoveHistoryTable = () => {
       >
         <Button
           variant="contained"
-          color={isPaused ? 'secondary' : 'info'}
-          onClick={handleResetSave}
-          disabled={!savedFEN || isPaused}
-          sx={{ flex: 0 }}
-        >
-          Reset Save
-        </Button>
-        <Button
-          variant="contained"
-          color={isPaused ? 'secondary' : 'success'}
-          onClick={handleSaveOrLoad}
-          disabled={
-            isPaused || position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-          } // Disable for default FEN
-          sx={{ flex: 0 }}
-        >
-          {saveMode ? 'Save' : 'Load'}
-        </Button>
-      </Box>
-
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          variant="contained"
           color={isPaused ? 'primary' : 'secondary'}
           onClick={togglePauseResume}
+          sx={{
+            flex: 1,
+            backgroundColor: isPaused ? 'primary.main' : 'secondary.main',
+          }}
         >
           {isPaused ? 'Resume' : 'Pause'}
         </Button>
@@ -158,8 +139,48 @@ export const MoveHistoryTable = () => {
             loadGame(fen);
           }}
           disabled={!history.length || savedFEN === position || isPaused}
+          sx={{
+            flex: 1,
+            backgroundColor: 'warning.main',
+          }}
         >
           Undo
+        </Button>
+      </Box>
+
+      <Box
+        sx={{
+          p: 1,
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 1,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleResetSave}
+          disabled={!savedFEN || isPaused}
+          sx={{
+            flex: 1,
+            backgroundColor: 'error.main',
+          }}
+        >
+          Clear
+        </Button>
+        <Button
+          variant="contained"
+          color={isPaused ? 'secondary' : 'success'}
+          onClick={handleSaveOrLoad}
+          disabled={
+            isPaused || position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+          }
+          sx={{
+            flex: 1,
+            backgroundColor: isPaused ? 'secondary.main' : 'success.main',
+          }}
+        >
+          {saveMode ? 'Save' : 'Load'}
         </Button>
       </Box>
     </SideContainer>
