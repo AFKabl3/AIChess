@@ -9,11 +9,10 @@ import { Fragment, useContext } from 'react';
 import { useDialog } from '../../hooks/useDialog';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
 
-export const ResetDialog = () => {
+export const ResetDialog = ({ onResetComplete }) => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
-  const { chess, moveHistory, chat } = useContext(ChessContext);
-  const { resetGame } = chess;
+  const { moveHistory, chat } = useContext(ChessContext);
   const { resetHistory } = moveHistory;
   const { resetChat } = chat;
 
@@ -25,9 +24,12 @@ export const ResetDialog = () => {
     if (formJson['chat-reset'] === 'on') {
       resetChat();
     }
-    resetGame();
+
     resetHistory();
     closeDialog();
+    if (onResetComplete) {
+      onResetComplete();
+    }
   };
 
   return (

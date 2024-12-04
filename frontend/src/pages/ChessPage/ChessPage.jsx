@@ -12,8 +12,6 @@ import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
 import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
-import ColorSelection from '../../components/colorSelection/ColorSelection';
-import FullControl from '../../components/fullControl/FullControl';
 
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
@@ -124,23 +122,8 @@ export const ChessPage = () => {
       disabled: true,
     },
   ];
-   
-  const content = !config.startedGame ? (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-      }}
-    >
-      <Box>
-        <ColorSelection/>
-        <FullControl/>
-      </Box>
-    </Box>
-  ) : (
+
+  const content = (
     <Box
       sx={{
         display: 'flex',
@@ -153,9 +136,7 @@ export const ChessPage = () => {
       }}
     >
       <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
-      <ChessBoardWrapper
-        settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
-      />
+      <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
       <Chat
         followChat={followChat}
         messages={messages}
@@ -164,7 +145,6 @@ export const ChessPage = () => {
       />
     </Box>
   );
-
   return (
     <ChessContext.Provider value={{ chess, moveHistory, config, updateConfigValue, chat }}>
       {content}
