@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { storage } from '../storage';
 
 // Default configuration
-const defaultConfig = {
+export const defaultConfig = {
   depth: 2, // Default depth for the chess bot
   selectedColor: 'w', // Default color used by the user
   startedGame: false,
