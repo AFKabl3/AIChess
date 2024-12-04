@@ -16,12 +16,12 @@ import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
-  const [config, setConfigValue] = useConfig();
+  const [config, updateConfigValue] = useConfig();
 
   const chat = useChat();
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = chat;
 
-  const moveHistory = useMoveHistory();
+  const moveHistory = useMoveHistory(config);
   const { isPaused, updateHistory } = moveHistory;
 
   const chess = useChess({
@@ -35,6 +35,7 @@ export const ChessPage = () => {
     lock,
     isPaused,
     config,
+    updateConfigValue,
   });
 
   const { position, addArrow } = chess;
@@ -74,6 +75,7 @@ export const ChessPage = () => {
 
     setLock(true);
     try {
+      console.log(position);
       const res = await api.getSuggestedMove(position);
       const data = await res.json();
 
@@ -121,30 +123,31 @@ export const ChessPage = () => {
     },
   ];
 
+  const content = (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        height: '90%',
+        width: '100%',
+        gap: 4,
+        p: 3,
+      }}
+    >
+      <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+      <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
+      <Chat
+        followChat={followChat}
+        messages={messages}
+        sendMessage={onQuestionAsked}
+        commands={commands}
+      />
+    </Box>
+  );
   return (
-    <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          height: '90%',
-          width: '100%',
-          gap: 4,
-          p: 3,
-        }}
-      >
-        <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
-        <ChessBoardWrapper
-          settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
-        />
-        <Chat
-          followChat={followChat}
-          messages={messages}
-          sendMessage={onQuestionAsked}
-          commands={commands}
-        />
-      </Box>
+    <ChessContext.Provider value={{ chess, moveHistory, config, updateConfigValue, chat }}>
+      {content}
     </ChessContext.Provider>
   );
 };

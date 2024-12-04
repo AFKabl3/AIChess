@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { ChessComponent } from '../../../components/chessComponent/ChessComponent';
 import DialogComponent from '../../../components/dialogComponent/DialogComponent';
 import { InfoBox } from '../../../components/InfoBox/InfoBox';
@@ -8,20 +8,36 @@ import { ResetDialog } from '../../../components/resetDialog/ResetDialog';
 import { useDialog } from '../../../hooks/useDialog';
 import { ChessContext } from '../ChessContext';
 import { ConfigBox } from '../Config/ConfigBox';
+import { NewGameDialog } from '../../../components/newGameDialog/newGameDialog';
+import { Timer } from '../../../components/timer/Timer';
 
 export const ChessBoardWrapper = ({ settings }) => {
-  const { chess, moveHistory } = useContext(ChessContext);
+  const { chess, moveHistory, updateConfigValue } = useContext(ChessContext);
 
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
-  const { resetHistory } = moveHistory;
+  const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
+  const [selectedMode, setSelectedMode] = useState();
+  const [selectedMinutes, setSelectedMinutes] = useState();
 
+  const { resetHistory } = moveHistory;
+  const { resetGame } = chess;
   const handleFenSubmit = (fen) => {
     const { loadGame } = chess;
 
     loadGame(fen);
     resetHistory();
     closeDialog();
+  };
+
+  const handleDialogData = ({ selectedMode, selectedColor, selectedMinutes, selectedSeconds }) => {
+    
+    setSelectedMode(selectedMode);
+    setSelectedMinutes(selectedMinutes);
+    updateConfigValue('selectedColor', selectedColor);
+    updateConfigValue('startedGame', true);
+    resetGame();
+
   };
 
   const { toggleFollowChat, toggleLLMUse } = settings;
@@ -31,11 +47,28 @@ export const ChessBoardWrapper = ({ settings }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         {/* TODO: Create system for selecting difficulty */}
         <InfoBox title="Bot" subtitle="(205)" image="/bot.png" />
+        {selectedMode === 'timed' && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Timer time={selectedMinutes} color="white" />
+            <Timer time={selectedMinutes} color="black" />
+          </Box>
+        )}
         <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
       </Box>
       <ChessComponent chess={chess} />
       <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center', gap: 4, pt: 2 }}>
-        <ResetDialog />
+        <ResetDialog onResetComplete={() => setIsNewGameDialogOpen(true)} />
+        <NewGameDialog
+          onConfirm={handleDialogData}
+          open={isNewGameDialogOpen}
+          onClose={() => setIsNewGameDialogOpen(false)}
+        />
         <Button variant="contained" color="secondary" size="large" onClick={openDialog}>
           Upload Chessboard Setup
         </Button>

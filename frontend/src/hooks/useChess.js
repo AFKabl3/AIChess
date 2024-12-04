@@ -4,7 +4,7 @@ import { api } from '../api/api';
 import { getKingPosition } from '../util/chessUtil';
 import { waitForResponseToast } from '../util/toasts';
 
-export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) => {
+export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, updateConfigValue }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -70,6 +70,14 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       setOptionSquares({});
     }
   }, [game]);
+
+  useEffect(() => {
+    updateConfigValue('turn', game.turn());
+  }, [game.turn()]);
+
+  useEffect(() => {
+    if (!config.fullControlMode && config.startedGame && config.selectedColor !==  game.turn()) setTimeout(makeBotMove, 300); 
+  }, [game, config.startedGame]);
 
   /**
    * Safely mutates the current game state by applying a modification function.
@@ -253,7 +261,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
       resetArrows();
       if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       setGame(gameCopy);
-      makeBotMove();
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
@@ -288,14 +295,12 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
         return game.move({
           from: fromSquare,
           to: toSquare,
-          promotion: piece[1].toLowerCase() ?? 'q',
+          promotion: piece[1]?.toLowerCase() || 'q', // Default to Queen
         });
       });
 
-      if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+      if (config.fullControlMode || onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       resetArrows();
-
-      makeBotMove();
     }
 
     // Clear selected moves and reset dialog and highlighting states
@@ -381,8 +386,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
     resetArrows();
 
-    // If the move is valid, trigger a random computer move after a 200ms delay
-    makeBotMove();
     return true;
   };
 
