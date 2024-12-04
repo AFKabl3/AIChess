@@ -30,8 +30,8 @@ def is_valid_move(fen, move):
     except (IllegalMoveError, InvalidMoveError, AmbiguousMoveError):
         return False
 
-def is_valid_num(depth):
-    return isinstance(depth, int) and depth >= 0
+def is_valid_num(num):
+    return isinstance(num, int) and num in range(0,21)  #max level skill 20
 
 def get_current_player(fen):
     return fen.split()[1]

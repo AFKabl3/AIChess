@@ -49,13 +49,15 @@ def create_main_app():
             }), 422
 
         try:
-            stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             evaluation_fen_before = stockfish.get_evaluation().get('value', None)
 
             after_move_fen = utils.move_to_fen(fen, move)
             stockfish.set_fen_position(after_move_fen)
             evaluation_fen_after = stockfish.get_evaluation().get('value', None)
+
+            #reset stockfish_parameters
+            stockfish.reset_engine_parameters()
 
             if evaluation_fen_before  is None or evaluation_fen_after is None:
                 raise StockfishException("no evaluation for the current fen")
@@ -84,14 +86,14 @@ def create_main_app():
         }), 200
 
     @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
-    def move_suggestion():
+    def get_move_suggestion_with_evaluation():
         data = request.get_json()
         fen = data.get("fen")
 
         if not fen:
             return jsonify({
                 "type": "invalid_request",
-                "message": "Both 'fen' and 'move' fields are required."
+                "message": "'fen' fields is required."
             }), 400
 
         if not stockfish.is_fen_valid(fen):
@@ -101,7 +103,6 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
         try:
-            stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             evaluation_fen_before = stockfish.get_evaluation().get('value', None)
 
@@ -109,6 +110,9 @@ def create_main_app():
             suggested_move_fen = utils.move_to_fen(fen, suggested_move)
             stockfish.set_fen_position(suggested_move_fen)
             evaluation_fen_after = stockfish.get_evaluation().get('value', None)
+
+            #reset stockfish_parameters
+            stockfish.reset_engine_parameters()
 
             if evaluation_fen_before  is None or evaluation_fen_after is None:
                 raise StockfishException("no evaluation for the current fen")
@@ -203,7 +207,7 @@ def create_main_app():
         if not fen and not skill_level:
             return jsonify({
                 "type": "invalid_request",
-                "message": "Both 'fen' and 'depth' fields are required."
+                "message": "Both 'fen' and 'skill_level' fields are required."
             }), 400
 
         if not stockfish.is_valid_fen(fen):
@@ -214,14 +218,17 @@ def create_main_app():
 
         if not utils.is_valid_num(skill_level):
             return jsonify({
-                "type": "invalid_depth",
-                "message": "Invalid depth provided."
+                "type": "invalid_skill_level",
+                "message": "Invalid skill level provided."
             }), 422
 
         try:
             stockfish.set_fen_position(fen)
             stockfish.set_skill_level(skill_level)
             bot_move = stockfish.get_best_move()
+            
+            #reset stockfish_parameters
+            stockfish.reset_engine_parameters()
 
         except StockfishException as e:
             return jsonify({
@@ -242,7 +249,7 @@ def create_main_app():
         if not fen:
             return jsonify({
                 "type": "invalid_request",
-                "message": "Both 'fen' and 'depth' fields are required."
+                "message": "'fen' field is required."
             }), 400
 
         if not stockfish.is_valid_fen(fen):
@@ -255,6 +262,9 @@ def create_main_app():
             stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             suggested_move = stockfish.get_best_move()
+
+            #reset stockfish_parameters
+            stockfish.reset_engine_parameters()
 
         except StockfishException as e:
             return jsonify({
