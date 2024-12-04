@@ -19,6 +19,7 @@ export const ChessBoardWrapper = ({ settings }) => {
   const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
   const [selectedMode, setSelectedMode] = useState();
   const [selectedMinutes, setSelectedMinutes] = useState();
+  const [selectedColor, setSelectedColor] = useState();
 
   const { resetHistory } = moveHistory;
   const { resetGame } = chess;
@@ -31,13 +32,22 @@ export const ChessBoardWrapper = ({ settings }) => {
   };
 
   const handleDialogData = ({ selectedMode, selectedColor, selectedMinutes, selectedSeconds }) => {
-    
     setSelectedMode(selectedMode);
+    setSelectedColor(selectedColor);
     setSelectedMinutes(selectedMinutes);
-    updateConfigValue('selectedColor', selectedColor);
-    updateConfigValue('startedGame', true);
-    resetGame();
 
+    if (selectedMode === 'full-control') {
+      updateConfigValue('fullControlMode', true);
+      updateConfigValue('startedGame', true);
+      updateConfigValue('selectedColor', 'w');
+    } else if (selectedMode === 'versus-bot') {
+      updateConfigValue('selectedColor', selectedColor);
+      updateConfigValue('startedGame', true);
+    } else {
+      updateConfigValue('selectedColor', selectedColor);
+      updateConfigValue('startedGame', true);
+    }
+    resetGame();
   };
 
   const { toggleFollowChat, toggleLLMUse } = settings;

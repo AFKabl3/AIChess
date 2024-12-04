@@ -15,14 +15,26 @@ import {
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export const NewGameDialog = ({ onConfirm, open, onClose }) => {
-
   const [currentStep, setCurrentStep] = useState(1); // State for the current step the dialog is displaying
   const [previousStep, setPreviousStep] = useState(null);
   const [selectedMode, setSelectedMode] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const [selectedMinutes, setSelectedMinutes] = useState(60); 
-  const [selectedSeconds, setSelectedSeconds] = useState(0); 
+  const [selectedMinutes, setSelectedMinutes] = useState(60);
+  const [selectedSeconds, setSelectedSeconds] = useState(0);
 
+  const resetDialogValues = () => {
+    setCurrentStep(1);
+    setSelectedMode('');
+    setSelectedColor('');
+    setSelectedMinutes(60);
+    setSelectedSeconds(0);
+  };
+
+  useEffect(() => {
+    if (open) {
+      resetDialogValues();
+    }
+  }, [open]);
 
   // Handle navigation between steps
   const handleNext = () => {
@@ -30,23 +42,10 @@ export const NewGameDialog = ({ onConfirm, open, onClose }) => {
   };
 
   const handleBack = () => {
-    if (currentStep === 3 && selectedMode === 'full-control') {
+    if (currentStep === 3 && selectedMode === 'versus-bot') {
       setCurrentStep(previousStep); // Skip the time selection (go to mode selection)
     } else {
       setCurrentStep((prev) => prev - 1);
-    }
-  };
-
-  const handleSelectMode = (mode) => {
-    setSelectedMode(mode);
-    if (mode === 'versus-bot') {
-      setPreviousStep(1);
-      setCurrentStep(3); // Skip to color selection
-    } else if (mode === 'full-control') {
-      setPreviousStep(1);
-      setCurrentStep(3);
-    } else if (mode === 'timed') {
-      setCurrentStep(2); // Go to time selection
     }
   };
 
@@ -59,7 +58,26 @@ export const NewGameDialog = ({ onConfirm, open, onClose }) => {
     };
     onConfirm(dialogData);
     onClose();
-    setCurrentStep(1);
+  };
+
+  const handleSelectMode = (mode) => {
+    setSelectedMode(mode);
+
+    if (mode === 'full-control') {
+      const dialogData = {
+        selectedMode: mode,
+        selectedColor, 
+        selectedMinutes,
+        selectedSeconds,
+      };
+      onConfirm(dialogData);
+      onClose();
+    } else if (mode === 'versus-bot') {
+      setPreviousStep(1);
+      setCurrentStep(3);
+    } else if (mode === 'timed') {
+      setCurrentStep(2); // Go to time selection
+    }
   };
 
   // Content for each step of the dialog
