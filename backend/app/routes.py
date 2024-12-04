@@ -169,9 +169,10 @@ def create_main_app():
             }), 422 # This will create an error if question is invalid
 
         try:
-            stockfish.reset_engine_parameters()
             stockfish.set_fen_position(fen)
             evaluation_fen = stockfish.get_evaluation().get('value', None)
+
+            stockfish.reset_engine_parameters()
             if evaluation_fen is None:
                 raise StockfishException("no evaluation for the current fen")
 
@@ -199,22 +200,21 @@ def create_main_app():
 
     @app.route('/get_bot_move', methods=['POST'])
     def get_bot_move():
-
         data = request.get_json()
         fen = data.get("fen")
         skill_level = data.get("skill_level")
 
-        if not fen and not skill_level:
+        if not fen or not skill_level:
             return jsonify({
                 "type": "invalid_request",
                 "message": "Both 'fen' and 'skill_level' fields are required."
             }), 400
 
-        if not stockfish.is_valid_fen(fen):
+        if not stockfish.is_fen_valid(fen):
             return jsonify({
                 "type": "invalid_fen_notation",
                 "message": "Invalid FEN string provided."
-            }), 422  # This will create an error if FEN is invalid
+            }), 422
 
         if not utils.is_valid_num(skill_level):
             return jsonify({
@@ -224,10 +224,10 @@ def create_main_app():
 
         try:
             stockfish.set_fen_position(fen)
-            stockfish.set_skill_level(skill_level)
+            stockfish.set_skill_level(int(skill_level))  # Ensure it's an integer
             bot_move = stockfish.get_best_move()
-            
-            #reset stockfish_parameters
+
+            # Reset stockfish parameters
             stockfish.reset_engine_parameters()
 
         except StockfishException as e:
@@ -237,8 +237,9 @@ def create_main_app():
             }), 500
 
         return jsonify({
-            "bot_move": bot_move
-        }), 200
+                "bot_move": bot_move
+            }), 200
+
 
     @app.route('/get_best_move', methods=['POST'])
     def get_best_move():
@@ -252,7 +253,7 @@ def create_main_app():
                 "message": "'fen' field is required."
             }), 400
 
-        if not stockfish.is_valid_fen(fen):
+        if not stockfish.is_fen_valid(fen):
             return jsonify({
                 "type": "invalid_fen_notation",
                 "message": "Invalid FEN string provided."
