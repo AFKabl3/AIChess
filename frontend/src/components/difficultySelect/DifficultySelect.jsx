@@ -26,13 +26,13 @@ const depthToElo = {
 };
 
 export const DifficultySelect = () => {
-  const { config, setConfigValue } = useContext(ChessContext);
+  const { config, updateConfigValue } = useContext(ChessContext);
   const [difficulty, setDifficulty] = useState(config.depth);
 
   const handleChange = (event) => {
     const newDifficulty = parseInt(event.target.value, 10);
     setDifficulty(newDifficulty);
-    setConfigValue('depth', newDifficulty);
+    updateConfigValue('depth', newDifficulty);
   };
 
   return (

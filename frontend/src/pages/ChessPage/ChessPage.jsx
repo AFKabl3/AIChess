@@ -13,6 +13,7 @@ import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
 import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
 import ColorSelection from '../../components/colorSelection/ColorSelection';
+import FullControl from '../../components/fullControl/FullControl';
 
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
@@ -36,6 +37,7 @@ export const ChessPage = () => {
     lock,
     isPaused,
     config,
+    updateConfigValue,
   });
 
   const { position, addArrow } = chess;
@@ -133,7 +135,10 @@ export const ChessPage = () => {
         height: '100%',
       }}
     >
-      <ColorSelection/>
+      <Box>
+        <ColorSelection/>
+        <FullControl/>
+      </Box>
     </Box>
   ) : (
     <Box

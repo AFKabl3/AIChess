@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
 
 const ColorSelection = () => {

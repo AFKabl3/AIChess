@@ -6,6 +6,8 @@ const defaultConfig = {
   depth: 2, // Default depth for the chess bot
   selectedColor: 'w', // Default color used by the user
   startedGame: false,
+  fullControlMode: false,
+  turn: 'w',
 };
 
 export const useConfig = () => {

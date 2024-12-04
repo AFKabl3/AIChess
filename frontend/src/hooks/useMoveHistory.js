@@ -7,18 +7,22 @@ export const useMoveHistory = ( config ) => {
   const updateHistory = (move, fen, player) => {
     setMoveHistory((prevHistory) => {
       const newHistory = [...prevHistory];
+
+      if (config.fullControlMode) {
+        config.turn === 'w' ? player = 'user' : player = 'bot';
+      }
+      
       if (config.selectedColor === 'w') {
         if (player === 'user') {
           newHistory.push({ user: { san: move.san, fen }, bot: null });
         } else {
             newHistory[newHistory.length - 1].bot = { san: move.san, fen };
         }
-      }
-      else {
+      } else {
         if (player === 'bot') {
           newHistory.push({ user: null, bot: { san: move.san, fen } });
         } else {
-            newHistory[newHistory.length - 1].user = { san: move.san, fen };
+          newHistory[newHistory.length - 1].user = { san: move.san, fen };
         }
       }
       return newHistory;

@@ -3,12 +3,21 @@ import { useWindowSize } from '@uidotdev/usehooks';
 import PropTypes from 'prop-types';
 import { Chessboard } from 'react-chessboard';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 export const ChessComponent = ({ chess }) => {
   const { height, width } = useWindowSize();
   const { config } = useContext(ChessContext);
-  
+
+  const [boardOrientation, setBoardOrientation] = useState(config.selectedColor === 'w' ? 'white' : 'black');
+
+  useEffect(() => {
+    const newOrientation = config.fullControlMode 
+      ? (config.turn === 'w' ? 'white' : 'black') 
+      : (config.selectedColor === 'w' ? 'white' : 'black');
+    setBoardOrientation(newOrientation);
+  }, [config.turn]);
+
   const {
     position,
     onDrop,
@@ -33,16 +42,16 @@ export const ChessComponent = ({ chess }) => {
         onPieceDrop={onDrop}
         onPieceDragBegin={onPieceDragBegin}
         onPieceDragEnd={onPieceDragEnd}
-        animationDuration={200}
         onSquareClick={onSquareClick}
         onSquareRightClick={onSquareRightClick}
         onPromotionPieceSelect={onPromotionPieceSelect}
         promotionToSquare={moveTo}
         showPromotionDialog={showPromotionDialog}
-        boardOrientation={config.selectedColor === 'w' ? 'white' : 'black'}                                             
+        boardOrientation={boardOrientation}                                             
         customBoardStyle={{
           borderRadius: '10px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+          
         }}
         customSquareStyles={{
           ...optionSquares,
