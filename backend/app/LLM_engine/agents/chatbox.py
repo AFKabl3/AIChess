@@ -42,6 +42,26 @@ class ChatBox:
         self.conversation_history.append({"role": "assistant", "content": answer})
         
         return answer
+    
+    def ask_no_history(self,question):
+        provisional_history = self.conversation_history[:2]
+        
+        #New question in provisional history with two initial messages
+        provisional_history.append({"role": "user", "content": question})
+        
+        # Stream the response
+        stream = client.chat.completions.create(
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1", 
+            messages=provisional_history, 
+            max_tokens=500,
+            stream=True
+        )
+        answer = ""
+        for chunk in stream:
+            answer += chunk.choices[0].delta.content
+            
+        return answer
+        
 
     def reset_memory(self):
         self.conversation_history = []
