@@ -266,7 +266,6 @@ def create_main_app():
             "suggested_move": suggested_move
         }), 200
 
-
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({

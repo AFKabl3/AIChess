@@ -3,9 +3,7 @@ from chess import IllegalMoveError, InvalidMoveError, AmbiguousMoveError
 from chess import Board
 from dotenv import load_dotenv
 
-'''
-method to retrieve the stockfish path from .env because it load_dotenv doesn't work in a correct way
-'''
+
 def get_stockfish_binary_path():
     current_file_path = os.path.abspath(__file__)
     backend_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
