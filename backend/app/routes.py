@@ -281,14 +281,14 @@ def create_main_app():
     def not_found(error):
         return jsonify({
             "type": "not_found",
-            "message": "The requested resource was not found."
+            "message": f"The requested resource was not found: : {str(error)}"
         }), 404
 
     @app.errorhandler(500)
     def internal_server_error(error):
         return jsonify({
             "type": "internal_server_error",
-            "message": "An unexpected error occurred."
+            "message": f"An unexpected error occurred: : {str(error)} "
         }), 500
 
     return app

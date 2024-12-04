@@ -215,7 +215,7 @@ POST /suggest_move
 POST /get_bot_move
 {
   "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
-  "skill_level": 1900
+  "skill_level": 19
 }
 ```
 
