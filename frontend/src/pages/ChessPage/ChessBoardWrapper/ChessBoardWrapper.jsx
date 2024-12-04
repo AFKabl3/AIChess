@@ -35,6 +35,7 @@ export const ChessBoardWrapper = ({ settings }) => {
     setSelectedMode(selectedMode);
     setSelectedColor(selectedColor);
     setSelectedMinutes(selectedMinutes);
+    resetGame();
 
     if (selectedMode === 'full-control') {
       updateConfigValue('fullControlMode', true);
@@ -46,8 +47,12 @@ export const ChessBoardWrapper = ({ settings }) => {
     } else {
       updateConfigValue('selectedColor', selectedColor);
       updateConfigValue('startedGame', true);
+      const minutes = parseInt(selectedMinutes, 10);
+      const seconds = parseInt(selectedSeconds, 10);
+      if (selectedMode === 'timed') {
+        chess.initializeTimers(minutes, seconds);
+      }
     }
-    resetGame();
   };
 
   const { toggleFollowChat, toggleLLMUse } = settings;
@@ -65,8 +70,8 @@ export const ChessBoardWrapper = ({ settings }) => {
               alignItems: 'center',
             }}
           >
-            <Timer time={selectedMinutes} color="white" />
-            <Timer time={selectedMinutes} color="black" />
+            <Timer time={chess.whiteTime} isActive={chess.activePlayer === 'w'} color="white" />
+            <Timer time={chess.blackTime} isActive={chess.activePlayer === 'b'} color="black" />
           </Box>
         )}
         <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />

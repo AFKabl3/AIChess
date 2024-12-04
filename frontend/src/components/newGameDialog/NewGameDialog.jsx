@@ -19,14 +19,14 @@ export const NewGameDialog = ({ onConfirm, open, onClose }) => {
   const [previousStep, setPreviousStep] = useState(null);
   const [selectedMode, setSelectedMode] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const [selectedMinutes, setSelectedMinutes] = useState(60);
+  const [selectedMinutes, setSelectedMinutes] = useState(1);
   const [selectedSeconds, setSelectedSeconds] = useState(0);
 
   const resetDialogValues = () => {
     setCurrentStep(1);
     setSelectedMode('');
     setSelectedColor('');
-    setSelectedMinutes(60);
+    setSelectedMinutes(1);
     setSelectedSeconds(0);
   };
 
@@ -148,11 +148,11 @@ export const NewGameDialog = ({ onConfirm, open, onClose }) => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Typography>Select Time Per Move:</Typography>
             <Select value={selectedMinutes} onChange={(e) => setSelectedMinutes(e.target.value)}>
-              <MenuItem value={60}>1 Minute</MenuItem>
-              <MenuItem value={120}>2 Minutes</MenuItem>
-              <MenuItem value={180}>3 Minutes</MenuItem>
-              <MenuItem value={300}>5 Minutes</MenuItem>
-              <MenuItem value={600}>10 Minutes</MenuItem>
+              <MenuItem value={1}>1 Minute</MenuItem>
+              <MenuItem value={2}>2 Minutes</MenuItem>
+              <MenuItem value={3}>3 Minutes</MenuItem>
+              <MenuItem value={5}>5 Minutes</MenuItem>
+              <MenuItem value={10}>10 Minutes</MenuItem>
             </Select>
             <Typography>Select Increment Per Move:</Typography>
             <Select value={selectedSeconds} onChange={(e) => setSelectedSeconds(e.target.value)}>

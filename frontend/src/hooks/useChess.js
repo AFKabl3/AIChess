@@ -4,7 +4,14 @@ import { api } from '../api/api';
 import { getKingPosition } from '../util/chessUtil';
 import { waitForResponseToast } from '../util/toasts';
 
-export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, updateConfigValue }) => {
+export const useChess = ({
+  onPlayerMove,
+  onBotMove,
+  lock,
+  isPaused,
+  config,
+  updateConfigValue,
+}) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -31,6 +38,86 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, upda
 
   // State to track custom arrows, are on the form [[from, to], [from, to], ...]
   const [arrows, setArrows] = useState([]);
+
+  const [whiteTime, setWhiteTime] = useState(); // Default 5 minutes
+  const [blackTime, setBlackTime] = useState();
+  const [increment, setIncrement] = useState(); // Default increment
+  const [activePlayer, setActivePlayer] = useState('w'); // 'w' for white, 'b' for black
+  const [timerInterval, setTimerInterval] = useState(null); // To track the timer
+  const [timers, setTimers] = useState({ white: 0, black: 0 });
+
+  // Start the timer for the active player
+  const startTimer = () => {
+    if (timerInterval) clearInterval(timerInterval); // Clear any existing interval
+
+    const interval = setInterval(() => {
+      setActivePlayer((currentPlayer) => {
+        if (currentPlayer === 'w') {
+          setWhiteTime((time) => {
+            if (time <= 0) {
+              clearInterval(interval);
+              showStatusMessage("White's time is up! Black wins!");
+              setIsGameOver(true);
+              stopTimer();
+              return 0;
+            }
+            return time - 1;
+          });
+        } else {
+          setBlackTime((time) => {
+            if (time <= 0) {
+              clearInterval(interval);
+              showStatusMessage("Black's time is up! White wins!");
+              setIsGameOver(true);
+              stopTimer();
+              return 0;
+            }
+            return time - 1;
+          });
+        }
+        return currentPlayer;
+      });
+    }, 1000); // Decrement every second
+
+    setTimerInterval(interval);
+  };
+
+  // Stop the timer
+  const stopTimer = () => {
+    if (timerInterval) clearInterval(timerInterval);
+  };
+
+  // Switch the active player and restart their timer
+  const switchPlayer = () => {
+    setActivePlayer((prev) => {
+      const nextPlayer = prev === 'w' ? 'b' : 'w';
+
+      // Add increment to the current player
+      if (prev === 'w') {
+        setWhiteTime((time) => time + increment);
+      } else {
+        setBlackTime((time) => time + increment);
+      }
+
+      return nextPlayer;
+    });
+
+    startTimer(); // Restart the timer for the next player
+  };
+
+  // Initialize timers for a new game
+  const initializeTimers = (minutes, seconds) => {
+    const totalSeconds = minutes * 60;
+    setWhiteTime(totalSeconds);
+    setBlackTime(totalSeconds);
+    setIncrement(seconds);
+    setActivePlayer('w'); // White starts
+    stopTimer();
+    startTimer();
+    setTimers({ white: totalSeconds, black: totalSeconds });
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const resetGame = () => {
     safeGameMutate((game) => {
@@ -61,6 +148,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, upda
         : 'Draw!';
       showStatusMessage(winner);
       setIsGameOver(true);
+      stopTimer();
       console.log(winner);
     } else if (game.in_check()) {
       const kingPos = getKingPosition(game);
@@ -76,7 +164,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, upda
   }, [game.turn()]);
 
   useEffect(() => {
-    if (!config.fullControlMode && config.startedGame && config.selectedColor !==  game.turn()) setTimeout(makeBotMove, 300); 
+    if (!config.fullControlMode && config.startedGame && config.selectedColor !== game.turn())
+      setTimeout(makeBotMove, 300);
   }, [game, config.startedGame]);
 
   /**
@@ -165,6 +254,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, upda
           return game.move(move, { sloppy: true });
         });
         if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Debugging Logs
+        stopTimer();
+        switchPlayer();
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else {
         setTimeout(makeRandomMove, 150);
       }
@@ -385,7 +479,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, upda
 
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
     resetArrows();
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    switchPlayer();
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return true;
   };
 
@@ -413,5 +509,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, upda
     arrows,
     addArrow,
     resetArrows,
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    initializeTimers,
+    whiteTime,
+    blackTime,
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   };
 };
