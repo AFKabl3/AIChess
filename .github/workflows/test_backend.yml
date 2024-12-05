@@ -46,7 +46,7 @@ jobs:
         run: |
           cd backend
           export FLASK_APP=run:app
-          flak run
+          flask run
 
       - name: Wait for Flask to be ready
         run: |
