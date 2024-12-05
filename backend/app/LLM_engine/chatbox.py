@@ -9,6 +9,8 @@ LLM_API_KEY = get_llm_api()
 class ChatBox:
     def __init__(self):
         self.automatic_conversation = []
+        self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        # self.model = "Qwen/QwQ-32B-Preview"
         self.direct_conversation_history = []
         self.client = InferenceClient(api_key=LLM_API_KEY)
         self.max_messages = 10
@@ -25,7 +27,7 @@ class ChatBox:
         
         # Stream the response
         stream = self.client.chat.completions.create(
-            model="mistralai/Mixtral-8x7B-Instruct-v0.1", 
+            model= self.model,
             messages=self.automatic_conversation,
             max_tokens=500,
             stream=True
@@ -52,11 +54,13 @@ class ChatBox:
 
         # Stream the response
         stream = self.client.chat.completions.create(
-            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            model= self.model,
             messages=self.direct_conversation_history,
             max_tokens=500,
             stream=True
         )
+
+
 
         answer = ""
         for chunk in stream:

@@ -34,20 +34,20 @@ class MainCoach(ChatBox):
         response = (self.ask(f"""The current state of the board is as follows in FEN : \n  {fen} \n
         The move made is {move}. 
         Having the delta of the two evaluations, before and after the move: {move_evaluation}, 
-        provide feedback on this move removing all the stockfish references."""))
+        provide feedback on this move removing all the stockfish references\n. Limit the response to 70 words\n"""))
         return response
 
     def ask_move_suggestion(self, suggestion):
         self.automatic_coach_creation()
         fen, move_suggestion, move_evaluation = suggestion
         response = (self.ask(f"""The current state of the board is as follows in FEN notation: {fen} \n
-        Suggest this move{move_suggestion},  having the delta of the two evaluations, before and after the move: {move_evaluation}.\n"""))
+        Suggest this move{move_suggestion},  having the delta of the two evaluations, before and after the move: {move_evaluation}.\nLimit the response to 70 words\n"""))
         return response
 
     def ask_chess_question(self, fen, question, evaluation):
         response =  (self.direct_question(f"""The current state of the board is as follows in FEN notation: {fen} \n
         The evaluation of the state is {evaluation}.\n
-        {question}"""))
+        {question}\n Limit the response to 70 words\n"""))
         return response
 
     

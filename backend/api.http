@@ -3,14 +3,14 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {
-  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-  "move": "e2e4"
+    "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    "move": "e2e4"
 }
 
 Response:
 {
-    "feedback": string,
-    "player_made_move": "w"
+      "feedback": string,
+      "player_made_move": "w"
 }
 
 
@@ -19,15 +19,8 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {
-  "move": "e7e5"
+    "move": "e7e5"
 }
-
-Response:
-{
-    "message": "Both 'fen' and 'move' fields are required.",
-    "type": "invalid_request"
-}
-
 
 Response:
 {
@@ -40,21 +33,13 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {
-  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
+    "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
-    "type": "invalid_request"
-}
-
-
-
-Response:
-{
-    "message": "Both 'fen' and 'move' fields are required.",
-    "type": "invalid_request"
+      "message": "Both 'fen' and 'move' fields are required.",
+      "type": "invalid_request"
 }
 
 
@@ -66,13 +51,6 @@ Content-Type: application/json
   "fen": "invalid_fen_string",
   "move": "e7e5"
 }
-
-Response:
-{
-    "message": "Invalid FEN string provided.",
-    "type": "invalid_fen_notation"
-}
-
 
 Response:
 {
@@ -100,12 +78,6 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {}
-
-Response:
-{
-    "message": "Both 'fen' and 'move' fields are required.",
-    "type": "invalid_request"
-}
 
 Response:
 {
@@ -142,14 +114,6 @@ Response:
     "current_player": "b",
     "suggested_move": "c6e5",
     "suggestion": string
-  "fen": "r1bqkbnr/pppp1ppp/2n5/4N3/4P3/8/PPPP1PPP/RNBQKB1R b KQkq - 0 1"
-}
-
-Response:
-{
-    "current_player": "b",
-    "suggested_move": "c6e5",
-    "suggestion": string
 }
 
 ### Invalid FEN String
@@ -158,12 +122,6 @@ Content-Type: application/json
 
 {
   "fen": "invalid_fen_string"
-}
-
-Response:
-{
-    "message": "Invalid FEN string provided.",
-    "type": "invalid_fen_notation"
 }
 
 Response:
@@ -243,6 +201,18 @@ Response:
     "type": "invalid_request"
 }
 
+### Empty Request Body
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{}
+
+Response:
+{
+    "message": "Both 'fen' and 'question' fields are required.",
+    "type": "invalid_request"
+}
+
 ### Invalid FEN string
 POST http://127.0.0.1:5000/answer_question
 Content-Type: application/json
@@ -255,7 +225,6 @@ Content-Type: application/json
 Response:
 {
    "message": "Invalid FEN string provided.",
-   "message": "Invalid FEN string provided.",
    "type": "invalid_fen_notation"
 }
 
@@ -266,12 +235,10 @@ Content-Type: application/json
 {
   "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
   "question": 1
-  "question": 1
 }
 
 Response:
 {
-   "message": "Invalid question string provided.",
    "message": "Invalid question string provided.",
    "type": "invalid_question"
 }
@@ -303,7 +270,7 @@ Content-Type: application/json
 
 Response:
 {
-  'bot_move':'e4f5'
+  "bot_move": "e4f5"
 }
 
 ### Missing FEN Field
@@ -316,8 +283,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': "Both 'fen' and 'skill_level' fields are required.",
-  'type': 'invalid_request
+  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "type": "invalid_request"
 }
 
 ### Missing Skill Level Field
@@ -330,8 +297,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': "Both 'fen' and 'skill_level' fields are required.",
-  'type': 'invalid_request
+  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "type": "invalid_request"
 }
 
 ### Invalid FEN String
@@ -345,8 +312,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': 'Invalid FEN string provided.', 
-  'type': 'invalid_fen_notation'
+  "message": "Invalid FEN string provided.",
+  "type": "invalid_fen_notation"
 }
 
 ### Invalid skill level Notation
@@ -360,8 +327,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': 'Invalid skill level provided.', 
-  'type': 'invalid_skill_level'
+  "message": "Invalid skill level provided.",
+  "type": "invalid_skill_level"
 }
 
 ### Invalid skill level Notation
@@ -375,8 +342,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': 'Invalid skill level provided.',
-  'type': 'invalid_skill_level'
+  "message": "Invalid skill level provided.",
+  "type": "invalid_skill_level"
 }
 
 ### Empty Request Body
@@ -387,8 +354,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': "Both 'fen' and 'skill level' fields are required."
-  'type': 'invalid_request'
+    "message": "Both 'fen' and 'skill_level' fields are required.",
+    "type": "invalid_request"
 }
 
 ### Non-JSON Content Type
@@ -418,7 +385,7 @@ Content-Type: application/json
 
 Response:
 {
-  'suggested_move':'e2e4'
+  "suggested_move": "e2e4"
 }
 
 
@@ -430,8 +397,8 @@ Content-Type: application/json
 
 Response:
  {
-  'message': "'fen' field is required.",
-  'type': 'invalid_request'
+  "message": "'fen' field is required.",
+  "type": "invalid_request"
 }
 
 
@@ -445,8 +412,8 @@ Content-Type: application/json
 
 Response:
 {
-  'message': 'Invalid FEN string provided.', 
-  'type': 'invalid_fen_notation'
+  "message": "Invalid FEN string provided.",
+  "type": "invalid_fen_notation"
 }
 
 
