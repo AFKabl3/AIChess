@@ -7,9 +7,9 @@ on:
     paths:
       - "backend/**"
 
-env:
-  LLM_API_KEY: ${{ secrets.SECRET_KEY }}
-  STOCKFISH_EXECUTABLE: stockfish/stockfish-executable
+# env:
+#   LLM_API_KEY: ${{ secrets.SECRET_KEY }}
+#   STOCKFISH_EXECUTABLE: stockfish_binaries/stockfish-ubuntu-x86-64-avx2
   
 
 jobs:
@@ -37,14 +37,13 @@ jobs:
           mkdir stockfish_binaries
           curl -L -o stockfish_binaries/stockfish.tar.gz https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-ubuntu-x86-64-avx2.tar
           tar -xf stockfish_binaries/stockfish.tar.gz --strip-components=1 -C stockfish_binaries
-          mv stockfish_binaries/stockfish-ubuntu-x86-64-avx2 stockfish_binaries/stockfish-executable
-          chmod +x stockfish_binaries/stockfish-executable
+          chmod +x stockfish_binaries/stockfish-ubuntu-x86-64-avx2
 
       - name: Create .env file
         run: |
           cat <<EOF > backend/.env
             LLM_API_KEY: ${{ secrets.SECRET_KEY }}
-            STOCKFISH_EXECUTABLE: stockfish/stockfish-executable
+            STOCKFISH_EXECUTABLE: stockfish_binaries/stockfish-ubuntu-x86-64-avx2
           EOF
 
  
