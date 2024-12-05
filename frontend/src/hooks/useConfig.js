@@ -3,7 +3,7 @@ import { storage } from '../storage';
 
 // Default configuration
 const defaultConfig = {
-  depth: 2, // Default depth for the chess bot
+  SKILL_LEVEL: 2, // Default skill level for the chess bot
 };
 
 export const useConfig = () => {
