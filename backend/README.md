@@ -45,6 +45,7 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
    Once the virtual environment is active, install the required dependencies using `pip`:
    ```bash
    pip install update
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 

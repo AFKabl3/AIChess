@@ -63,5 +63,5 @@ jobs:
 
       - name: Run tests
         run: |
-          cd backend
+          cd backend/test
           python test_runner.py

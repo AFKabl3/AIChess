@@ -2,24 +2,28 @@
 from flask import jsonify, Flask
 from flask_cors import CORS
 from flask import request
-#route_utils module
-from . routes_utils import helper_functions as utils
-#stockfish modules
-from stockfish import Stockfish
-from stockfish import StockfishException
-#Assistant module
-from .LLM_engine.main_coach import MainCoach
 
+#stockfish modules
+from .Stockfish_engine import StockfishEngine
+from .Stockfish_engine import utils as stockfish_utils
+from .Stockfish_engine import StockfishException
+
+#Assistant module
+from .LLM_engine import MainCoach
+from .LLM_engine import utils as llm_utils
 
 def create_main_app():
 
     app = Flask(__name__)
     CORS(app)
 
+    #stockfish instance creation
+    stockfish_path = stockfish_utils.get_stockfish_binary_path()
+    stockfish = StockfishEngine(path=stockfish_path)
 
-    stockfish_path = utils.get_stockfish_binary_path()
-    stockfish = Stockfish(path=stockfish_path)
-    coach = MainCoach()
+    #main coach instance creation
+    api_key = llm_utils.get_llm_api()
+    coach = MainCoach(api_key=api_key)
 
 
     @app.route('/evaluate_move', methods=['POST'])
@@ -42,31 +46,34 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
 
-        if not utils.is_valid_move(fen, move):
+        if not stockfish.is_move_valid(fen, move):
             return jsonify({
                 "type": "invalid_move",
                 "message": "Invalid/illegal string move provided."
             }), 422
 
         try:
-            stockfish.set_fen_position(fen)
-            evaluation_fen_before = stockfish.get_evaluation().get('value', None)
-
-            after_move_fen = utils.move_to_fen(fen, move)
-            stockfish.set_fen_position(after_move_fen)
-            evaluation_fen_after = stockfish.get_evaluation().get('value', None)
+            # evaluation of the move made by the user
+            delta_evaluation = stockfish.get_move_evaluation(fen, move)
 
             #reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
-            if evaluation_fen_before  is None or evaluation_fen_after is None:
+            if delta_evaluation is None:
                 raise StockfishException("no evaluation for the current fen")
 
-            delta_evaluation = utils.delta_evaluation(fen, evaluation_fen_before, evaluation_fen_after)
-            board_str = utils.get_board(after_move_fen)
-            input = (board_str, move, delta_evaluation)
             try:
-                response = coach.ask_move_feedback(input)
+                fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
+                board_str = stockfish_utils.get_string_board(fen_after_move)
+                # input = (board_str, move, delta_evaluation)
+
+                ask_input = {
+                    "board": board_str,
+                    "move": move,
+                    "delta_evaluation": delta_evaluation
+                }
+
+                response = coach.ask_move_feedback(ask_input)
             except Exception as e:
                 return jsonify({
                     "type": "llm_error",
@@ -79,7 +86,7 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-        player_made_move = utils.get_current_player(fen)
+        player_made_move = stockfish_utils.get_current_player(fen)
         return jsonify({
             "player_made_move": player_made_move,
             "feedback": response,
@@ -103,26 +110,29 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
         try:
-            stockfish.set_fen_position(fen)
-            evaluation_fen_before = stockfish.get_evaluation().get('value', None)
+            # obtain from stockfish the best move
+            suggested_move = stockfish.get_move(fen)
 
-            suggested_move = stockfish.get_best_move()
-            suggested_move_fen = utils.move_to_fen(fen, suggested_move)
-            stockfish.set_fen_position(suggested_move_fen)
-            evaluation_fen_after = stockfish.get_evaluation().get('value', None)
+            # calculate the evaluation of the move
+            delta_evaluation = stockfish.get_move_evaluation(fen, suggested_move)
 
             #reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
-            if evaluation_fen_before  is None or evaluation_fen_after is None:
+            if delta_evaluation  is None:
                 raise StockfishException("no evaluation for the current fen")
 
-            delta_evaluation = utils.delta_evaluation(fen, evaluation_fen_before, evaluation_fen_after)
-            board_str = utils.get_board(fen)
-            input = (board_str, suggested_move, delta_evaluation)
-
             try:
-                response = coach.ask_move_suggestion(input)
+                board_str = stockfish_utils.get_string_board(fen)
+                # input = (board_str, suggested_move, delta_evaluation)
+
+                ask_input = {
+                    "board": board_str,
+                    "move": suggested_move,
+                    "delta_evaluation": delta_evaluation
+                }
+
+                response = coach.ask_move_suggestion(ask_input)
 
             except Exception as e:
                 return jsonify({
@@ -136,7 +146,7 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-        current_player = utils.get_current_player(fen)
+        current_player = stockfish_utils.get_current_player(fen)
         return jsonify({
             "current_player": current_player,
             "suggested_move": suggested_move,
@@ -162,7 +172,7 @@ def create_main_app():
                 "message": "Invalid FEN string provided."
             }), 422  # This will create an error if FEN is invalid
 
-        if not utils.is_valid_question(question):
+        if not llm_utils.is_question_valid(question):
             return jsonify({
                 "type": "invalid_question",
                 "message": "Invalid question string provided."
@@ -170,16 +180,25 @@ def create_main_app():
 
         try:
             stockfish.set_fen_position(fen)
-            evaluation_fen = stockfish.get_evaluation().get('value', None)
+            evaluation = stockfish.get_evaluation().get('value', None)
 
+            # reset stockfish parameters
             stockfish.reset_engine_parameters()
-            if evaluation_fen is None:
+
+            if evaluation is None:
                 raise StockfishException("no evaluation for the current fen")
 
             try:
+                board_str = stockfish_utils.get_string_board(fen)
+
+                ask_input = {
+                    "board": board_str,
+                    "question": question,
+                    "evaluation": evaluation
+                }
+
                 # ask question to the LLM
-                board_str = utils.get_board(fen)
-                answer = coach.ask_chess_question(board_str, question, evaluation_fen)
+                answer = coach.ask_chess_question(ask_input)
 
             except Exception as e:
                 return jsonify({
@@ -197,6 +216,7 @@ def create_main_app():
         return jsonify({
             "answer": answer
         }), 200
+
 
     @app.route('/get_bot_move', methods=['POST'])
     def get_bot_move():
@@ -216,16 +236,16 @@ def create_main_app():
                 "message": "Invalid FEN string provided."
             }), 422
 
-        if not utils.is_valid_num(skill_level):
+        if not stockfish_utils.is_skill_level_valid(skill_level):
             return jsonify({
                 "type": "invalid_skill_level",
                 "message": "Invalid skill level provided."
             }), 422
 
         try:
-            stockfish.set_fen_position(fen)
+            # obtain from stockfish the bot move modifying the stockfish skill level
             stockfish.set_skill_level(int(skill_level))  # Ensure it's an integer
-            bot_move = stockfish.get_best_move()
+            bot_move = stockfish.get_move(fen)
 
             # Reset stockfish parameters
             stockfish.reset_engine_parameters()
@@ -260,9 +280,8 @@ def create_main_app():
             }), 422  # This will create an error if FEN is invalid
 
         try:
-            stockfish.reset_engine_parameters()
-            stockfish.set_fen_position(fen)
-            suggested_move = stockfish.get_best_move()
+            # obtain from stockfish the best move
+            suggested_move = stockfish.get_move(fen)
 
             #reset stockfish_parameters
             stockfish.reset_engine_parameters()

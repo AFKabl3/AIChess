@@ -1,11 +1,9 @@
-from http.client import responses
-
-from .chatbox import ChatBox
+from .llm import LLM
 
 
-class MainCoach(ChatBox):
-    def __init__(self):
-        super().__init__()
+class MainCoach(LLM):
+    def __init__(self, api_key):
+        super().__init__(api_key)
         self.automatic_coach_creation()
         self.direct_coach_creation()
 
@@ -28,24 +26,31 @@ class MainCoach(ChatBox):
         self.direct_conversation_history.append(
             {"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 
-    def ask_move_feedback(self,evaluation):
+    def ask_move_feedback(self,input):
         self.automatic_coach_creation()
-        fen, move, move_evaluation = evaluation
-        response = (self.ask(f"""The current state of the board is as follows in FEN : \n  {fen} \n
+        board = input.get("board")
+        move = input.get("move")
+        evaluation = input.get("delta_evaluation")
+        response = (self.ask(f"""The current state of the board is: \n  {board} \n
         The move made is {move}. 
-        Having the delta of the two evaluations, before and after the move: {move_evaluation}, 
+        Having the delta of the two evaluations, before and after the move: {evaluation}, 
         provide feedback on this move removing all the stockfish references\n. Limit the response to 70 words\n"""))
         return response
 
-    def ask_move_suggestion(self, suggestion):
+    def ask_move_suggestion(self, input):
         self.automatic_coach_creation()
-        fen, move_suggestion, move_evaluation = suggestion
-        response = (self.ask(f"""The current state of the board is as follows in FEN notation: {fen} \n
-        Suggest this move{move_suggestion},  having the delta of the two evaluations, before and after the move: {move_evaluation}.\nLimit the response to 70 words\n"""))
+        board = input.get("board")
+        move = input.get("move")
+        evaluation = input.get("delta_evaluation")
+        response = (self.ask(f"""The current state of the board is: {board} \n
+        Suggest this move{move},  having the delta of the two evaluations, before and after the move: {evaluation}.\nLimit the response to 70 words\n"""))
         return response
 
-    def ask_chess_question(self, fen, question, evaluation):
-        response =  (self.direct_question(f"""The current state of the board is as follows in FEN notation: {fen} \n
+    def ask_chess_question(self, ask_input):
+        board = ask_input.get("board")
+        evaluation = ask_input.get("evaluation")
+        question = ask_input.get("question")
+        response =  (self.direct_question(f"""The current state of the board is: {board} \n
         The evaluation of the state is {evaluation}.\n
         {question}\n Limit the response to 70 words\n"""))
         return response

@@ -1,7 +1,6 @@
-import requests
 import re
 import yaml
-import json
+import requests
 from colorama import Fore, Style, init
 
 def parse_test_file(file_path):
@@ -212,6 +211,6 @@ def run_tests(test_cases):
 
 if __name__ == '__main__':
     init()
-    test_file = 'api.http'
+    test_file = 'requests_&_responses.http'
     test_cases = parse_test_file(test_file)
     run_tests(test_cases)

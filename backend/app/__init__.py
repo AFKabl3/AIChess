@@ -1,4 +1,2 @@
-from .routes import create_main_app
+from .routes import create_main_app as app
 
-def create_app():
-    return create_main_app()
