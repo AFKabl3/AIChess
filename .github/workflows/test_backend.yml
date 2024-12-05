@@ -51,7 +51,7 @@ jobs:
         run: |
           cd backend
           export FLASK_APP=run:app
-          nohup python run.py &
+          nohup flask run &
 
       - name: Wait for Flask to be ready
         run: |
