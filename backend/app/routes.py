@@ -24,11 +24,11 @@ def create_main_app():
 
     @app.route('/evaluate_move', methods=['POST'])
     def evaluate_move():
+        time.sleep(0.2)
         data = request.get_json()
         fen = data.get("fen")
         move = data.get("move")
 
-        # Validate FEN and move data
         if not fen or not move:
             return jsonify({
                 "type": "invalid_request",
