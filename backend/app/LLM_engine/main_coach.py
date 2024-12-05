@@ -13,7 +13,7 @@ class MainCoach(LLM):
                 For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
                 Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
                 the move you suggested, move sequences, or any general advice they may seek."""
-        self.automatic_conversation.append({"role": "user", "content": self.prompt})
+        # self.automatic_conversation.append({"role": "user", "content": self.prompt})
         self.automatic_conversation.append({"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 
     def direct_coach_creation(self):
@@ -22,7 +22,7 @@ class MainCoach(LLM):
                 For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
                 Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
                 the move you suggested, move sequences, or any general advice they may seek."""
-        self.direct_conversation_history.append({"role": "user", "content": self.prompt})
+        # self.direct_conversation_history.append({"role": "user", "content": self.prompt})
         self.direct_conversation_history.append(
             {"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 
@@ -32,9 +32,9 @@ class MainCoach(LLM):
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
         response = (self.ask(f"""The current state of the board is: \n  {board} \n
-        The move made is {move}. 
-        Having the delta of the two evaluations, before and after the move: {evaluation}, 
-        provide feedback on this move removing all the stockfish references\n. Limit the response to 70 words\n"""))
+        The move made is {move},\n
+        having the delta of the two evaluations, before and after the move: {evaluation}.
+        In your response only provide a feedback on this move using the info above and limit the response to 70 words\n"""))
         return response
 
     def ask_move_suggestion(self, input):
@@ -43,7 +43,9 @@ class MainCoach(LLM):
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
         response = (self.ask(f"""The current state of the board is: {board} \n
-        Suggest this move{move},  having the delta of the two evaluations, before and after the move: {evaluation}.\nLimit the response to 70 words\n"""))
+        The move:{move},\n
+        Having the delta of the two evaluations, before and after the move: {evaluation}.\n
+        In your response only suggest this move to the user using the info above and limit the response to 70 words\n"""))
         return response
 
     def ask_chess_question(self, ask_input):
@@ -52,7 +54,8 @@ class MainCoach(LLM):
         question = ask_input.get("question")
         response =  (self.direct_question(f"""The current state of the board is: {board} \n
         The evaluation of the state is {evaluation}.\n
-        {question}\n Limit the response to 70 words\n"""))
+        {question}\n 
+        Limit the response to 70 words\n"""))
         return response
 
     
