@@ -39,12 +39,14 @@ jobs:
           tar -xf stockfish_binaries/stockfish.tar.gz --strip-components=1 -C stockfish_binaries
           mv stockfish_binaries/stockfish-ubuntu-x86-64-avx2 stockfish_binaries/stockfish-executable
           chmod +x stockfish_binaries/stockfish-executable
+
  
 
       - name: Run flask app
         run: |
           cd backend
-          nohup python run.py &
+          export FLASK_APP=run:app
+          flak run
 
       - name: Wait for Flask to be ready
         run: |
