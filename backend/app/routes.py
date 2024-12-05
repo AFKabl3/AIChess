@@ -65,8 +65,6 @@ def create_main_app():
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
                 board_str = stockfish_utils.get_string_board(fen_after_move)
-                # input = (board_str, move, delta_evaluation)
-
                 ask_input = {
                     "board": board_str,
                     "move": move,
@@ -111,7 +109,7 @@ def create_main_app():
 
         try:
             # obtain from stockfish the best move
-            suggested_move = stockfish.get_move(fen)
+            suggested_move = stockfish.get_move_suggestion(fen)
 
             # calculate the evaluation of the move
             delta_evaluation = stockfish.get_move_evaluation(fen, suggested_move)
@@ -124,8 +122,6 @@ def create_main_app():
 
             try:
                 board_str = stockfish_utils.get_string_board(fen)
-                # input = (board_str, suggested_move, delta_evaluation)
-
                 ask_input = {
                     "board": board_str,
                     "move": suggested_move,
@@ -179,8 +175,7 @@ def create_main_app():
             }), 422 # This will create an error if question is invalid
 
         try:
-            stockfish.set_fen_position(fen)
-            evaluation = stockfish.get_evaluation().get('value', None)
+            evaluation = stockfish.get_board_evaluation(fen)
 
             # reset stockfish parameters
             stockfish.reset_engine_parameters()
@@ -190,14 +185,12 @@ def create_main_app():
 
             try:
                 board_str = stockfish_utils.get_string_board(fen)
-
                 ask_input = {
                     "board": board_str,
                     "question": question,
                     "evaluation": evaluation
                 }
 
-                # ask question to the LLM
                 answer = coach.ask_chess_question(ask_input)
 
             except Exception as e:
@@ -244,8 +237,7 @@ def create_main_app():
 
         try:
             # obtain from stockfish the bot move modifying the stockfish skill level
-            stockfish.set_skill_level(int(skill_level))  # Ensure it's an integer
-            bot_move = stockfish.get_move(fen)
+            bot_move = stockfish.get_bot_move(fen, skill_level)
 
             # Reset stockfish parameters
             stockfish.reset_engine_parameters()
@@ -281,7 +273,7 @@ def create_main_app():
 
         try:
             # obtain from stockfish the best move
-            suggested_move = stockfish.get_move(fen)
+            suggested_move = stockfish.get_move_suggestion(fen)
 
             #reset stockfish_parameters
             stockfish.reset_engine_parameters()

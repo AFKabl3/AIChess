@@ -11,16 +11,24 @@ class StockfishEngine(Stockfish):
             return False
         return self.is_fen_valid(new_fen)
 
-    def get_move(self, fen):
+    def get_move_suggestion(self, fen):
         self.set_fen_position(fen)
         return self.get_best_move()
 
-    def get_move_evaluation(self, fen, move):
+    def get_bot_move(self, fen, skill_level):
+        self.set_skill_level(skill_level)
         self.set_fen_position(fen)
-        evaluation_before = self.get_evaluation().get('value', None)
+        return self.get_best_move()
+
+    def get_board_evaluation(self, fen):
+        self.set_fen_position(fen)
+        evaluation = self.get_evaluation().get('value')
+        return evaluation
+
+    def get_move_evaluation(self, fen, move):
+        evaluation_before = self.get_board_evaluation(fen)
         fen_after_move = utils.from_move_to_fen(fen, move)
-        self.set_fen_position(fen_after_move)
-        evaluation_after = self.get_evaluation().get('value', None)
+        evaluation_after = self.get_board_evaluation(fen_after_move)
 
         if evaluation_before is None or evaluation_after is None:
            return None
