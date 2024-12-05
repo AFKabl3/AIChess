@@ -6,7 +6,7 @@ from flask import request
 #stockfish modules
 from .Stockfish_engine import StockfishEngine
 from .Stockfish_engine import utils as stockfish_utils
-from .Stockfish_engine import StockfishException
+from stockfish import StockfishException
 
 #Assistant module
 from .LLM_engine import MainCoach
