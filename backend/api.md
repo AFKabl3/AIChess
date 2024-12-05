@@ -165,7 +165,7 @@ POST /get_best_move
 <summary>Example Request</summary>
 
 ```json
-POST /suggest_move
+POST /get_move_suggestion_with_evaluation
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
