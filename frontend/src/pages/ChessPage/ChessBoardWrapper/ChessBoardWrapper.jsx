@@ -18,14 +18,20 @@ export const ChessBoardWrapper = ({ settings }) => {
 
   const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
   const [selectedMode, setSelectedMode] = useState();
+  const [timerVisible, setTimersVisible] = useState(false);
 
   const { resetHistory } = moveHistory;
   const { resetGame } = chess;
+
   const handleFenSubmit = (fen) => {
     const { loadGame } = chess;
-
+    resetGame();
+    updateConfigValue('fullControlMode', false);
+    updateConfigValue('selectedColor', 'w');
+    updateConfigValue('startedGame', true);
     loadGame(fen);
     resetHistory();
+    setTimersVisible(false);
     closeDialog();
   };
 
@@ -42,6 +48,7 @@ export const ChessBoardWrapper = ({ settings }) => {
       updateConfigValue('selectedColor', selectedColor);
       updateConfigValue('startedGame', true);
     } else if (selectedMode === 'timed') {
+      setTimersVisible(true);
       const minutes = parseInt(selectedMinutes, 10);
       const seconds = parseInt(selectedSeconds, 10);
       chess.initializeTimers(minutes, seconds, selectedColor);
@@ -57,7 +64,7 @@ export const ChessBoardWrapper = ({ settings }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         {/* TODO: Create system for selecting difficulty */}
         <InfoBox title="Bot" subtitle="(205)" image="/bot.png" />
-        {selectedMode === 'timed' && (
+        {timerVisible && (
           <Box
             sx={{
               display: 'flex',

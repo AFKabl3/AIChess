@@ -41,17 +41,17 @@ export const useChess = ({
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const [whiteTime, setWhiteTime] = useState(60); 
+  const [whiteTime, setWhiteTime] = useState(60);
   const [blackTime, setBlackTime] = useState(60);
-  const [increment, setIncrement] = useState(0); 
-  const [activePlayer, setActivePlayer] = useState('w'); 
+  const [increment, setIncrement] = useState(0);
+  const [activePlayer, setActivePlayer] = useState();
   const [timerInterval, setTimerInterval] = useState(null); // To track the timer
   const [timers, setTimers] = useState({ white: 0, black: 0 });
-  const [gameMode, setGameMode] = useState();
+  const [gameMode, setGameMode] = useState(); // Selected game mode at the begin
 
   // Start the timer for the active player
   const startTimer = () => {
-    if (timerInterval) clearInterval(timerInterval); // Clear any existing interval
+    if (timerInterval) clearInterval(timerInterval); 
 
     const interval = setInterval(() => {
       setActivePlayer((currentPlayer) => {
@@ -80,7 +80,7 @@ export const useChess = ({
         }
         return currentPlayer;
       });
-    }, 1000); // Decrement every second
+    }, 1000); 
 
     setTimerInterval(interval);
   };
@@ -91,7 +91,6 @@ export const useChess = ({
 
   // Switch the active player and restart their timer
   const switchPlayer = () => {
-    console.log('Switched to player: ' + activePlayer);
     setActivePlayer((prev) => {
       const nextPlayer = prev === 'w' ? 'b' : 'w';
 
@@ -105,7 +104,7 @@ export const useChess = ({
       return nextPlayer;
     });
 
-    startTimer(); 
+    startTimer();
   };
 
   // Initialize timers for a new game
@@ -120,6 +119,15 @@ export const useChess = ({
     setTimers({ white: totalSeconds, black: totalSeconds });
   };
 
+  const disableTimers = () => {
+    stopTimer();
+    setActivePlayer('');
+    setWhiteTime(0);
+    setBlackTime(0);
+    setIncrement(0);
+    setTimerInterval(null);
+    setGameMode(null);
+  };
   const getGameMode = (gameMode) => {
     setGameMode(gameMode);
   };
@@ -135,6 +143,7 @@ export const useChess = ({
     setStatusMessage('');
     setIsGameOver(false);
     setArrows([]);
+    disableTimers();
   };
 
   const showStatusMessage = (message) => {
@@ -306,6 +315,11 @@ export const useChess = ({
   const onSquareClick = (square) => {
     setRightClickedSquares({});
     if (isPaused) return; // Disable piece movement if game is paused
+    /////////////////////////////////////////////////////////////////
+    if (gameMode === 'timed') {
+      if (isGameOver) return;
+    }
+    /////////////////////////////////////////////////////////////////
     // Set starting square for move
     if (!moveFrom) {
       const hasMoveOptions = getMoveOptions(square);
@@ -468,6 +482,18 @@ export const useChess = ({
    */
   const onDrop = (source, target) => {
     if (isPaused) return false; // Disable drop if game is paused
+    /////////////////////////////////////////////////////////////////
+    if (gameMode === 'timed') {
+      if (isGameOver) {
+        if (!statusMessage) {
+          console.log(activePlayer);
+          showStatusMessage(activePlayer === 'w' ? 'Black wins!' : 'White wins!');
+          console.log('poruka');
+        }
+        return false;
+      }
+    }
+    /////////////////////////////////////////////////////////////////
     if (lock) {
       waitForResponseToast();
       return false;
@@ -524,7 +550,7 @@ export const useChess = ({
     initializeTimers,
     whiteTime,
     blackTime,
-    getGameMode
+    getGameMode,
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   };
 };
