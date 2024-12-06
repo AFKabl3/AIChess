@@ -1,34 +1,33 @@
-#flask modules
-from flask import jsonify, Flask
-from flask_cors import CORS
-from flask import request
+# quart modules
+import threading
+from quart import jsonify, Quart, request
+from quart_cors import cors
 
-#stockfish modules
+# stockfish modules
 from .Stockfish_engine import StockfishEngine
 from .Stockfish_engine import utils as stockfish_utils
 from stockfish import StockfishException
 
-#Assistant module
+# Assistant module
 from .LLM_engine import MainCoach
 from .LLM_engine import utils as llm_utils
 
 def create_main_app():
 
-    app = Flask(__name__)
-    CORS(app)
+    app = Quart(__name__)
+    app = cors(app)
 
-    #stockfish instance creation
+    # stockfish instance creation
     stockfish_path = stockfish_utils.get_stockfish_binary_path()
     stockfish = StockfishEngine(path=stockfish_path)
 
-    #main coach instance creation
+    # main coach instance creation
     api_key = llm_utils.get_llm_api()
     coach = MainCoach(api_key=api_key)
 
-
     @app.route('/evaluate_move', methods=['POST'])
-    def evaluate_move():
-        data = request.get_json()
+    async def evaluate_move():
+        data = await request.get_json()
         fen = data.get("fen")
         move = data.get("move")
 
@@ -43,8 +42,7 @@ def create_main_app():
             return jsonify({
                 "type": "invalid_fen_notation",
                 "message": "Invalid FEN string provided."
-            }), 422  # This will create an error if FEN is invalid
-
+            }), 422
 
         if not stockfish.is_move_valid(fen, move):
             return jsonify({
@@ -56,7 +54,7 @@ def create_main_app():
             # evaluation of the move made by the user
             delta_evaluation = stockfish.get_move_evaluation(fen, move)
 
-            #reset stockfish_parameters
+            # reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
             if delta_evaluation is None:
@@ -91,8 +89,8 @@ def create_main_app():
         }), 200
 
     @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
-    def get_move_suggestion_with_evaluation():
-        data = request.get_json()
+    async def get_move_suggestion_with_evaluation():
+        data = await request.get_json()
         fen = data.get("fen")
 
         if not fen:
@@ -105,7 +103,7 @@ def create_main_app():
             return jsonify({
                 "type": "invalid_fen_notation",
                 "message": "Invalid FEN string provided."
-            }), 422  # This will create an error if FEN is invalid
+            }), 422
 
         try:
             # obtain from stockfish the best move
@@ -114,10 +112,10 @@ def create_main_app():
             # calculate the evaluation of the move
             delta_evaluation = stockfish.get_move_evaluation(fen, suggested_move)
 
-            #reset stockfish_parameters
+            # reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
-            if delta_evaluation  is None:
+            if delta_evaluation is None:
                 raise StockfishException("no evaluation for the current fen")
 
             try:
@@ -149,10 +147,9 @@ def create_main_app():
             "suggestion": response,
         }), 200
 
-
     @app.route('/answer_question', methods=['POST'])
-    def answer_question():
-        data = request.get_json()
+    async def answer_question():
+        data = await request.get_json()
         fen = data.get("fen")
         question = data.get("question")
 
@@ -166,13 +163,13 @@ def create_main_app():
             return jsonify({
                 "type": "invalid_fen_notation",
                 "message": "Invalid FEN string provided."
-            }), 422  # This will create an error if FEN is invalid
+            }), 422
 
         if not llm_utils.is_question_valid(question):
             return jsonify({
                 "type": "invalid_question",
                 "message": "Invalid question string provided."
-            }), 422 # This will create an error if question is invalid
+            }), 422
 
         try:
             evaluation = stockfish.get_board_evaluation(fen)
@@ -205,15 +202,13 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-            # Response to client
         return jsonify({
             "answer": answer
         }), 200
 
-
     @app.route('/get_bot_move', methods=['POST'])
-    def get_bot_move():
-        data = request.get_json()
+    async def get_bot_move():
+        data = await request.get_json()
         fen = data.get("fen")
         skill_level = data.get("skill_level")
 
@@ -249,14 +244,12 @@ def create_main_app():
             }), 500
 
         return jsonify({
-                "bot_move": bot_move
-            }), 200
-
+            "bot_move": bot_move
+        }), 200
 
     @app.route('/get_best_move', methods=['POST'])
-    def get_best_move():
-
-        data = request.get_json()
+    async def get_best_move():
+        data = await request.get_json()
         fen = data.get("fen")
 
         if not fen:
@@ -269,13 +262,13 @@ def create_main_app():
             return jsonify({
                 "type": "invalid_fen_notation",
                 "message": "Invalid FEN string provided."
-            }), 422  # This will create an error if FEN is invalid
+            }), 422
 
         try:
             # obtain from stockfish the best move
             suggested_move = stockfish.get_move_suggestion(fen)
 
-            #reset stockfish_parameters
+            # reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
         except StockfishException as e:
@@ -289,14 +282,14 @@ def create_main_app():
         }), 200
 
     @app.errorhandler(404)
-    def not_found(error):
+    async def not_found(error):
         return jsonify({
             "type": "not_found",
             "message": f"The requested resource was not found: : {str(error)}"
         }), 404
 
     @app.errorhandler(500)
-    def internal_server_error(error):
+    async def internal_server_error(error):
         return jsonify({
             "type": "internal_server_error",
             "message": f"An unexpected error occurred: : {str(error)} "
