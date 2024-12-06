@@ -95,11 +95,10 @@ Content-Type: text/plain
 }
 
 Response:
-<!doctype html>
-<html lang=en>
-<title>415 Unsupported Media Type</title>
-<h1>Unsupported Media Type</h1>
-<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+{
+    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "type": "internal_server_error"
+}
 
 ### Valid request
 POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
@@ -152,11 +151,10 @@ Content-Type: text/plain
 }
 
 Response:
-<!doctype html>
-<html lang=en>
-<title>415 Unsupported Media Type</title>
-<h1>Unsupported Media Type</h1>
-<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+{
+    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "type": "internal_server_error"
+}
 
 
 ### Valid Request
@@ -252,11 +250,10 @@ Content-Type: text/plain
 }
 
 Response:
-<!doctype html>
-<html lang=en>
-<title>415 Unsupported Media Type</title>
-<h1>Unsupported Media Type</h1>
-<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+{
+    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "type": "internal_server_error"
+}
 
 
 ### Valid Request
@@ -368,11 +365,10 @@ Content-Type: text/plain
 }
 
 Response:
-<!doctype html>
-<html lang=en>
-<title>415 Unsupported Media Type</title>
-<h1>Unsupported Media Type</h1>
-<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+{
+    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "type": "internal_server_error"
+}
 
 
 ### Valid Request
@@ -426,11 +422,10 @@ Content-Type: text/plain
 }
 
 Response:
-<!doctype html>
-<html lang=en>
-<title>415 Unsupported Media Type</title>
-<h1>Unsupported Media Type</h1>
-<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+{
+    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "type": "internal_server_error"
+}
 
 
 ### enpassant field in FEN
