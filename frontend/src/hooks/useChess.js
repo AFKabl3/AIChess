@@ -39,12 +39,15 @@ export const useChess = ({
   // State to track custom arrows, are on the form [[from, to], [from, to], ...]
   const [arrows, setArrows] = useState([]);
 
-  const [whiteTime, setWhiteTime] = useState(); // Default 5 minutes
-  const [blackTime, setBlackTime] = useState();
-  const [increment, setIncrement] = useState(); // Default increment
-  const [activePlayer, setActivePlayer] = useState('w'); // 'w' for white, 'b' for black
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  const [whiteTime, setWhiteTime] = useState(60); 
+  const [blackTime, setBlackTime] = useState(60);
+  const [increment, setIncrement] = useState(0); 
+  const [activePlayer, setActivePlayer] = useState('w'); 
   const [timerInterval, setTimerInterval] = useState(null); // To track the timer
   const [timers, setTimers] = useState({ white: 0, black: 0 });
+  const [gameMode, setGameMode] = useState();
 
   // Start the timer for the active player
   const startTimer = () => {
@@ -82,13 +85,13 @@ export const useChess = ({
     setTimerInterval(interval);
   };
 
-  // Stop the timer
   const stopTimer = () => {
     if (timerInterval) clearInterval(timerInterval);
   };
 
   // Switch the active player and restart their timer
   const switchPlayer = () => {
+    console.log('Switched to player: ' + activePlayer);
     setActivePlayer((prev) => {
       const nextPlayer = prev === 'w' ? 'b' : 'w';
 
@@ -102,19 +105,23 @@ export const useChess = ({
       return nextPlayer;
     });
 
-    startTimer(); // Restart the timer for the next player
+    startTimer(); 
   };
 
   // Initialize timers for a new game
-  const initializeTimers = (minutes, seconds) => {
+  const initializeTimers = (minutes, seconds, color) => {
     const totalSeconds = minutes * 60;
     setWhiteTime(totalSeconds);
     setBlackTime(totalSeconds);
     setIncrement(seconds);
-    setActivePlayer('w'); // White starts
+    setActivePlayer(color);
     stopTimer();
     startTimer();
     setTimers({ white: totalSeconds, black: totalSeconds });
+  };
+
+  const getGameMode = (gameMode) => {
+    setGameMode(gameMode);
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +172,7 @@ export const useChess = ({
 
   useEffect(() => {
     if (!config.fullControlMode && config.startedGame && config.selectedColor !== game.turn())
-      setTimeout(makeBotMove, 300);
+      setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
 
   /**
@@ -255,9 +262,10 @@ export const useChess = ({
         });
         if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Debugging Logs
-        stopTimer();
-        switchPlayer();
+        if (gameMode === 'timed') {
+          stopTimer();
+          switchPlayer();
+        }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else {
         setTimeout(makeRandomMove, 150);
@@ -480,7 +488,10 @@ export const useChess = ({
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
     resetArrows();
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    switchPlayer();
+    if (gameMode == 'timed') {
+      stopTimer();
+      switchPlayer();
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return true;
   };
@@ -513,6 +524,7 @@ export const useChess = ({
     initializeTimers,
     whiteTime,
     blackTime,
+    getGameMode
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   };
 };

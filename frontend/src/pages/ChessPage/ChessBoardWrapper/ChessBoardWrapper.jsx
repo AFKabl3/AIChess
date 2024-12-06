@@ -18,8 +18,6 @@ export const ChessBoardWrapper = ({ settings }) => {
 
   const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
   const [selectedMode, setSelectedMode] = useState();
-  const [selectedMinutes, setSelectedMinutes] = useState();
-  const [selectedColor, setSelectedColor] = useState();
 
   const { resetHistory } = moveHistory;
   const { resetGame } = chess;
@@ -33,9 +31,8 @@ export const ChessBoardWrapper = ({ settings }) => {
 
   const handleDialogData = ({ selectedMode, selectedColor, selectedMinutes, selectedSeconds }) => {
     setSelectedMode(selectedMode);
-    setSelectedColor(selectedColor);
-    setSelectedMinutes(selectedMinutes);
     resetGame();
+    chess.getGameMode(selectedMode);
 
     if (selectedMode === 'full-control') {
       updateConfigValue('fullControlMode', true);
@@ -44,14 +41,12 @@ export const ChessBoardWrapper = ({ settings }) => {
     } else if (selectedMode === 'versus-bot') {
       updateConfigValue('selectedColor', selectedColor);
       updateConfigValue('startedGame', true);
-    } else {
-      updateConfigValue('selectedColor', selectedColor);
-      updateConfigValue('startedGame', true);
+    } else if (selectedMode === 'timed') {
       const minutes = parseInt(selectedMinutes, 10);
       const seconds = parseInt(selectedSeconds, 10);
-      if (selectedMode === 'timed') {
-        chess.initializeTimers(minutes, seconds);
-      }
+      chess.initializeTimers(minutes, seconds, selectedColor);
+      updateConfigValue('selectedColor', selectedColor);
+      updateConfigValue('startedGame', true);
     }
   };
 
