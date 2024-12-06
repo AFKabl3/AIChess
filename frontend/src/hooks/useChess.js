@@ -134,15 +134,15 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config }) =>
   };
 
   const makeBotMove = async () => {
-    const depth = config.depth;
+    const skillLevel = config.SKILL_LEVEL;
 
-    if (depth === 0) {
+    if (skillLevel === 0) {
       setTimeout(makeRandomMove, 150);
       return;
     }
 
     const fetchMove = async () => {
-      const res = await api.getBotMove(game.fen(), depth);
+      const res = await api.getBotMove(game.fen(), skillLevel);
       const data = await res.json();
 
       return data.bot_move;
