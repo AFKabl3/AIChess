@@ -1,9 +1,9 @@
 import {
   answerChessQuestion,
   evaluateMove,
+  getBestMove,
   getBotMove,
-  getSuggestedMove,
-  getSuggestedMoveWithExplanation,
+  getMoveSuggestionWithEvaluation,
 } from './chess';
 import { example } from './example';
 
@@ -18,8 +18,8 @@ export const Method = {
 export const api = {
   example,
   evaluateMove,
+  getMoveSuggestionWithEvaluation,
   answerChessQuestion,
-  getSuggestedMove,
-  getSuggestedMoveWithExplanation,
   getBotMove,
+  getBestMove,
 };

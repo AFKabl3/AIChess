@@ -1,3 +1,5 @@
 venv
 __pycache__
 .env
+stockfish_binaries
+.DS_Store

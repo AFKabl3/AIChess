@@ -75,8 +75,7 @@ export const ChessPage = () => {
 
     setLock(true);
     try {
-      console.log(position);
-      const res = await api.getSuggestedMove(position);
+      const res = await api.getMoveSuggestionWithEvaluation(position);
       const data = await res.json();
 
       modifyText(`${data.suggestion}.`);

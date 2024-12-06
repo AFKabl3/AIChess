@@ -5,9 +5,9 @@
 1. [Endpoints](#endpoints)
    - [1. Evaluate Move Endpoint](#1-evaluate-move-endpoint)
    - [2. Answer Chess Question Endpoint](#2-answer-chess-question-endpoint)
-   - [3. Get Suggested Move Endpoint](#3-get-suggested-move-endpoint)
-   - [4. Get Game Status Endpoint](#4-get-suggested-move-with-explanation-endpoint)
-   - [5. Get Bot Move Endpoint](#4-get-suggested-move-with-explanation-endpoint)
+   - [3. Get Best Move Endpoint](#3-get-best-move-endpoint)
+   - [4. Get Move Suggestion with Evaluation Endpoint](#4-Get-Move-Suggestion-with-Evaluation-Endpoint)
+   - [5. Get Bot Move Endpoint](#5-get-bot-move-endpoint)
 2. [Error Handling](#error-handling)
 
 ## Endpoints
@@ -100,11 +100,11 @@ POST /answer_question
 
 </details>
 
-### 3. Get Suggested Move Endpoint
+### 3. Get Best Move Endpoint
 
-- **Endpoint**: `/suggest_move`
+- **Endpoint**: `/get_best_move`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation, along with a textual explanation for the move..
+- **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation.
 
 #### Request Parameters
 
@@ -116,14 +116,13 @@ POST /answer_question
 - **200 OK**:
   - **Body (JSON)**:
       - `current_player` (string)
-      - `move` (string): The best move in UCI notation.
-      - `suggestion` (string): textual descprtion of the suggested move
+      - `suggested_move` (string): The best move in UCI notation.
 
 <details>
 <summary>Example Request</summary>
 
 ```json
-POST /suggest_move
+POST /get_best_move
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
@@ -138,17 +137,16 @@ POST /suggest_move
 {
   "current_player": "w",
   "suggested_move": "e2e4",
-  "suggestion": " Great move! Advancing your pawn to e4 opens up the center of the board and supports the development of your other pieces. It also puts pressure on your opponent's position, requiring them to respond. These types of moves are fundamental to building a strong foundation in chess. Just keep in mind that your opponent may have different ideas and plans, so stay flexible and be ready to adapt. Keep up the good work and have fun!"
 }
 ```
 
 </details>
 
-### 4. Get Game Status Endpoint
+### 4. Get Move Suggestion with Evaluation Endpoint
 
-- **Endpoint**: `/game_status`
+- **Endpoint**: `/get_move_suggestion_with_evaluation`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and returns the percentage of winning.
+- **Description**: Accepts a chess board in FEN notation and returns the suggested move in UCI notation, along with a textual explanation for the move..
 
 #### Request Parameters
 
@@ -159,15 +157,15 @@ POST /suggest_move
 
 - **200 OK**:
   - **Body (JSON)**:
-    -  `current_player` (string): current player that has to play the move.
-    - `fen` (string): The FEN string representing the board state.
-    - `game_status` (float): percentage of winning for the white player (for now).
+      - `current_player` (string)
+      - `suggested_move` (string): The best move in UCI notation.
+      - `suggestion` (string): textual descprtion of the suggested move
 
 <details>
 <summary>Example Request</summary>
 
 ```json
-POST /game_status
+POST /get_move_suggestion_with_evaluation
 {
   "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
 }
@@ -181,25 +179,28 @@ POST /game_status
 ```json
 {
   "current_player": "w",
-  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-  "game_status": 51.74827500461166
+  "suggested_move": "e2e4",
+  "suggestion": "Move e4 pairs your pawn with the opponent's, controlling center and opening lines for your pieces to develop. A good start as it aims to establish dominance, seize space and limit Black's options. Value is positive+0.7, signifying an attacking edge with an open game favoring your side. It's the classic starting move for a reason, breaking open the center & allowing you to prepare for castling kingside, and a Bn or Qn jump to f3, while Rb1 moves to d1-c1 line; overall aiming for rapid piece development and an active game ahead."
 }
 ```
 
 </details>
 
-### 3. Get Suggested Move Endpoint
+
+
+### 5. Get Bot Move Endpoint
 
 - **Endpoint**: `/get_bot_move`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and an integer value representing the depth (represents also a possible bot level). 
-Return the best move according to the Stockfish and the input depth.
+- **Description**: Accepts a chess board in FEN notation and an integer value representing the bot's level. 
+
+  Return the best move according to the Stockfish and the input depth.
 
 #### Request Parameters
 
 - **Body (JSON)**:
-  - `fen` (string, required): The FEN string representing the board state after the player move.
-  - `depth` (int, required): integer value representing the level of the bot
+  - `fen` (string, required): The FEN string representing the board state.
+  - `skill_level` (int, required): integer value representing the level of the bot
 
 #### Response
 
@@ -214,7 +215,7 @@ Return the best move according to the Stockfish and the input depth.
 POST /get_bot_move
 {
   "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
-  "depth": 10
+  "skill_level": 19
 }
 ```
 

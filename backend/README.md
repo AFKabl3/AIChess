@@ -14,21 +14,27 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
 
 1. **Clone the Repository**
 
-   Clone the repository to your local machine:
+   In the terminal clone the repository to your local machine:
+
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AFKabl3/AIChess.git
    cd AIChess/backend
 
-   
-
+   ```
 2. **Set Up Virtual Environment**
 
    Create a virtual environment:
+
    ```bash
    python -m venv venv
    ```
+   or
 
+   ```bash
+   python3 -m venv venv
+   ```
    Activate the virtual environment:
+
    - On **Linux/Mac**:
      ```bash
      source venv/bin/activate
@@ -37,40 +43,72 @@ The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/),
      ```powershell
      venv\Scripts\activate
      ```
-
 3. **Install Dependencies**
 
    Once the virtual environment is active, install the required dependencies using `pip`:
+
    ```bash
+   pip install update
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
+4. **Stockfish installation**
 
-4. **Environment Variables**
+   Download the binaries for your `OS` from [`https://stockfishchess.org/`](https://stockfishchess.org/download/).
 
-   Create a `.env` file in the backend root directory to define environment-specific variables. Below is an example `.env` file:
-   ```plaintext
-   SECRET_KEY=your_secret_key_here
+   Extract from the compressed folder only the `stockfish_executable` file.
+
+   Create a folder named `stockfish_binaries` in the backend root directory, and place only the `stockfish_executable` inside it.
+5. **Environment Variables**
+
+   Create a file `.env` in the backend root directory to define environment-specific variables:
+
+   - `LLM_API_KEY` contain the `API KEY` of the LLM
+   - `STOCKFISH_EXECUTABLE` contain the relative path from
+     backend in order to reach the `executable`
+
+   Below are examples of a `.env` file for different `OS`:
+
+   - On **Linux/Mac**:
+     ```plain
+     LLM_API_KEY=your_secret_key_here
+     STOCKFISH_EXECUTABLE=stockfish_binaries/stockfish-executable
+     ```
+   - On **Windows**:
+     ```plain
+     LLM_API_KEY=your_secret_key_here
+     STOCKFISH_EXECUTABLE=stockfish_binaries\stockfish-executable.exe
+     ```
+6. **Final backend structure**
+
+   Here the final structure of the backend
+
+   ```plain
+   backend/
+   ├── .env
+   ├── app/
+   ├── stockfish_binaries/
+   │   └── stockfish-executable
    ```
-
-5. **Initialize the `FLASK_APP` Environment Variable**
+7. **Initialize the `FLASK_APP` Environment Variable**
 
    Set the `FLASK_APP` variable in the terminal:
 
    - **Windows (PowerShell)**:
+
      ```powershell
      $env:FLASK_APP = "run:app"
      ```
-
    - **Linux/Mac**:
+
      ```bash
      export FLASK_APP=run:app
      ```
-
-6. **Start the Flask Development Server**
+8. **Start the Flask Development Server**
 
    Run the Flask application:
+
    ```bash
    flask run
    ```
-
    Once the server is running, the API will be available at [http://localhost:5000](http://localhost:5000).

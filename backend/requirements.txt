@@ -4,6 +4,7 @@ python-chess
 chess
 python-dotenv
 requests
-huggingface-hub
+huggingface_hub
+stockfish
 colorama
 pyyaml

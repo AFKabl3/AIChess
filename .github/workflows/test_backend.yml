@@ -8,7 +8,9 @@ on:
       - "backend/**"
 
 env:
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  LLM_API_KEY: ${{ secrets.SECRET_KEY }}
+  STOCKFISH_EXECUTABLE: stockfish_binaries/stockfish-ubuntu-x86-64-avx2
+  
 
 jobs:
   test:
@@ -29,10 +31,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download Stockfish
+        run: |
+          cd backend
+          mkdir stockfish_binaries
+          curl -L -o stockfish_binaries/stockfish.tar.gz https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-ubuntu-x86-64-avx2.tar
+          tar -xf stockfish_binaries/stockfish.tar.gz --strip-components=1 -C stockfish_binaries
+          chmod +x stockfish_binaries/stockfish-ubuntu-x86-64-avx2
+
+
+      - name: Verify Stockfish executable
+        run: |
+          ls ./backend/stockfish_binaries
+          ls -l ./backend/stockfish_binaries/stockfish-ubuntu-x86-64-avx2
+          ./backend/stockfish_binaries/stockfish-ubuntu-x86-64-avx2 --version
+ 
+
       - name: Run flask app
         run: |
           cd backend
-          nohup python run.py &
+          export FLASK_APP=run:app
+          nohup flask run &
 
       - name: Wait for Flask to be ready
         run: |
@@ -44,5 +63,5 @@ jobs:
 
       - name: Run tests
         run: |
-          cd backend
+          cd backend/test
           python test_runner.py
