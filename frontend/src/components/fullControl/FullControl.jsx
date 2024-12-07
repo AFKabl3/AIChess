@@ -3,12 +3,12 @@ import { ChessContext } from '../../pages/ChessPage/ChessContext';
 import { Box } from '@mui/material';
 
 const FullControl = () => {
-  const { updateConfigValue } = useContext(ChessContext);
+  const { setConfigValue } = useContext(ChessContext);
 
   const handleFullControl = () => {
-    updateConfigValue('fullControlMode', true);
-    updateConfigValue('startedGame', true);
-    updateConfigValue('selectedColor', 'w')
+    setConfigValue('fullControlMode', true);
+    setConfigValue('startedGame', true);
+    setConfigValue('selectedColor', 'w')
   };
 
   return (

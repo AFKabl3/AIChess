@@ -16,7 +16,7 @@ import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
   const [lock, setLock] = useState(false);
-  const [config, updateConfigValue] = useConfig();
+  const [config, setConfigValue] = useConfig();
 
   const chat = useChat();
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = chat;
@@ -35,7 +35,7 @@ export const ChessPage = () => {
     lock,
     isPaused,
     config,
-    updateConfigValue,
+    setConfigValue,
   });
 
   const { position, addArrow } = chess;
@@ -145,7 +145,7 @@ export const ChessPage = () => {
     </Box>
   );
   return (
-    <ChessContext.Provider value={{ chess, moveHistory, config, updateConfigValue, chat }}>
+    <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
       {content}
     </ChessContext.Provider>
   );

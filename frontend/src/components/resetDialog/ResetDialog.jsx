@@ -8,12 +8,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Fragment, useContext } from 'react';
 import { useDialog } from '../../hooks/useDialog';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
-import { useConfig } from '../../hooks/useConfig';
+import { defaultConfig } from '../../hooks/useConfig';
 
 export const ResetDialog = ({ onResetComplete }) => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
-  const { moveHistory, chat, config, updateConfigValue } = useContext(ChessContext);
+  const { moveHistory, chat, setConfigValue } = useContext(ChessContext);
   const { resetHistory } = moveHistory;
   const { resetChat } = chat;
 
@@ -29,8 +29,8 @@ export const ResetDialog = ({ onResetComplete }) => {
     resetHistory();
 
     // Reset config to default values
-    Object.keys(useConfig).forEach((key) => {
-      updateConfigValue(key, useConfig[key]);
+    Object.keys(defaultConfig).forEach((key) => {
+      setConfigValue(key, defaultConfig[key]);
     });
 
     closeDialog();

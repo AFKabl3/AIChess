@@ -12,7 +12,7 @@ import { NewGameDialog } from '../../../components/newGameDialog/newGameDialog';
 import { Timer } from '../../../components/timer/Timer';
 
 export const ChessBoardWrapper = ({ settings }) => {
-  const { chess, moveHistory, updateConfigValue } = useContext(ChessContext);
+  const { chess, moveHistory, setConfigValue } = useContext(ChessContext);
 
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
@@ -20,17 +20,21 @@ export const ChessBoardWrapper = ({ settings }) => {
   const [selectedMode, setSelectedMode] = useState();
   const [timerVisible, setTimersVisible] = useState(false);
 
-  const { resetHistory } = moveHistory;
+  const { resetHistory, updateHistory } = moveHistory;
   const { resetGame } = chess;
 
   const handleFenSubmit = (fen) => {
     const { loadGame } = chess;
     resetGame();
-    updateConfigValue('fullControlMode', false);
-    updateConfigValue('selectedColor', 'w');
-    updateConfigValue('startedGame', true);
+    setConfigValue('fullControlMode', false);
+    setConfigValue('selectedColor', 'w');
+    setConfigValue('startedGame', true);
+    setConfigValue('turn', fen.split(" ")[1]);
     loadGame(fen);
     resetHistory();
+    if (fen.split(" ")[1] === 'b') {
+      updateHistory({san: '-'}, fen, 'user');
+    }
     setTimersVisible(false);
     closeDialog();
   };
@@ -42,20 +46,20 @@ export const ChessBoardWrapper = ({ settings }) => {
 
     if (selectedMode === 'full-control') {
       setTimersVisible(false);
-      updateConfigValue('fullControlMode', true);
-      updateConfigValue('startedGame', true);
-      updateConfigValue('selectedColor', 'w');
+      setConfigValue('fullControlMode', true);
+      setConfigValue('startedGame', true);
+      setConfigValue('selectedColor', 'w');
     } else if (selectedMode === 'versus-bot') {
       setTimersVisible(false);
-      updateConfigValue('selectedColor', selectedColor);
-      updateConfigValue('startedGame', true);
+      setConfigValue('selectedColor', selectedColor);
+      setConfigValue('startedGame', true);
     } else if (selectedMode === 'timed') {
       setTimersVisible(true);
       const minutes = parseInt(selectedMinutes, 10);
       const seconds = parseInt(selectedSeconds, 10);
       chess.initializeTimers(minutes, seconds, selectedColor);
-      updateConfigValue('selectedColor', selectedColor);
-      updateConfigValue('startedGame', true);
+      setConfigValue('selectedColor', selectedColor);
+      setConfigValue('startedGame', true);
     }
   };
 

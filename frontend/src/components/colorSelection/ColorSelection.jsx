@@ -2,11 +2,11 @@ import { useContext } from 'react';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
 
 const ColorSelection = () => {
-  const { config, updateConfigValue } = useContext(ChessContext);
+  const { config, setConfigValue } = useContext(ChessContext);
 
   const handleSelection = (color) => {
-    updateConfigValue('selectedColor', color);
-    updateConfigValue('startedGame', true);
+    setConfigValue('selectedColor', color);
+    setConfigValue('startedGame', true);
   };
 
   return (

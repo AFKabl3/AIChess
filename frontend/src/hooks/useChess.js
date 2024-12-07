@@ -10,7 +10,7 @@ export const useChess = ({
   lock,
   isPaused,
   config,
-  updateConfigValue,
+  setConfigValue,
 }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
@@ -176,11 +176,11 @@ export const useChess = ({
   }, [game]);
 
   useEffect(() => {
-    updateConfigValue('turn', game.turn());
+    setConfigValue('turn', game.turn());
   }, [game.turn()]);
 
   useEffect(() => {
-    if (!config.fullControlMode && config.startedGame && config.selectedColor !== game.turn())
+    if (!isPaused && !config.fullControlMode && config.startedGame && config.selectedColor !== game.turn())
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
 

@@ -13,19 +13,21 @@ export const useMoveHistory = (config) => {
         config.turn === 'w' ? (player = 'user') : (player = 'bot');
       }
 
-      if (config.selectedColor === 'w') { 
+      const lastMove = player === 'user' ? newHistory[newHistory.length - 1]?.user : newHistory[newHistory.length - 1]?.bot;
+      const isMoveDifferent = lastMove?.fen !== fen;
+      const moveData = { san: move.san, fen };
+
+      if (lastMove === null) {
         if (player === 'user') {
-          newHistory.push({ user: { san: move.san, fen }, bot: null });
-        } else {
-          newHistory[newHistory.length - 1].bot = { san: move.san, fen };
+          newHistory[newHistory.length - 1].user = moveData;
+        } else if (player === 'bot') {
+          newHistory[newHistory.length - 1].bot = moveData;
         }
-      } else {
-        if (player === 'bot') {
-          newHistory.push({ user: null, bot: { san: move.san, fen } });
-        } else {
-          newHistory[newHistory.length - 1].user = { san: move.san, fen };
-        }
+      } else if (lastMove === undefined || isMoveDifferent) {
+        const newMove = player === 'user' ? { user: moveData, bot: null } : { user: null, bot: moveData };
+        newHistory.push(newMove);
       }
+
       return newHistory;
     });
   };
