@@ -59,11 +59,12 @@ class MainCoach(LLM):
         return response
     
     def ask_game_status_explanation(self, ask_input):
+        self.automatic_coach_creation()
         board = ask_input.get("board")
         evaluation = ask_input.get("evaluation")
-        response = (self.direct_question(f"""The current state of the board is: {board} \n
+        response = (self.ask(f"""The current state of the board is: {board} \n
         The evaluation of the state is {evaluation}.\n
-        Explain the game status to the user\n 
+        Explain the game status to the user, you can for example explain if black or white are winning and explain why. \n 
         Limit the response to 70 words\n"""))
         return response
 

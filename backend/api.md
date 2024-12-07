@@ -236,7 +236,7 @@ POST /get_bot_move
 - **Method**: `POST`
 - **Description**: Accepts a chess board in FEN notation
 
-  Return the best move according to the Stockfish and the input depth.
+  Return the explanation of the current game status according to Stockfish evaluation.
 
 #### Request Parameters
 
