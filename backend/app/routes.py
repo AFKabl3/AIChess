@@ -281,6 +281,49 @@ def create_main_app():
             "suggested_move": suggested_move
         }), 200
 
+    @app.route('/get_game_status', methods=['POST'])
+    async def get_game_status():
+        data = await request.get_json()
+        fen = data.get("fen")
+
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "'fen' field is required."
+            }), 400
+
+        if not stockfish.is_fen_valid(fen):
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422
+
+        try:
+            game_status_evaluation = stockfish.get_board_evaluation(fen)
+            # reset stockfish_parameters
+            stockfish.reset_engine_parameters()
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500
+
+        ask_input = {
+            "board": fen,
+            "evaluation": game_status_evaluation
+        }
+        try:
+            answer = coach.ask_game_status_explanation(ask_input)
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
+
+        return jsonify({
+            "answer": answer
+        }), 200
+
     @app.errorhandler(404)
     async def not_found(error):
         return jsonify({

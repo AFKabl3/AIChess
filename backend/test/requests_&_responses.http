@@ -428,7 +428,7 @@ Response:
 }
 
 
-### enpassant field in FEN
+### Enpassant field in FEN
 POST http://127.0.0.1:5000/get_best_move
 Content-Type: application/json
 
@@ -440,4 +440,75 @@ Response:
 
 {
   "suggested_move": "c7c5"
+}
+
+### Valid Request
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+Response:
+{
+  "answer" : string
+}
+
+
+### Missing FEN Field
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{}
+
+Response:
+ {
+  "message": "'fen' field is required.",
+  "type": "invalid_request"
+}
+
+
+### Invalid FEN String
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{
+  "fen": "invalid_fen_string"
+}
+
+Response:
+{
+  "message": "Invalid FEN string provided.",
+  "type": "invalid_fen_notation"
+}
+
+
+### Non-JSON Content Type
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: text/plain
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+Response:
+{
+    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "type": "internal_server_error"
+}
+
+
+### Enpassant field in FEN
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+}
+
+Response:
+
+{
+  "answer":string
 }
