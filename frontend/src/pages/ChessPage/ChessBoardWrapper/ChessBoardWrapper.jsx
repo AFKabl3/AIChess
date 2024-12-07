@@ -41,10 +41,12 @@ export const ChessBoardWrapper = ({ settings }) => {
     chess.getGameMode(selectedMode);
 
     if (selectedMode === 'full-control') {
+      setTimersVisible(false);
       updateConfigValue('fullControlMode', true);
       updateConfigValue('startedGame', true);
       updateConfigValue('selectedColor', 'w');
     } else if (selectedMode === 'versus-bot') {
+      setTimersVisible(false);
       updateConfigValue('selectedColor', selectedColor);
       updateConfigValue('startedGame', true);
     } else if (selectedMode === 'timed') {
@@ -84,7 +86,11 @@ export const ChessBoardWrapper = ({ settings }) => {
         <NewGameDialog
           onConfirm={handleDialogData}
           open={isNewGameDialogOpen}
-          onClose={() => setIsNewGameDialogOpen(false)}
+          onClose={(event, reason) => {
+            if (reason !== 'backdropClick') {
+              setIsNewGameDialogOpen(false);
+            }
+          }}
         />
         <Button variant="contained" color="secondary" size="large" onClick={openDialog}>
           Upload Chessboard Setup

@@ -221,7 +221,6 @@ export const NewGameDialog = ({ onConfirm, open, onClose }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      disableBackdropClick // Prevent clicking outside from closing the dialog
       disableEscapeKeyDown
       maxWidth="xs"
       fullWidth
