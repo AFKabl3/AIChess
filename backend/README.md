@@ -1,6 +1,6 @@
 # AIChess Backend
 
-The backend is built with [Flask](https://flask.palletsprojects.com/en/stable/), a lightweight web framework for Python, to handle API requests and perform web app logic.
+The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/), a lightweight web framework for Python, to handle API requests and perform web app logic.
 
 ## Getting Started
 
