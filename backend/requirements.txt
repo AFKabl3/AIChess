@@ -1,5 +1,5 @@
-Flask
-Flask-Cors
+quart
+quart_cors
 python-chess
 chess
 python-dotenv
