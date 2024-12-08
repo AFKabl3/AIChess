@@ -115,8 +115,8 @@ POST /answer_question
 
 - **200 OK**:
   - **Body (JSON)**:
-      - `current_player` (string)
-      - `suggested_move` (string): The best move in UCI notation.
+    - `current_player` (string)
+    - `suggested_move` (string): The best move in UCI notation.
 
 <details>
 <summary>Example Request</summary>
@@ -136,7 +136,7 @@ POST /get_best_move
 ```json
 {
   "current_player": "w",
-  "suggested_move": "e2e4",
+  "suggested_move": "e2e4"
 }
 ```
 
@@ -157,9 +157,9 @@ POST /get_best_move
 
 - **200 OK**:
   - **Body (JSON)**:
-      - `current_player` (string)
-      - `suggested_move` (string): The best move in UCI notation.
-      - `suggestion` (string): textual descprtion of the suggested move
+    - `current_player` (string)
+    - `suggested_move` (string): The best move in UCI notation.
+    - `suggestion` (string): textual descprtion of the suggested move
 
 <details>
 <summary>Example Request</summary>
@@ -186,13 +186,11 @@ POST /get_move_suggestion_with_evaluation
 
 </details>
 
-
-
 ### 5. Get Bot Move Endpoint
 
 - **Endpoint**: `/get_bot_move`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and an integer value representing the bot's level. 
+- **Description**: Accepts a chess board in FEN notation and an integer value representing the bot's level.
 
   Return the best move according to the Stockfish and the input depth.
 
@@ -206,7 +204,7 @@ POST /get_move_suggestion_with_evaluation
 
 - **200 OK**:
   - **Body (JSON)**:
-      - `bot_move` (string): bot_move
+    - `bot_move` (string): bot_move
 
 <details>
 <summary>Example Request</summary>
@@ -227,6 +225,48 @@ POST /get_bot_move
 ```json
 {
   "bot_move": "e4f5"
+}
+```
+
+</details>
+
+### 5. Get Game status endpoint
+
+- **Endpoint**: `/get_game_status`
+- **Method**: `POST`
+- **Description**: Accepts a chess board in FEN notation
+
+  Return the explanation of the current game status according to Stockfish evaluation.
+
+#### Request Parameters
+
+- **Body (JSON)**:
+  - `fen` (string, required): The FEN string representing the board state.
+
+#### Response
+
+- **200 OK**:
+  - **Body (JSON)**:
+    - `answer` (string): answer from the LLM concerning the game status
+
+<details>
+<summary>Example Request</summary>
+
+```json
+POST /get_game_status
+{
+  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1"
+}
+```
+
+</details>
+
+<details>
+<summary>Example Response</summary>
+
+```json
+{
+  "answer": "The board is balanced, white is winning by a short length"
 }
 ```
 
