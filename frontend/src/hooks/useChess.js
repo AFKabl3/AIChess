@@ -4,14 +4,7 @@ import { api } from '../api/api';
 import { getKingPosition } from '../util/chessUtil';
 import { waitForResponseToast } from '../util/toasts';
 
-export const useChess = ({
-  onPlayerMove,
-  onBotMove,
-  lock,
-  isPaused,
-  config,
-  setConfigValue,
-}) => {
+export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setConfigValue }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
 
@@ -51,7 +44,7 @@ export const useChess = ({
 
   // Start the timer for the active player
   const startTimer = () => {
-    if (timerInterval) clearInterval(timerInterval); 
+    if (timerInterval) clearInterval(timerInterval);
 
     const interval = setInterval(() => {
       setActivePlayer((currentPlayer) => {
@@ -80,7 +73,7 @@ export const useChess = ({
         }
         return currentPlayer;
       });
-    }, 1000); 
+    }, 1000);
 
     setTimerInterval(interval);
   };
@@ -132,6 +125,11 @@ export const useChess = ({
     setGameMode(gameMode);
   };
 
+  const handleMoveTimerSwitch = () => {
+    stopTimer();
+    switchPlayer();
+  };
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const resetGame = () => {
@@ -180,7 +178,12 @@ export const useChess = ({
   }, [game.turn()]);
 
   useEffect(() => {
-    if (!isPaused && !config.fullControlMode && config.startedGame && config.selectedColor !== game.turn())
+    if (
+      !isPaused &&
+      !config.fullControlMode &&
+      config.startedGame &&
+      config.selectedColor !== game.turn()
+    )
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
 
@@ -380,6 +383,13 @@ export const useChess = ({
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
+      /////////////////////////////////
+      if (move !== null) {
+        if (gameMode === 'timed') {
+          handleMoveTimerSwitch();
+        }
+      }
+      /////////////////////////////////
       return;
     }
   };
@@ -424,6 +434,11 @@ export const useChess = ({
     setMoveTo(null);
     setShowPromotionDialog(false);
     setOptionSquares({});
+    if (move !== null) {
+      if (gameMode === 'timed') {
+        handleMoveTimerSwitch();
+      }
+    }
     return;
   };
 
@@ -467,6 +482,12 @@ export const useChess = ({
     const move = game.move(possibleMove[randomIndex]); // TODO: Change to safe game mutate
     if (move && onBotMove) onBotMove(move, null, game.fen());
     setGame(new Chess(game.fen()));
+    if (move !== null) {
+      if (gameMode === 'timed') {
+        handleMoveTimerSwitch();
+      }
+    }
+    
   };
 
   /**
@@ -486,9 +507,7 @@ export const useChess = ({
     if (gameMode === 'timed') {
       if (isGameOver) {
         if (!statusMessage) {
-          console.log(activePlayer);
           showStatusMessage(activePlayer === 'w' ? 'Black wins!' : 'White wins!');
-          console.log('poruka');
         }
         return false;
       }
@@ -514,12 +533,13 @@ export const useChess = ({
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
     resetArrows();
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if (gameMode == 'timed') {
-      stopTimer();
-      switchPlayer();
+    if (move !== null) {
+      if (gameMode === 'timed') {
+        handleMoveTimerSwitch();
+      }
     }
+    return move !== null;
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    return true;
   };
 
   const loadGame = (fen) => {
