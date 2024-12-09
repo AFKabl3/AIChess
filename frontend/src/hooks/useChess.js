@@ -101,12 +101,12 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   };
 
   // Initialize timers for a new game
-  const initializeTimers = (minutes, seconds, color) => {
+  const initializeTimers = (minutes, seconds) => {
     const totalSeconds = minutes * 60;
     setWhiteTime(totalSeconds);
     setBlackTime(totalSeconds);
     setIncrement(seconds);
-    setActivePlayer(color);
+    setActivePlayer('w');
     stopTimer();
     startTimer();
     setTimers({ white: totalSeconds, black: totalSeconds });
@@ -275,8 +275,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
         if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (gameMode === 'timed') {
-          stopTimer();
-          switchPlayer();
+          handleMoveTimerSwitch();
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else {
@@ -487,7 +486,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
         handleMoveTimerSwitch();
       }
     }
-    
   };
 
   /**

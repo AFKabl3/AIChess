@@ -57,7 +57,7 @@ export const ChessBoardWrapper = ({ settings }) => {
       setTimersVisible(true);
       const minutes = parseInt(selectedMinutes, 10);
       const seconds = parseInt(selectedSeconds, 10);
-      chess.initializeTimers(minutes, seconds, selectedColor);
+      chess.initializeTimers(minutes, seconds);
       setConfigValue('selectedColor', selectedColor);
       setConfigValue('startedGame', true);
     }
