@@ -10,7 +10,6 @@ on:
 env:
   LLM_API_KEY: ${{ secrets.SECRET_KEY }}
   STOCKFISH_EXECUTABLE: stockfish_binaries/stockfish-ubuntu-x86-64-avx2
-  
 
 jobs:
   test:
@@ -39,25 +38,23 @@ jobs:
           tar -xf stockfish_binaries/stockfish.tar.gz --strip-components=1 -C stockfish_binaries
           chmod +x stockfish_binaries/stockfish-ubuntu-x86-64-avx2
 
-
       - name: Verify Stockfish executable
         run: |
           ls ./backend/stockfish_binaries
           ls -l ./backend/stockfish_binaries/stockfish-ubuntu-x86-64-avx2
           ./backend/stockfish_binaries/stockfish-ubuntu-x86-64-avx2 --version
- 
 
-      - name: Run flask app
+      - name: Run Quart app
         run: |
           cd backend
-          export FLASK_APP=run:app
-          nohup flask run &
+          export QUART_APP=run:app
+          nohup quart run --host 127.0.0.1 --port 5000 &
 
-      - name: Wait for Flask to be ready
+      - name: Wait for Quart to be ready
         run: |
           for i in {1..30}; do
             curl --silent http://127.0.0.1:5000/ && break
-            echo "Waiting for Flask to start..."
+            echo "Waiting for Quart to start..."
             sleep 2
           done
 
