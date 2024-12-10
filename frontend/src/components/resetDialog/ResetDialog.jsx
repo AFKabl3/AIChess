@@ -8,12 +8,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Fragment, useContext } from 'react';
 import { useDialog } from '../../hooks/useDialog';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
+import { defaultConfig } from '../../hooks/useConfig';
 
-export const ResetDialog = () => {
+export const ResetDialog = ({ onResetComplete }) => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
 
-  const { chess, moveHistory, chat } = useContext(ChessContext);
-  const { resetGame } = chess;
+  const { moveHistory, chat, setConfigValue } = useContext(ChessContext);
   const { resetHistory } = moveHistory;
   const { resetChat } = chat;
 
@@ -25,9 +25,18 @@ export const ResetDialog = () => {
     if (formJson['chat-reset'] === 'on') {
       resetChat();
     }
-    resetGame();
+
     resetHistory();
+
+    // Reset config to default values
+    Object.keys(defaultConfig).forEach((key) => {
+      setConfigValue(key, defaultConfig[key]);
+    });
+
     closeDialog();
+    if (onResetComplete) {
+      onResetComplete();
+    }
   };
 
   return (

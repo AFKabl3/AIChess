@@ -13,7 +13,7 @@ const NotationLink = styled('span')({
 });
 
 export const MoveHistoryTable = () => {
-  const { chess, moveHistory } = useContext(ChessContext);
+  const { chess, moveHistory, config } = useContext(ChessContext);
   const { position, loadGame } = chess;
   const {
     isPaused,
@@ -96,13 +96,15 @@ export const MoveHistoryTable = () => {
               }}
             >
               <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
-                {`${index + 1}. ${movePair.user.san}`}
+                {config.selectedColor === 'w' ? 
+                (movePair.user ? `${index + 1}. ${movePair.user.san}` : ``) : 
+                (movePair.bot ? `${index + 1}. ${movePair.bot.san}` : ``)}
               </NotationLink>
-              {movePair.bot && (
-                <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
-                  {movePair.bot.san}
-                </NotationLink>
-              )}
+              <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
+                {config.selectedColor === 'w' ? 
+                (movePair.bot ? movePair.bot.san : ``) : 
+                (movePair.user ? movePair.user.san : ``)}
+              </NotationLink>
             </Box>
           ))}
           <div ref={notationEndRef} />

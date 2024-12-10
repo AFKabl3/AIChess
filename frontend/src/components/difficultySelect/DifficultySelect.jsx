@@ -6,13 +6,17 @@ import { useContext, useState } from 'react';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
 
 export const DifficultySelect = () => {
+
   const { config, setConfigValue } = useContext(ChessContext);
   const [difficulty, setDifficulty] = useState(config.SKILL_LEVEL);
 
   const handleChange = (event) => {
     const newDifficulty = parseInt(event.target.value, 10);
     setDifficulty(newDifficulty);
+
+
     setConfigValue('SKILL_LEVEL', newDifficulty);
+
   };
 
   return (
