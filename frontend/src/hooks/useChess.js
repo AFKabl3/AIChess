@@ -32,12 +32,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   // State to track custom arrows, are on the form [[from, to], [from, to], ...]
   const [arrows, setArrows] = useState([]);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   const [whiteTime, setWhiteTime] = useState(60);
   const [blackTime, setBlackTime] = useState(60);
   const [increment, setIncrement] = useState(0);
-  const [activePlayer, setActivePlayer] = useState();
   const [timerInterval, setTimerInterval] = useState(null); // To track the timer
   const [timers, setTimers] = useState({ white: 0, black: 0 });
   const [gameMode, setGameMode] = useState(); // Selected game mode at the begin
@@ -47,32 +44,30 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     if (timerInterval) clearInterval(timerInterval);
 
     const interval = setInterval(() => {
-      setActivePlayer((currentPlayer) => {
-        if (currentPlayer === 'w') {
-          setWhiteTime((time) => {
-            if (time <= 0) {
-              clearInterval(interval);
-              showStatusMessage("White's time is up! Black wins!");
-              setIsGameOver(true);
-              stopTimer();
-              return 0;
-            }
-            return time - 1;
-          });
-        } else {
-          setBlackTime((time) => {
-            if (time <= 0) {
-              clearInterval(interval);
-              showStatusMessage("Black's time is up! White wins!");
-              setIsGameOver(true);
-              stopTimer();
-              return 0;
-            }
-            return time - 1;
-          });
-        }
-        return currentPlayer;
-      });
+      if (game.turn() === 'w') {
+        setWhiteTime((time) => {
+          if (time <= 0) {
+            clearInterval(interval);
+            showStatusMessage("White's time is up! Black wins!");
+            setIsGameOver(true);
+            stopTimer();
+            return 0;
+          }
+          return time - 1;
+        });
+      } else {
+        setBlackTime((time) => {
+          if (time <= 0) {
+            clearInterval(interval);
+            showStatusMessage("Black's time is up! White wins!");
+            setIsGameOver(true);
+            stopTimer();
+            return 0;
+          }
+          return time - 1;
+        });
+      }
+      return currentPlayer;
     }, 1000);
 
     setTimerInterval(interval);
@@ -84,19 +79,12 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   // Switch the active player and restart their timer
   const switchPlayer = () => {
-    setActivePlayer((prev) => {
-      const nextPlayer = prev === 'w' ? 'b' : 'w';
-
-      // Add increment to the current player
-      if (prev === 'w') {
-        setWhiteTime((time) => time + increment);
-      } else {
-        setBlackTime((time) => time + increment);
-      }
-
-      return nextPlayer;
-    });
-
+    // Add increment to the current player's timer
+    if (game.turn() === 'w') {
+      setWhiteTime((time) => time + increment);
+    } else {
+      setBlackTime((time) => time + increment);
+    }
     startTimer();
   };
 
@@ -106,7 +94,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setWhiteTime(totalSeconds);
     setBlackTime(totalSeconds);
     setIncrement(seconds);
-    setActivePlayer('w');
     stopTimer();
     startTimer();
     setTimers({ white: totalSeconds, black: totalSeconds });
@@ -114,7 +101,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   const disableTimers = () => {
     stopTimer();
-    setActivePlayer('');
     setWhiteTime(0);
     setBlackTime(0);
     setIncrement(0);
@@ -129,8 +115,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     stopTimer();
     switchPlayer();
   };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const resetGame = () => {
     safeGameMutate((game) => {
@@ -273,11 +257,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           return game.move(move, { sloppy: true });
         });
         if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (gameMode === 'timed') {
           handleMoveTimerSwitch();
         }
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       } else {
         setTimeout(makeRandomMove, 150);
       }
@@ -317,11 +299,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   const onSquareClick = (square) => {
     setRightClickedSquares({});
     if (isPaused) return; // Disable piece movement if game is paused
-    /////////////////////////////////////////////////////////////////
     if (gameMode === 'timed') {
       if (isGameOver) return;
     }
-    /////////////////////////////////////////////////////////////////
     // Set starting square for move
     if (!moveFrom) {
       const hasMoveOptions = getMoveOptions(square);
@@ -382,13 +362,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
-      /////////////////////////////////
       if (move !== null) {
         if (gameMode === 'timed') {
           handleMoveTimerSwitch();
         }
       }
-      /////////////////////////////////
       return;
     }
   };
@@ -501,7 +479,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    */
   const onDrop = (source, target) => {
     if (isPaused) return false; // Disable drop if game is paused
-    /////////////////////////////////////////////////////////////////
     if (gameMode === 'timed') {
       if (isGameOver) {
         if (!statusMessage) {
@@ -510,7 +487,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
         return false;
       }
     }
-    /////////////////////////////////////////////////////////////////
     if (lock) {
       waitForResponseToast();
       return false;
@@ -530,14 +506,12 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
     resetArrows();
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (move !== null) {
       if (gameMode === 'timed') {
         handleMoveTimerSwitch();
       }
     }
     return move !== null;
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   };
 
   const loadGame = (fen) => {
@@ -565,11 +539,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     addArrow,
     resetArrows,
     turn: game.turn(),
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     initializeTimers,
     whiteTime,
     blackTime,
     getGameMode,
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   };
 };
