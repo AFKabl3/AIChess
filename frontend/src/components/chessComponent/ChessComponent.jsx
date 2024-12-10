@@ -3,20 +3,20 @@ import { useWindowSize } from '@uidotdev/usehooks';
 import PropTypes from 'prop-types';
 import { Chessboard } from 'react-chessboard';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
-import { useContext, useState, useEffect } from 'react';
+import { useContext } from 'react';
 
 export const ChessComponent = ({ chess }) => {
   const { height, width } = useWindowSize();
   const { config } = useContext(ChessContext);
 
-  const [boardOrientation, setBoardOrientation] = useState(config.selectedColor === 'w' ? 'white' : 'black');
+  const getBoardOrientation = () => {
+    if (config.fullControlMode) {
+      return chess.turn === 'w' ? 'white' : 'black';
+    }
+    return config.selectedColor === 'w' ? 'white' : 'black';
+  };
 
-  useEffect(() => {
-    const newOrientation = config.fullControlMode 
-      ? (config.turn === 'w' ? 'white' : 'black') 
-      : (config.selectedColor === 'w' ? 'white' : 'black');
-    setBoardOrientation(newOrientation);
-  }, [config.turn]);
+  const boardOrientation = getBoardOrientation();
 
   const {
     position,

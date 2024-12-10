@@ -564,6 +564,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     arrows,
     addArrow,
     resetArrows,
+    turn: game.turn(),
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     initializeTimers,
     whiteTime,
