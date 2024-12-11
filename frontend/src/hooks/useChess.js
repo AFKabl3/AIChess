@@ -400,7 +400,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setMoveTo(null);
     setShowPromotionDialog(false);
     setOptionSquares({});
-    if (gameMode === 'timed') handleMoveTimerSwitch();
     return;
   };
 
@@ -459,11 +458,13 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   const onDrop = (source, target) => {
-    if (isPaused) return false; // Disable drop if game is paused
-    if (gameMode === 'timed' && isGameOver && !statusMessage) {
-      showStatusMessage(game.turn === 'w' ? 'Black wins!' : 'White wins!');
+    if (
+      isPaused ||
+      (gameMode === 'timed' && isGameOver && !statusMessage)(
+        showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!')
+      )
+    )
       return false;
-    }
 
     if (lock) {
       waitForResponseToast();
