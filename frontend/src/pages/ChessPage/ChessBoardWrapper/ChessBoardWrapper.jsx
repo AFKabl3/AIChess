@@ -31,8 +31,8 @@ export const ChessBoardWrapper = ({ settings }) => {
     setConfigValue('startedGame', true);
     loadGame(fen);
     resetHistory();
-    if (fen.split(" ")[1] === 'b') {
-      updateHistory({san: '-'}, fen, 'user');
+    if (fen.split(' ')[1] === 'b') {
+      updateHistory({ san: '-' }, fen, 'user');
     }
     setTimersVisible(false);
     closeDialog();
@@ -77,8 +77,8 @@ export const ChessBoardWrapper = ({ settings }) => {
               alignItems: 'center',
             }}
           >
-            <Timer time={chess.whiteTime} isActive={chess.activePlayer === 'w'} color="white" />
-            <Timer time={chess.blackTime} isActive={chess.activePlayer === 'b'} color="black" />
+            <Timer time={chess.whiteTime} color="white" />
+            <Timer time={chess.blackTime} color="black" />
           </Box>
         )}
         <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />

@@ -67,7 +67,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           return time - 1;
         });
       }
-      return currentPlayer;                                                         // !!!
     }, 1000);
 
     setTimerInterval(interval);
@@ -253,9 +252,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           return game.move(move, { sloppy: true });
         });
         if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
-        if (gameMode === 'timed') {
-          handleMoveTimerSwitch();
-        }
+        if (gameMode === 'timed') handleMoveTimerSwitch();
       } else {
         setTimeout(makeRandomMove, 150);
       }
@@ -331,7 +328,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setMoveTo(square);
 
       // If promotion move
-      if (isPromotionMove(foundMove, square))  {
+      if (isPromotionMove(foundMove, square)) {
         setShowPromotionDialog(true);
         return;
       }
@@ -463,12 +460,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    */
   const onDrop = (source, target) => {
     if (isPaused) return false; // Disable drop if game is paused
-    if (gameMode === 'timed' && isGameOver) {
-      if (!statusMessage) {
-        showStatusMessage(activePlayer === 'w' ? 'Black wins!' : 'White wins!');
-      }
+    if (gameMode === 'timed' && isGameOver && !statusMessage) {
+      showStatusMessage(game.turn === 'w' ? 'Black wins!' : 'White wins!');
       return false;
     }
+
     if (lock) {
       waitForResponseToast();
       return false;

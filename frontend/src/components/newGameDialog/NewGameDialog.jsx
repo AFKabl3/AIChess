@@ -146,7 +146,7 @@ export const NewGameDialog = ({ onConfirm, open, onClose }) => {
       case 2:
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography>Select Time Per Move:</Typography>
+            <Typography>Select Time Per Player:</Typography>
             <Select value={selectedMinutes} onChange={(e) => setSelectedMinutes(e.target.value)}>
               <MenuItem value={1}>1 Minute</MenuItem>
               <MenuItem value={2}>2 Minutes</MenuItem>
