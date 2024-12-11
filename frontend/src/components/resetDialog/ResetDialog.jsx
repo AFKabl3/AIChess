@@ -8,7 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Fragment, useContext } from 'react';
 import { useDialog } from '../../hooks/useDialog';
 import { ChessContext } from '../../pages/ChessPage/ChessContext';
-import { defaultConfig } from '../../hooks/useConfig';
 
 export const ResetDialog = ({ onResetComplete }) => {
   const { isDialogOpen, openDialog, closeDialog } = useDialog();
@@ -29,9 +28,9 @@ export const ResetDialog = ({ onResetComplete }) => {
     resetHistory();
 
     // Reset config to default values
-    Object.keys(defaultConfig).forEach((key) => {
-      setConfigValue(key, defaultConfig[key]);
-    });
+    setConfigValue('fullControlMode', false);
+    setConfigValue('selectedColor', 'w');
+    setConfigValue('startedGame', true);
 
     closeDialog();
     if (onResetComplete) {

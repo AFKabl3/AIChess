@@ -67,7 +67,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           return time - 1;
         });
       }
-      return currentPlayer;
+      return currentPlayer;                                                         // !!!
     }, 1000);
 
     setTimerInterval(interval);
@@ -156,10 +156,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setOptionSquares({});
     }
   }, [game]);
-
-  useEffect(() => {
-    setConfigValue('turn', game.turn());
-  }, [game.turn()]);
 
   useEffect(() => {
     if (
@@ -298,15 +294,18 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    */
   const onSquareClick = (square) => {
     setRightClickedSquares({});
-    if (isPaused) return; // Disable piece movement if game is paused
-    if (gameMode === 'timed') {
-      if (isGameOver) return;
-    }
+    if (isPaused || (gameMode === 'timed' && isGameOver)) return;
+
+    const isPromotionMove = (move, square) => {
+      return (
+        (move.color === 'w' && move.piece === 'p' && square[1] === '8') ||
+        (move.color === 'b' && move.piece === 'p' && square[1] === '1')
+      );
+    };
+
     // Set starting square for move
     if (!moveFrom) {
-      const hasMoveOptions = getMoveOptions(square);
-
-      if (hasMoveOptions) setMoveFrom(square);
+      if (getMoveOptions(square)) setMoveFrom(square);
       return;
     }
 
@@ -318,25 +317,21 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
       // Handle invalid move by checking if a new piece was clicked
       if (!foundMove) {
-        const hasMoveOptions = getMoveOptions(square);
-        setMoveFrom(hasMoveOptions ? square : '');
+        setMoveFrom(getMoveOptions(square) ? square : '');
         return;
       }
 
       // If the board is locked, show a toast and return from function
       if (lock) {
         waitForResponseToast();
-        return false;
+        return;
       }
 
       // Valid move - set moveTo and handle promotion if applicable
       setMoveTo(square);
 
       // If promotion move
-      if (
-        (foundMove.color === 'w' && foundMove.piece === 'p' && square[1] === '8') ||
-        (foundMove.color === 'b' && foundMove.piece === 'p' && square[1] === '1')
-      ) {
+      if (isPromotionMove(foundMove, square))  {
         setShowPromotionDialog(true);
         return;
       }
@@ -349,9 +344,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       const move = gameCopy.move(move_UCI_notation, { sloppy: true });
 
       // Handle invalid move scenario
-      if (move === null) {
-        const hasMoveOptions = getMoveOptions(square);
-        if (hasMoveOptions) setMoveFrom(square);
+      if (!move) {
+        if (getMoveOptions(square)) setMoveFrom(square);
         return;
       }
 
@@ -362,11 +356,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
-      if (move !== null) {
-        if (gameMode === 'timed') {
-          handleMoveTimerSwitch();
-        }
-      }
+      if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
       return;
     }
   };
@@ -393,6 +383,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     if (piece) {
       const prevFen = game.fen();
 
+      if (!fromSquare && moveFrom) fromSquare = moveFrom;
+
       // Apply promotion move with selected piece, defaulting to Queen if undefined
       const move = safeGameMutate((game) => {
         return game.move({
@@ -402,7 +394,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
         });
       });
 
-      if (config.fullControlMode || onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+      if (move && onPlayerMove) onPlayerMove(move, prevFen, game.fen());
       resetArrows();
     }
 
@@ -411,11 +403,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setMoveTo(null);
     setShowPromotionDialog(false);
     setOptionSquares({});
-    if (move !== null) {
-      if (gameMode === 'timed') {
-        handleMoveTimerSwitch();
-      }
-    }
+    if (gameMode === 'timed') handleMoveTimerSwitch();
     return;
   };
 
@@ -459,11 +447,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     const move = game.move(possibleMove[randomIndex]); // TODO: Change to safe game mutate
     if (move && onBotMove) onBotMove(move, null, game.fen());
     setGame(new Chess(game.fen()));
-    if (move !== null) {
-      if (gameMode === 'timed') {
-        handleMoveTimerSwitch();
-      }
-    }
+    if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
   };
 
   /**
@@ -479,13 +463,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    */
   const onDrop = (source, target) => {
     if (isPaused) return false; // Disable drop if game is paused
-    if (gameMode === 'timed') {
-      if (isGameOver) {
-        if (!statusMessage) {
-          showStatusMessage(activePlayer === 'w' ? 'Black wins!' : 'White wins!');
-        }
-        return false;
+    if (gameMode === 'timed' && isGameOver) {
+      if (!statusMessage) {
+        showStatusMessage(activePlayer === 'w' ? 'Black wins!' : 'White wins!');
       }
+      return false;
     }
     if (lock) {
       waitForResponseToast();
@@ -506,11 +488,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
     resetArrows();
-    if (move !== null) {
-      if (gameMode === 'timed') {
-        handleMoveTimerSwitch();
-      }
-    }
+    if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
     return move !== null;
   };
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useMoveHistory = (config) => {
+export const useMoveHistory = () => {
   const [moveHistory, setMoveHistory] = useState([]); // Tracks moves with separate FEN states for the notation table
   const [isPaused, setIsPaused] = useState(false); // Tracks the pause/resume state
   const [savedFEN, setSavedFEN] = useState(null);
@@ -8,11 +8,6 @@ export const useMoveHistory = (config) => {
   const updateHistory = (move, fen, player) => {
     setMoveHistory((prevHistory) => {
       const newHistory = [...prevHistory];
-
-      if (config.fullControlMode) {
-        config.turn === 'w' ? (player = 'user') : (player = 'bot');
-      }
-
       const lastMove = player === 'user' ? newHistory[newHistory.length - 1]?.user : newHistory[newHistory.length - 1]?.bot;
       const isMoveDifferent = lastMove?.fen !== fen;
       const moveData = { san: move.san, fen };

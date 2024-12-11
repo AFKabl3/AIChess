@@ -29,7 +29,6 @@ export const ChessBoardWrapper = ({ settings }) => {
     setConfigValue('fullControlMode', false);
     setConfigValue('selectedColor', 'w');
     setConfigValue('startedGame', true);
-    setConfigValue('turn', fen.split(" ")[1]);
     loadGame(fen);
     resetHistory();
     if (fen.split(" ")[1] === 'b') {

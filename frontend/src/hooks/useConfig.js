@@ -7,7 +7,6 @@ export const defaultConfig = {
   selectedColor: 'w', // Default color used by the user
   startedGame: false,
   fullControlMode: false,
-  turn: 'w',
 };
 
 export const useConfig = () => {

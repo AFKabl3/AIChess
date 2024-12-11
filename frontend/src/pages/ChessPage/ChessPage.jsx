@@ -21,13 +21,13 @@ export const ChessPage = () => {
   const chat = useChat();
   const { messages, followChat, toggleFollowChat, sendUserChat, addBotChat } = chat;
 
-  const moveHistory = useMoveHistory(config);
+  const moveHistory = useMoveHistory();
   const { isPaused, updateHistory } = moveHistory;
 
   const chess = useChess({
     onPlayerMove: (move, prevFen, currFen) => {
       onPlayerMove(formatUciMove(move), prevFen);
-      updateHistory(move, currFen, 'user');
+      updateHistory(move, currFen, config.fullControlMode ? (move['color'] === 'w' ? 'user' : 'bot') : 'user');
     },
     onBotMove: (move, _, currFen) => {
       updateHistory(move, currFen, 'bot');
