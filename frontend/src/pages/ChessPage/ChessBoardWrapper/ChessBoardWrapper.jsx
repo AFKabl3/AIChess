@@ -19,6 +19,7 @@ export const ChessBoardWrapper = ({ settings }) => {
   const [isNewGameDialogOpen, setIsNewGameDialogOpen] = useState(true);
   const [selectedMode, setSelectedMode] = useState();
   const [timerVisible, setTimersVisible] = useState(false);
+  const [selectedColor, setSelectedColor] = useState();
 
   const { resetHistory, updateHistory } = moveHistory;
   const { resetGame } = chess;
@@ -40,6 +41,7 @@ export const ChessBoardWrapper = ({ settings }) => {
 
   const handleDialogData = ({ selectedMode, selectedColor, selectedMinutes, selectedSeconds }) => {
     setSelectedMode(selectedMode);
+    setSelectedColor(selectedColor);
     resetGame();
     chess.getGameMode(selectedMode);
 
@@ -56,7 +58,7 @@ export const ChessBoardWrapper = ({ settings }) => {
       setTimersVisible(true);
       const minutes = parseInt(selectedMinutes, 10);
       const seconds = parseInt(selectedSeconds, 10);
-      chess.initializeTimers(minutes, seconds);
+      chess.initializeTimers(minutes, seconds, selectedColor);
       setConfigValue('selectedColor', selectedColor);
       setConfigValue('startedGame', true);
     }
@@ -70,16 +72,19 @@ export const ChessBoardWrapper = ({ settings }) => {
         {/* TODO: Create system for selecting difficulty */}
         <InfoBox title="Bot" subtitle="(205)" image="/bot.png" />
         {timerVisible && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Timer time={chess.whiteTime} color="white" />
-            <Timer time={chess.blackTime} color="black" />
-          </Box>
+          // <Box
+          //   sx={{
+          //     display: 'flex',
+          //     flexDirection: 'column',
+          //     alignItems: 'center',
+          //   }}
+          // >
+          <Timer
+            time={selectedColor === 'w' ? chess.whiteTime : chess.blackTime}
+            color={selectedColor === 'w' ? 'white' : 'black'}
+          />
+          // <Timer time={chess.blackTime} color="black" />
+          /* // </Box> */
         )}
         <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
       </Box>

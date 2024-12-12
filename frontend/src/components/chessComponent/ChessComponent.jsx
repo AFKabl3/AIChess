@@ -40,6 +40,7 @@ export const ChessComponent = ({ chess }) => {
         boardWidth={Math.min(height - 210, width / 1.5 - 175)} // Responsive board width
         position={position}
         onPieceDrop={onDrop}
+        animationDuration={200}
         onPieceDragBegin={onPieceDragBegin}
         onPieceDragEnd={onPieceDragEnd}
         onSquareClick={onSquareClick}

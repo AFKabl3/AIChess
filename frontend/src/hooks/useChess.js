@@ -42,14 +42,13 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   // Start the timer for the active player
   const startTimer = () => {
     if (timerInterval) clearInterval(timerInterval);
-
     const interval = setInterval(() => {
       if (game.turn() === 'w') {
         setWhiteTime((time) => {
           if (time <= 0) {
             clearInterval(interval);
-            showStatusMessage("White's time is up! Black wins!");
-            setIsGameOver(true);
+            config.selectedColor === 'w' &&
+              (showStatusMessage("White's time is up! Black wins!"), setIsGameOver(true));
             stopTimer();
             return 0;
           }
@@ -59,8 +58,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
         setBlackTime((time) => {
           if (time <= 0) {
             clearInterval(interval);
-            showStatusMessage("Black's time is up! White wins!");
-            setIsGameOver(true);
+            config.selectedColor === 'b' &&
+              (showStatusMessage("Black's time is up! White wins!"), setIsGameOver(true));
             stopTimer();
             return 0;
           }
@@ -78,8 +77,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   // Switch the active player and restart their timer
   const switchPlayer = () => {
+    const previousPlayer = game.turn() === 'w' ? 'b' : 'w';
     // Add increment to the current player's timer
-    if (game.turn() === 'w') {
+    if (previousPlayer === 'w') {
       setWhiteTime((time) => time + increment);
     } else {
       setBlackTime((time) => time + increment);
@@ -146,6 +146,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       showStatusMessage(winner);
       setIsGameOver(true);
       stopTimer();
+      
       console.log(winner);
     } else if (game.in_check()) {
       const kingPos = getKingPosition(game);
@@ -392,6 +393,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       });
 
       if (move && onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+      if (move && gameMode === 'timed') handleMoveTimerSwitch();
       resetArrows();
     }
 
@@ -442,8 +444,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     const randomIndex = Math.floor(Math.random() * possibleMove.length);
     const move = game.move(possibleMove[randomIndex]); // TODO: Change to safe game mutate
     if (move && onBotMove) onBotMove(move, null, game.fen());
-    setGame(new Chess(game.fen()));
     if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
+    setGame(new Chess(game.fen()));
   };
 
   /**
@@ -458,14 +460,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   const onDrop = (source, target) => {
-    if (
-      isPaused ||
-      (gameMode === 'timed' && isGameOver && !statusMessage)(
-        showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!')
-      )
-    )
-      return false;
-
+    if (isPaused) return;
+    if (gameMode === 'timed' && isGameOver) {
+      if (!statusMessage) showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!');
+      return;
+    }
     if (lock) {
       waitForResponseToast();
       return false;
