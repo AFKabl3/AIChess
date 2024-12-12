@@ -1,18 +1,28 @@
 import { useState } from 'react';
 
 export const useMoveHistory = () => {
-  const [moveHistory, setMoveHistory] = useState([]);
-  const [isPaused, setIsPaused] = useState(false);
+  const [moveHistory, setMoveHistory] = useState([]); // Tracks moves with separate FEN states for the notation table
+  const [isPaused, setIsPaused] = useState(false); // Tracks the pause/resume state
   const [savedFEN, setSavedFEN] = useState(null);
 
   const updateHistory = (move, fen, player) => {
     setMoveHistory((prevHistory) => {
       const newHistory = [...prevHistory];
-      if (player === 'user') {
-        newHistory.push({ user: { san: move.san, fen }, bot: null });
-      } else {
-        newHistory[newHistory.length - 1].bot = { san: move.san, fen };
+      const lastMove = player === 'user' ? newHistory[newHistory.length - 1]?.user : newHistory[newHistory.length - 1]?.bot;
+      const isMoveDifferent = lastMove?.fen !== fen;
+      const moveData = { san: move.san, fen };
+
+      if (lastMove === null) {
+        if (player === 'user') {
+          newHistory[newHistory.length - 1].user = moveData;
+        } else if (player === 'bot') {
+          newHistory[newHistory.length - 1].bot = moveData;
+        }
+      } else if (lastMove === undefined || isMoveDifferent) {
+        const newMove = player === 'user' ? { user: moveData, bot: null } : { user: null, bot: moveData };
+        newHistory.push(newMove);
       }
+
       return newHistory;
     });
   };

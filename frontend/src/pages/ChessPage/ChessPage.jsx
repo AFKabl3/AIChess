@@ -27,7 +27,7 @@ export const ChessPage = () => {
   const chess = useChess({
     onPlayerMove: (move, prevFen, currFen) => {
       onPlayerMove(formatUciMove(move), prevFen);
-      updateHistory(move, currFen, 'user');
+      updateHistory(move, currFen, config.fullControlMode ? (move['color'] === 'w' ? 'user' : 'bot') : 'user');
     },
     onBotMove: (move, _, currFen) => {
       updateHistory(move, currFen, 'bot');
@@ -35,6 +35,7 @@ export const ChessPage = () => {
     lock,
     isPaused,
     config,
+    setConfigValue,
   });
 
   const { position, addArrow } = chess;
@@ -121,30 +122,31 @@ export const ChessPage = () => {
     },
   ];
 
+  const content = (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        height: '90%',
+        width: '100%',
+        gap: 4,
+        p: 3,
+      }}
+    >
+      <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+      <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
+      <Chat
+        followChat={followChat}
+        messages={messages}
+        sendMessage={onQuestionAsked}
+        commands={commands}
+      />
+    </Box>
+  );
   return (
     <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          height: '90%',
-          width: '100%',
-          gap: 4,
-          p: 3,
-        }}
-      >
-        <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
-        <ChessBoardWrapper
-          settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }}
-        />
-        <Chat
-          followChat={followChat}
-          messages={messages}
-          sendMessage={onQuestionAsked}
-          commands={commands}
-        />
-      </Box>
+      {content}
     </ChessContext.Provider>
   );
 };

@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { storage } from '../storage';
 
 // Default configuration
-const defaultConfig = {
+export const defaultConfig = {
   SKILL_LEVEL: 2, // Default skill level for the chess bot
+  selectedColor: 'w', // Default color used by the user
+  startedGame: false,
+  fullControlMode: false,
 };
 
 export const useConfig = () => {
@@ -20,7 +23,7 @@ export const useConfig = () => {
     return initialConfig;
   });
 
-  const updateConfigValue = (key, value) => {
+  const setConfigValue = (key, value) => {
     if (typeof defaultConfig[key] !== typeof value) {
       throw new TypeError(`Type of ${key} must be ${typeof defaultConfig[key]}`);
     }
@@ -33,5 +36,5 @@ export const useConfig = () => {
     }));
   };
 
-  return [config, updateConfigValue];
+  return [config, setConfigValue];
 };
