@@ -8,6 +8,7 @@
    - [3. Get Best Move Endpoint](#3-get-best-move-endpoint)
    - [4. Get Move Suggestion with Evaluation Endpoint](#4-Get-Move-Suggestion-with-Evaluation-Endpoint)
    - [5. Get Bot Move Endpoint](#5-get-bot-move-endpoint)
+   - [6. More Explanation Endpoint](#6-more-explanation-endpoint)
 2. [Error Handling](#error-handling)
 
 ## Endpoints
