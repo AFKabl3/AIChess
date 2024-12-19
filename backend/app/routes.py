@@ -165,7 +165,7 @@ def create_main_app():
                 "message": "Invalid FEN string provided."
             }), 422
 
-        if not llm_utils.is_question_valid(question):
+        if not llm_utils.is_string_valid(question):
             return jsonify({
                 "type": "invalid_question",
                 "message": "Invalid question string provided."
@@ -318,6 +318,72 @@ def create_main_app():
             return jsonify({
                 "type": "llm_error",
                 "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
+
+        return jsonify({
+            "answer": answer
+        }), 200
+        
+    @app.route('/more_explanation', methods=['POST'])
+    async def more_explanation():
+        data = await request.get_json()
+        fen = data.get("fen")
+        question = data.get("question")
+        first_answer = data.get("first_answer")
+
+        if not fen or not question or not first_answer:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "All 'fen', 'question' and 'first_answer' fields are required."
+            }), 400
+
+        if not stockfish.is_fen_valid(fen):
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422
+
+        if not llm_utils.is_string_valid(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422
+            
+        if not llm_utils.is_string_valid(first_answer):
+            return jsonify({
+                "type": "invalid_first_answer",
+                "message": "Invalid first_answer string provided."
+            }), 422
+
+        try:
+            evaluation = stockfish.get_board_evaluation(fen)
+
+            # reset stockfish parameters
+            stockfish.reset_engine_parameters()
+
+            if evaluation is None:
+                raise StockfishException("no evaluation for the current fen")
+
+            try:
+                board_str = stockfish_utils.get_string_board(fen)
+                ask_input = {
+                    "board": board_str,
+                    "question": f"Answer with more explanation to the question: '{question}' which you answered as: '{first_answer}'?",
+                    "evaluation": evaluation
+                }
+
+                answer = coach.ask_chess_question(ask_input)
+
+            except Exception as e:
+                return jsonify({
+                    "type": "llm_error",
+                    "message": f"Failed to get a response from the LLM: {str(e)}"
+                }), 500
+
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
         return jsonify({
