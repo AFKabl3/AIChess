@@ -7,6 +7,7 @@ const ChessEndpoint = {
   ANSWER_QUESTION: '/answer_question',
   GET_BOT_MOVE: '/get_bot_move',
   GET_BEST_MOVE: '/get_best_move',
+  MORE_EXPLANATION: '/more_explanation'
 };
 
 /**
@@ -69,3 +70,14 @@ export const getBotMove = async (fen, skill_level) =>
  */
 export const getBestMove = async (fen) =>
   request(ChessEndpoint.GET_BEST_MOVE, Method.POST, { fen });
+
+/**
+ * Gets the best move for a given board position.
+ *
+ * @param {string} fen The FEN string representing the board state.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - `suggested_move` (string): The best move in UCI notation.
+ *  or rejects with an error message.
+ */
+export const moreExplanation = async (fen, question, first_answer) =>
+  request(ChessEndpoint.MORE_EXPLANATION, Method.POST, { fen, question, first_answer });
