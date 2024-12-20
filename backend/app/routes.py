@@ -323,6 +323,42 @@ def create_main_app():
         return jsonify({
             "answer": answer
         }), 200
+    
+    @app.route('/get_winning_percentage', methods=['POST'])
+    async def get_winning_percentage():
+        data = await request.get_json()
+        fen = data.get("fen")
+
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "'fen' field is required."
+            }), 400
+
+        if not stockfish.is_fen_valid(fen):
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422
+        
+        try:
+            winning_percentage = stockfish.get_winning_percentage(fen)
+            
+            # reset stockfish_parameters
+            stockfish.reset_engine_parameters()
+
+            return jsonify(
+                winning_percentage
+            ), 200
+        
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500  
+
+
+
 
     @app.errorhandler(404)
     async def not_found(error):

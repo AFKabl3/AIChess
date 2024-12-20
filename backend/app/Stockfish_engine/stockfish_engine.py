@@ -1,4 +1,5 @@
 from stockfish import Stockfish
+import numpy as np
 from .utils import utils
 
 class StockfishEngine(Stockfish):
@@ -38,6 +39,38 @@ class StockfishEngine(Stockfish):
             return evaluation_after - evaluation_before
         else:
             return evaluation_before - evaluation_after
+
+    # calcutation of the winnig percentage of the current player
+    def get_winning_percentage(self, fen):
+        '''
+        the fen provided is the position of the board after the move, so 
+        the player in the fen is the one after the move  
+        '''
+        current_player = utils.get_current_player(fen)
+        self.set_fen_position(fen)
+        evaluation = self.get_evaluation()
+        evaluation_type = evaluation.get('type')
+        # calculate the evaluation value in centipawns
+        evaluation_field = evaluation.get('value')/100
+
+        if evaluation_type == "cp":
+            # this formula is based on the one use in lichess
+            percentage = 50 + 50 * (2 / (1 + np.exp(-0.00368208 * evaluation_field)) - 1)
+        elif evaluation_type == "mate":
+            percentage = 100
+
+        # if the current player is white, the one who made the move is the black
+        if current_player == "b":
+            percentage = 100 - percentage
+
+        result ={
+            "centipawns": evaluation_field,
+            "type": evaluation_type,
+            "percentage": percentage,
+            "current_player": current_player
+        }
+        return result
+
 
 
 
