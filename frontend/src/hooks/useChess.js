@@ -39,6 +39,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   const [timers, setTimers] = useState({ white: 0, black: 0 });
   const [gameMode, setGameMode] = useState(); // Selected game mode at the begin
 
+  // Percentage of probability of both players winning
+  const [whitePercentage, setWhitePercentage] = useState(50.0);
+  const [blackPercentage, setBlackPercentage] = useState(50.0);
+
   // Start the timer for the active player
   const startTimer = () => {
     if (timerInterval) clearInterval(timerInterval);
@@ -166,6 +170,25 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     )
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
+
+  useEffect(() => {
+      // Simula una chiamata API per aggiornare le percentuali
+      const fetchProbabilities = async () => {
+        try {
+          const res = await api.getWinningPercentage(game.fen());
+          const data = await res.json();
+          const { current_player, percentage } = data;
+  
+          setWhitePercentage(current_player === 'w' ? percentage : 100.0 - percentage);
+          setBlackPercentage(current_player === 'b' ? percentage : 100.0 - percentage);
+
+        } catch (error) {
+          console.error("Error fetching probabilities:", error);
+        }
+      };
+  
+      fetchProbabilities();
+    }, [game.turn()]);
 
   /**
    * Safely mutates the current game state by applying a modification function.
@@ -517,5 +540,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     whiteTime,
     blackTime,
     getGameMode,
+    whitePercentage,
+    blackPercentage,
   };
 };
