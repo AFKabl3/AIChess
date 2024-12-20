@@ -96,8 +96,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 ### Valid request
@@ -152,8 +152,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -251,8 +251,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -366,8 +366,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -423,8 +423,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -494,8 +494,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -620,10 +620,9 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
-
 
 ### Enpassant field in FEN
 POST http://127.0.0.1:5000/get_winning_percentage
@@ -639,4 +638,19 @@ Response:
   "current_player": "b",
   "percentage": float,
   "type": "cp"
+}
+
+
+### endpoint not found
+POST http://127.0.0.1:5000/get_winning_percentages
+Content-Type: application/json
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+}
+
+Response:
+{
+  "message": "404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
+  "type": "not_found"
 }

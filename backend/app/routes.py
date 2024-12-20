@@ -27,6 +27,11 @@ def create_main_app():
 
     @app.route('/evaluate_move', methods=['POST'])
     async def evaluate_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         move = data.get("move")
@@ -90,6 +95,11 @@ def create_main_app():
 
     @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
     async def get_move_suggestion_with_evaluation():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -149,6 +159,11 @@ def create_main_app():
 
     @app.route('/answer_question', methods=['POST'])
     async def answer_question():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         question = data.get("question")
@@ -208,6 +223,11 @@ def create_main_app():
 
     @app.route('/get_bot_move', methods=['POST'])
     async def get_bot_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         skill_level = data.get("skill_level")
@@ -249,6 +269,11 @@ def create_main_app():
 
     @app.route('/get_best_move', methods=['POST'])
     async def get_best_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -283,6 +308,12 @@ def create_main_app():
 
     @app.route('/get_game_status', methods=['POST'])
     async def get_game_status():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
+        
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -326,6 +357,11 @@ def create_main_app():
     
     @app.route('/get_winning_percentage', methods=['POST'])
     async def get_winning_percentage():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -364,7 +400,7 @@ def create_main_app():
     async def not_found(error):
         return jsonify({
             "type": "not_found",
-            "message": f"The requested resource was not found: : {str(error)}"
+            "message": f"{str(error)}"
         }), 404
 
     @app.errorhandler(500)
