@@ -172,7 +172,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   }, [game, config.startedGame]);
 
   useEffect(() => {
-      // Simula una chiamata API per aggiornare le percentuali
       const fetchProbabilities = async () => {
         try {
           const res = await api.getWinningPercentage(game.fen());
