@@ -308,8 +308,6 @@ POST /get_game_status
 
 - **200 OK**:
   - **Body (JSON)**:
-    - `centipawns` (string)
-    - `type` (string)
     - `current_player` (string)
     - `percentage` (float): percentage of winning of the `current_player`.
 
@@ -330,8 +328,6 @@ POST /get_winning_percentage
 
 ```json
 {
-  "centipawns": 28,
-  "type": "cp",
   "current_player": "w",
   "percentage": 52.57517538936253
 

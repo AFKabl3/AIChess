@@ -524,10 +524,8 @@ Content-Type: application/json
 
 Response:
 {
-  "centipawns": integer,
   "current_player": string,
-  "percentage": float,
-  "type": "cp"
+  "percentage": float
 }
 
 
@@ -541,10 +539,8 @@ Content-Type: application/json
 
 Response:
 {
-  "centipawns": integer,
   "current_player": string,
-  "percentage": float,
-  "type": "cp"
+  "percentage": float
 }
 
 
@@ -558,10 +554,8 @@ Content-Type: application/json
 
 Response:
 {
-  "centipawns": integer,
   "current_player": string,
-  "percentage": float,
-  "type": "cp"
+  "percentage": float
 }
 
 
@@ -575,10 +569,8 @@ Content-Type: application/json
 
 Response:
 {
-  "centipawns": integer,
   "current_player": string,
-  "percentage": 100.0,
-  "type": "mate"
+  "percentage": 100.0
 }
 
 
@@ -634,10 +626,8 @@ Content-Type: application/json
 
 Response:
 {
-  "centipawns": integer,
   "current_player": "b",
-  "percentage": float,
-  "type": "cp"
+  "percentage": float
 }
 
 

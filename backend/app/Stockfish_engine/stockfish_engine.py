@@ -64,8 +64,8 @@ class StockfishEngine(Stockfish):
             percentage = 100.0 - percentage
 
         result ={
-            "centipawns": evaluation_field,
-            "type": evaluation_type,
+            # "evaluation": evaluation_field/100,
+            # "type": evaluation_type,
             "percentage": percentage,
             "current_player": current_player
         }
