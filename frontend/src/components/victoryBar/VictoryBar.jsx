@@ -3,8 +3,8 @@ import { Box, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { ChessContext } from "../../pages/ChessPage/ChessContext";
 
-const VictoryBar = () => {
-  const { chess } = useContext(ChessContext);
+export const VictoryBar = () => {
+  const { chess, config } = useContext(ChessContext);
   const { whitePercentage, blackPercentage } = chess;
 
   return (
@@ -14,20 +14,18 @@ const VictoryBar = () => {
         flexDirection: "column-reverse",
         alignItems: "center",
         justifyContent: "space-between",
-        width: "80px",
+        width: "60px",
         height: "100%",
-        border: "1px solid #ccc",
         borderRadius: "8px",
         overflow: "hidden",
         backgroundColor: "#f9f9f9",
       }}
     >
-      {/* Black Bar */}
       <Box
         sx={{
           width: "100%",
-          height: `${blackPercentage}%`,
-          backgroundColor: "#000",
+          height: `${config.selectedColor === 'w' ? whitePercentage : blackPercentage}%`,
+          backgroundColor: `${config.selectedColor === 'w' ? "#fff" : "#000"}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -36,18 +34,17 @@ const VictoryBar = () => {
       >
         <Typography
           variant="caption"
-          sx={{ color: "#fff", fontWeight: "bold", position: "absolute" }}
+          sx={{ color: `${config.selectedColor === 'w' ? "#000" : "#fff"}`, fontWeight: "bold", position: "absolute" }}
         >
-          {blackPercentage}%
+          {(config.selectedColor === 'w' ? whitePercentage : blackPercentage).toFixed(1)}%
         </Typography>
       </Box>
 
-      {/* White Bar */}
       <Box
         sx={{
           width: "100%",
-          height: `${whitePercentage}%`,
-          backgroundColor: "#fff",
+          height: `${config.selectedColor === 'w' ? blackPercentage : whitePercentage}%`,
+          backgroundColor: `${config.selectedColor === 'w' ? "#000" : "#fff" }`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -56,9 +53,9 @@ const VictoryBar = () => {
       >
         <Typography
           variant="caption"
-          sx={{ color: "#000", fontWeight: "bold", position: "absolute" }}
+          sx={{ color: `${config.selectedColor === 'w' ? "#fff" : "#000"}`, fontWeight: "bold", position: "absolute" }}
         >
-          {whitePercentage}%
+          {(config.selectedColor === 'w' ? blackPercentage : whitePercentage).toFixed(1)}%
         </Typography>
       </Box>
     </Box>
