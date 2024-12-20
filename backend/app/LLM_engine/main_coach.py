@@ -31,10 +31,11 @@ class MainCoach(LLM):
         board = input.get("board")
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
-        response = (self.ask(f"""The current state of the board is: \n  {board} \n
-        The move made is {move},\n
-        having the delta of the two evaluations, before and after the move: {evaluation}.
-        In your response only provide a feedback on this move using the info above and limit the response to 70 words\n"""))
+        prompt = (f"""The current state of the board is, empty cells are rapresented with ' ':\n{board}
+        The move made is: {move},
+        having the delta of the two evaluations of the board state, before and after the move: {evaluation}.
+        Provide a feedback on this move using the info above and limit the response to 70 words""")
+        response = (self.ask(prompt))
         return response
 
     def ask_move_suggestion(self, input):
@@ -42,30 +43,33 @@ class MainCoach(LLM):
         board = input.get("board")
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
-        response = (self.ask(f"""The current state of the board is: {board} \n
-        The move:{move},\n
-        Having the delta of the two evaluations, before and after the move: {evaluation}.\n
-        In your response only suggest this move to the user using the info above and limit the response to 70 words\n"""))
+        prompt = (f"""The current state of the board is, empty cells are rapresented with ' ':\n{board}
+        The move to be suggested: {move},
+        Having the delta of the two evaluations of the board state, before and after the move: {evaluation}.
+        Suggest this move to the user using the info above and limit the response to 70 words""")
+        response = (self.ask(prompt))
         return response
 
     def ask_chess_question(self, ask_input):
         board = ask_input.get("board")
         evaluation = ask_input.get("evaluation")
         question = ask_input.get("question")
-        response =  (self.direct_question(f"""The current state of the board is: {board} \n
-        The evaluation of the state is {evaluation}.\n
-        {question}\n 
-        Limit the response to 70 words\n"""))
+        prompt = (f"""The current state of the board is, empty cells are rapresented with ' ':\n{board}
+        The evaluation of current board is: {evaluation}.
+        {question}
+        Limit the response to 70 words\n""")
+        response =  (self.direct_question(prompt))
         return response
     
     def ask_game_status_explanation(self, ask_input):
         self.automatic_coach_creation()
         board = ask_input.get("board")
         evaluation = ask_input.get("evaluation")
-        response = (self.ask(f"""The current state of the board is: {board} \n
-        The evaluation of the state is {evaluation}.\n
-        Explain the game status to the user, you can for example explain if black or white are winning and explain why. \n 
-        Limit the response to 70 words\n"""))
+        prompt = (f"""The current state of the board is, empty cells are rapresented with ' ':\n{board}
+        The evaluation of current board is: {evaluation}.
+        Explain the game status to the user, you can for example explain if black or white are winning and explain why.
+        Limit the response to 70 words\n""")
+        response = (self.ask(prompt))
         return response
 
     

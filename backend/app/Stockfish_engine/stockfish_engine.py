@@ -23,7 +23,8 @@ class StockfishEngine(Stockfish):
 
     def get_board_evaluation(self, fen):
         self.set_fen_position(fen)
-        evaluation = self.get_evaluation().get('value')
+        # evaluation as lichess/chess.com (Stockfish provide it in centipawns)
+        evaluation = self.get_evaluation().get('value') / 100
         return evaluation
 
     def get_move_evaluation(self, fen, move):

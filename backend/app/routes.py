@@ -67,7 +67,7 @@ def create_main_app():
 
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
-                board_str = stockfish_utils.get_string_board(fen_after_move)
+                board_str = llm_utils.from_fen_to_board(fen_after_move)
                 ask_input = {
                     "board": board_str,
                     "move": move,
@@ -129,7 +129,7 @@ def create_main_app():
                 raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
+                board_str = llm_utils.from_fen_to_board(fen)
                 ask_input = {
                     "board": board_str,
                     "move": suggested_move,
@@ -196,7 +196,7 @@ def create_main_app():
                 raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
+                board_str = llm_utils.from_fen_to_board(fen)
                 ask_input = {
                     "board": board_str,
                     "question": question,
@@ -338,12 +338,13 @@ def create_main_app():
                 "type": "stockfish_error",
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
-
-        ask_input = {
-            "board": fen,
-            "evaluation": game_status_evaluation
-        }
+        
         try:
+            board_str = llm_utils.from_fen_to_board(fen)
+            ask_input = {
+                "board": board_str,
+                "evaluation": game_status_evaluation
+            }
             answer = coach.ask_game_status_explanation(ask_input)
         except Exception as e:
             return jsonify({
