@@ -68,8 +68,10 @@ def create_main_app():
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
                 board_str = llm_utils.from_fen_to_board(fen_after_move)
+                player_made_move = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(player_made_move),
                     "move": move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -87,7 +89,7 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-        player_made_move = stockfish_utils.get_current_player(fen)
+        
         return jsonify({
             "player_made_move": player_made_move,
             "feedback": response,
@@ -130,8 +132,10 @@ def create_main_app():
 
             try:
                 board_str = llm_utils.from_fen_to_board(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "move": suggested_move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -150,7 +154,6 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-        current_player = stockfish_utils.get_current_player(fen)
         return jsonify({
             "current_player": current_player,
             "suggested_move": suggested_move,
@@ -197,8 +200,10 @@ def create_main_app():
 
             try:
                 board_str = llm_utils.from_fen_to_board(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "question": question,
                     "evaluation": evaluation
                 }
@@ -341,8 +346,10 @@ def create_main_app():
         
         try:
             board_str = llm_utils.from_fen_to_board(fen)
+            current_player = stockfish_utils.get_current_player(fen)
             ask_input = {
                 "board": board_str,
+                "player": llm_utils.get_player(current_player),
                 "evaluation": game_status_evaluation
             }
             answer = coach.ask_game_status_explanation(ask_input)
@@ -393,8 +400,6 @@ def create_main_app():
                 "type": "stockfish_error",
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500  
-
-
 
 
     @app.errorhandler(404)

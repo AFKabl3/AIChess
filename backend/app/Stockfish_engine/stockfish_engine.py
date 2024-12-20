@@ -25,7 +25,7 @@ class StockfishEngine(Stockfish):
         self.set_fen_position(fen)
         # evaluation as lichess/chess.com (Stockfish provide it in centipawns)
         evaluation = self.get_evaluation().get('value') / 100
-        return evaluation
+        return round(evaluation, 5)
 
     def get_move_evaluation(self, fen, move):
         evaluation_before = self.get_board_evaluation(fen)
@@ -37,9 +37,9 @@ class StockfishEngine(Stockfish):
 
         current_player = utils.get_current_player(fen)
         if current_player == "w":
-            return evaluation_after - evaluation_before
+            return round(evaluation_after - evaluation_before, 5)
         else:
-            return evaluation_before - evaluation_after
+            return round(evaluation_before - evaluation_after, 5)
 
     # calcutation of the winnig percentage of the current player
     def get_winning_percentage(self, fen):

@@ -12,6 +12,12 @@ def is_question_valid(question):
 def get_string_board(fen):
     return fen.split()[0]
 
+def get_player(fen_player):
+    if fen_player == 'w':
+        return 'white'
+    else:
+        return 'black'
+
 def from_fen_to_board(fen):
     board = get_string_board(fen)
     matrixboard = [[' ' for _ in range(8)] for _ in range(8)]
