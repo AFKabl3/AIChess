@@ -13,7 +13,7 @@ class MainCoach(LLM):
                 For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
                 Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
                 the move you suggested, move sequences, or any general advice they may seek."""
-        # self.automatic_conversation.append({"role": "user", "content": self.prompt})
+        self.automatic_conversation.append({"role": "user", "content": self.prompt})
         self.automatic_conversation.append({"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 
     def direct_coach_creation(self):
@@ -22,7 +22,7 @@ class MainCoach(LLM):
                 For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
                 Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
                 the move you suggested, move sequences, or any general advice they may seek."""
-        # self.direct_conversation_history.append({"role": "user", "content": self.prompt})
+        self.direct_conversation_history.append({"role": "user", "content": self.prompt})
         self.direct_conversation_history.append(
             {"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 

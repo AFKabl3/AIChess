@@ -299,12 +299,39 @@ Content-Type: application/json
 }
 
 
-### Valid Request
+### Valid Request - initial state
 POST http://127.0.0.1:5000/get_winning_percentage
 Content-Type: application/json
 
 {
-  "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+
+### Valid Request - in game status (white is in advantage)
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r2Q1b1r/3R1p2/k1b2Bnp/pp6/8/1PP2N1P/P4P2/4R1K1 w - - 5 34"
+}
+
+
+### Valid Request - in game status (black is in advantage)
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r2qkbnr/ppp2ppp/2n5/3pp3/2N5/4P2b/PPPPBPPP/R1BQ1RK1 b kq - 1 6"
+}
+
+
+### Valid Request - mate for white
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4"
 }
 
 
@@ -313,7 +340,6 @@ POST http://127.0.0.1:5000/get_winning_percentage
 Content-Type: application/json
 
 {}
-
 
 
 ### Invalid FEN String

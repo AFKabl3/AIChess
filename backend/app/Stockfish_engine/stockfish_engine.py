@@ -51,17 +51,16 @@ class StockfishEngine(Stockfish):
         evaluation = self.get_evaluation()
         evaluation_type = evaluation.get('type')
         # calculate the evaluation value in centipawns
-        evaluation_field = evaluation.get('value')/100
+        evaluation_field = evaluation.get('value')
 
         if evaluation_type == "cp":
             # this formula is based on the one use in lichess
             percentage = 50 + 50 * (2 / (1 + np.exp(-0.00368208 * evaluation_field)) - 1)
         elif evaluation_type == "mate":
-            percentage = 100
-
+            percentage = 100.0
         # if the current player is white, the one who made the move is the black
         if current_player == "b":
-            percentage = 100 - percentage
+            percentage = 100.0 - percentage
 
         result ={
             "centipawns": evaluation_field,
