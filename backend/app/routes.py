@@ -27,6 +27,11 @@ def create_main_app():
 
     @app.route('/evaluate_move', methods=['POST'])
     async def evaluate_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         move = data.get("move")
@@ -62,9 +67,11 @@ def create_main_app():
 
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
-                board_str = stockfish_utils.get_string_board(fen_after_move)
+                board_str = llm_utils.from_fen_to_board(fen_after_move)
+                player_made_move = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(player_made_move),
                     "move": move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -82,7 +89,7 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-        player_made_move = stockfish_utils.get_current_player(fen)
+        
         return jsonify({
             "player_made_move": player_made_move,
             "feedback": response,
@@ -90,6 +97,11 @@ def create_main_app():
 
     @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
     async def get_move_suggestion_with_evaluation():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -119,9 +131,11 @@ def create_main_app():
                 raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
+                board_str = llm_utils.from_fen_to_board(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "move": suggested_move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -140,7 +154,6 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
 
-        current_player = stockfish_utils.get_current_player(fen)
         return jsonify({
             "current_player": current_player,
             "suggested_move": suggested_move,
@@ -149,6 +162,11 @@ def create_main_app():
 
     @app.route('/answer_question', methods=['POST'])
     async def answer_question():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         question = data.get("question")
@@ -181,9 +199,11 @@ def create_main_app():
                 raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
+                board_str = llm_utils.from_fen_to_board(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "question": question,
                     "evaluation": evaluation
                 }
@@ -208,6 +228,11 @@ def create_main_app():
 
     @app.route('/get_bot_move', methods=['POST'])
     async def get_bot_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         skill_level = data.get("skill_level")
@@ -249,6 +274,11 @@ def create_main_app():
 
     @app.route('/get_best_move', methods=['POST'])
     async def get_best_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -283,6 +313,12 @@ def create_main_app():
 
     @app.route('/get_game_status', methods=['POST'])
     async def get_game_status():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
+        
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -307,12 +343,15 @@ def create_main_app():
                 "type": "stockfish_error",
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500
-
-        ask_input = {
-            "board": fen,
-            "evaluation": game_status_evaluation
-        }
+        
         try:
+            board_str = llm_utils.from_fen_to_board(fen)
+            current_player = stockfish_utils.get_current_player(fen)
+            ask_input = {
+                "board": board_str,
+                "player": llm_utils.get_player(current_player),
+                "evaluation": game_status_evaluation
+            }
             answer = coach.ask_game_status_explanation(ask_input)
         except Exception as e:
             return jsonify({
@@ -323,12 +362,51 @@ def create_main_app():
         return jsonify({
             "answer": answer
         }), 200
+    
+    @app.route('/get_winning_percentage', methods=['POST'])
+    async def get_winning_percentage():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
+        data = await request.get_json()
+        fen = data.get("fen")
+
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "'fen' field is required."
+            }), 400
+
+        if not stockfish.is_fen_valid(fen):
+            return jsonify({
+                "type": "invalid_fen_notation",
+                "message": "Invalid FEN string provided."
+            }), 422
+        
+        try:
+            winning_percentage = stockfish.get_winning_percentage(fen)
+            
+            # reset stockfish_parameters
+            stockfish.reset_engine_parameters()
+
+            return jsonify(
+                winning_percentage
+            ), 200
+        
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500  
+
 
     @app.errorhandler(404)
     async def not_found(error):
         return jsonify({
             "type": "not_found",
-            "message": f"The requested resource was not found: : {str(error)}"
+            "message": f"{str(error)}"
         }), 404
 
     @app.errorhandler(500)

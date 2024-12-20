@@ -22,9 +22,6 @@ def from_move_to_fen(fen, move):
 def is_skill_level_valid(skill_level):
     return isinstance(skill_level, int) and skill_level in range(0,21)
 
-def get_string_board(fen):
-    return fen.split()[0]
-
 def get_current_player(fen):
     return fen.split()[1]
 
