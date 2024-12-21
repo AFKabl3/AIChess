@@ -12,11 +12,21 @@ from stockfish import StockfishException
 from .LLM_engine import MainCoach
 from .LLM_engine import utils as llm_utils
 
+# Error handling functions
+from .error_handlers import (
+    invalid_request_error,
+    invalid_fen_error,
+    invalid_move_error,
+    stockfish_error,
+    llm_error,
+    invalid_question_error
+)
+
 def create_main_app():
 
     app = Quart(__name__)
     app = cors(app)
-
+    
     # stockfish instance creation
     stockfish_path = stockfish_utils.get_stockfish_binary_path()
     stockfish = StockfishEngine(path=stockfish_path)
@@ -33,32 +43,21 @@ def create_main_app():
 
         # Validate FEN and move data
         if not fen or not move:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "Both 'fen' and 'move' fields are required."
-            }), 400
+            return invalid_request_error(["fen", "move"])
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            return invalid_fen_error()
 
         if not stockfish.is_move_valid(fen, move):
-            return jsonify({
-                "type": "invalid_move",
-                "message": "Invalid/illegal string move provided."
-            }), 422
+            return invalid_move_error()
+
 
         try:
-            # evaluation of the move made by the user
             delta_evaluation = stockfish.get_move_evaluation(fen, move)
-
-            # reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
             if delta_evaluation is None:
-                raise StockfishException("no evaluation for the current fen")
+                raise StockfishException("no evaluation for the current FEN")
 
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
@@ -68,19 +67,12 @@ def create_main_app():
                     "move": move,
                     "delta_evaluation": delta_evaluation
                 }
-
                 response = coach.ask_move_feedback(ask_input)
             except Exception as e:
-                return jsonify({
-                    "type": "llm_error",
-                    "message": f"Failed to get a response from the LLM: {str(e)}"
-                }), 500
+                return llm_error(e)
 
         except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
+            return stockfish_error(e)
 
         player_made_move = stockfish_utils.get_current_player(fen)
         return jsonify({
@@ -94,16 +86,10 @@ def create_main_app():
         fen = data.get("fen")
 
         if not fen:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "'fen' fields is required."
-            }), 400
+            return invalid_request_error(fen)
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            return invalid_fen_error()
 
         try:
             # obtain from stockfish the best move
@@ -129,16 +115,10 @@ def create_main_app():
                 response = coach.ask_move_suggestion(ask_input)
 
             except Exception as e:
-                return jsonify({
-                    "type": "llm_error",
-                    "message": f"Failed to get a response from the LLM: {str(e)}"
-                }), 500
+                return llm_error(e)
 
         except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
+            return stockfish_error(e)
 
         current_player = stockfish_utils.get_current_player(fen)
         return jsonify({
@@ -154,22 +134,13 @@ def create_main_app():
         question = data.get("question")
 
         if not fen or not question:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "Both 'fen' and 'question' fields are required."
-            }), 400
+            return invalid_request_error(["fen","question"])
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            return invalid_fen_error()
 
         if not llm_utils.is_question_valid(question):
-            return jsonify({
-                "type": "invalid_question",
-                "message": "Invalid question string provided."
-            }), 422
+            return invalid_question_error()
 
         try:
             evaluation = stockfish.get_board_evaluation(fen)
@@ -191,16 +162,10 @@ def create_main_app():
                 answer = coach.ask_chess_question(ask_input)
 
             except Exception as e:
-                return jsonify({
-                    "type": "llm_error",
-                    "message": f"Failed to get a response from the LLM: {str(e)}"
-                }), 500
+                return llm_error(e)
 
         except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
+            return stockfish_error(e)
 
         return jsonify({
             "answer": answer
@@ -213,16 +178,10 @@ def create_main_app():
         skill_level = data.get("skill_level")
 
         if not fen or not skill_level:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "Both 'fen' and 'skill_level' fields are required."
-            }), 400
+            return invalid_request_error(["fen","skill_level"])
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            return invalid_fen_error()
 
         if not stockfish_utils.is_skill_level_valid(skill_level):
             return jsonify({
@@ -238,10 +197,7 @@ def create_main_app():
             stockfish.reset_engine_parameters()
 
         except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
+            return stockfish_error(e)
 
         return jsonify({
             "bot_move": bot_move
@@ -253,16 +209,10 @@ def create_main_app():
         fen = data.get("fen")
 
         if not fen:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "'fen' field is required."
-            }), 400
+            return invalid_request_error(fen)
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            return invalid_fen_error()
 
         try:
             # obtain from stockfish the best move
@@ -272,10 +222,7 @@ def create_main_app():
             stockfish.reset_engine_parameters()
 
         except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
+            return stockfish_error(e)
 
         return jsonify({
             "suggested_move": suggested_move
@@ -287,26 +234,17 @@ def create_main_app():
         fen = data.get("fen")
 
         if not fen:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "'fen' field is required."
-            }), 400
+            return invalid_request_error(fen)
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            return invalid_fen_error()
 
         try:
             game_status_evaluation = stockfish.get_board_evaluation(fen)
             # reset stockfish_parameters
             stockfish.reset_engine_parameters()
         except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
+            return stockfish_error(e)
 
         ask_input = {
             "board": fen,
@@ -315,10 +253,7 @@ def create_main_app():
         try:
             answer = coach.ask_game_status_explanation(ask_input)
         except Exception as e:
-            return jsonify({
-                "type": "llm_error",
-                "message": f"Failed to get a response from the LLM: {str(e)}"
-            }), 500
+            return llm_error(e)
 
         return jsonify({
             "answer": answer
@@ -328,14 +263,14 @@ def create_main_app():
     async def not_found(error):
         return jsonify({
             "type": "not_found",
-            "message": f"The requested resource was not found: : {str(error)}"
+            "message": "The requested resource was not found. "
         }), 404
 
     @app.errorhandler(500)
     async def internal_server_error(error):
         return jsonify({
             "type": "internal_server_error",
-            "message": f"An unexpected error occurred: : {str(error)} "
+            "message": "An unexpected error occurred. Please try again.} "
         }), 500
 
     return app
