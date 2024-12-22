@@ -43,7 +43,7 @@ def create_main_app():
 
         # Validate FEN and move data
         if not fen or not move:
-            return invalid_request_error(["fen", "move"])
+            return invalid_request_error(["'fen'", "'move'"])
 
         if not stockfish.is_fen_valid(fen):
             return invalid_fen_error()
@@ -270,7 +270,7 @@ def create_main_app():
     async def internal_server_error(error):
         return jsonify({
             "type": "internal_server_error",
-            "message": "An unexpected error occurred. Please try again.} "
+            "message": "An unexpected error occurred. Please try again."
         }), 500
 
     return app

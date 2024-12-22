@@ -24,7 +24,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
+    "message": "The following fields are required: 'fen', 'move'.",
     "type": "invalid_request"
 }
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 Response:
 {
-      "message": "Both 'fen' and 'move' fields are required.",
+      "message": "The following fields are required: 'fen', 'move'.",
       "type": "invalid_request"
 }
 
@@ -69,7 +69,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Invalid/illegal string move provided.",
+    "message": "Invalid/illegal move provided.",
     "type": "invalid_move"
 }
 
@@ -81,7 +81,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
+    "message": "The following fields are required: 'fen', 'move'.",
     "type": "invalid_request"
 }
 
@@ -96,7 +96,7 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "message": "An unexpected error occurred. Please try again.",
     "type": "internal_server_error"
 }
 
@@ -137,7 +137,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "'fen' fields is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -152,7 +152,7 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "message": "An unexpected error occurred. Please try again.",
     "type": "internal_server_error"
 }
 
@@ -181,7 +181,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'question' fields are required.",
+    "message": "The following fields are required: fen, question.",
     "type": "invalid_request"
 }
 
@@ -195,7 +195,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'question' fields are required.",
+    "message": "The following fields are required: fen, question.",
     "type": "invalid_request"
 }
 
@@ -207,7 +207,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'question' fields are required.",
+    "message": "The following fields are required: fen, question.",
     "type": "invalid_request"
 }
 
@@ -251,7 +251,7 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "message": "An unexpected error occurred. Please try again.",
     "type": "internal_server_error"
 }
 
@@ -280,7 +280,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "message": "The following fields are required: fen, skill_level.",
   "type": "invalid_request"
 }
 
@@ -294,7 +294,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "message": "The following fields are required: fen, skill_level.",
   "type": "invalid_request"
 }
 
@@ -351,7 +351,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'skill_level' fields are required.",
+    "message": "The following fields are required: fen, skill_level.",
     "type": "invalid_request"
 }
 
@@ -366,7 +366,7 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "message": "An unexpected error occurred. Please try again.",
     "type": "internal_server_error"
 }
 
@@ -393,7 +393,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -423,7 +423,7 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "message": "An unexpected error occurred. Please try again.",
     "type": "internal_server_error"
 }
 
@@ -464,7 +464,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -494,7 +494,7 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
+    "message": "An unexpected error occurred. Please try again.",
     "type": "internal_server_error"
 }
 
