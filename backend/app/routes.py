@@ -86,7 +86,7 @@ def create_main_app():
         fen = data.get("fen")
 
         if not fen:
-            return invalid_request_error(fen)
+            return invalid_request_error(["fen"])
 
         if not stockfish.is_fen_valid(fen):
             return invalid_fen_error()
@@ -209,7 +209,7 @@ def create_main_app():
         fen = data.get("fen")
 
         if not fen:
-            return invalid_request_error(fen)
+            return invalid_request_error(["fen"])
 
         if not stockfish.is_fen_valid(fen):
             return invalid_fen_error()
@@ -234,7 +234,7 @@ def create_main_app():
         fen = data.get("fen")
 
         if not fen:
-            return invalid_request_error(fen)
+            return invalid_request_error(["fen"])
 
         if not stockfish.is_fen_valid(fen):
             return invalid_fen_error()
