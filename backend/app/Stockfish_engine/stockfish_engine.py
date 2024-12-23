@@ -1,4 +1,5 @@
 from stockfish import Stockfish
+from chess import Board
 import numpy as np
 from .utils import utils
 
@@ -40,6 +41,20 @@ class StockfishEngine(Stockfish):
             return round(evaluation_after - evaluation_before, 5)
         else:
             return round(evaluation_before - evaluation_after, 5)
+        
+    def is_game_over(self, fen):
+        if fen is None or len(fen.split(" ")) != 6:
+            return {
+                "is_game_over": False,
+                "type": "Invalid FEN string provided."
+            }
+        board = Board(fen)
+        type = str(board.outcome().termination).split(".")[1]
+        return {
+            "is_game_over": board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material(),
+            "type": type
+        }
+
 
     # calcutation of the winnig percentage of the current player
     def get_winning_percentage(self, fen):
@@ -64,8 +79,6 @@ class StockfishEngine(Stockfish):
             percentage = 100.0 - percentage
 
         result ={
-            # "evaluation": evaluation_field/100,
-            # "type": evaluation_type,
             "percentage": percentage,
             "current_player": current_player
         }

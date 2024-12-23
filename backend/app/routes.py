@@ -44,10 +44,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         if not stockfish.is_move_valid(fen, move):
             return jsonify({
@@ -68,10 +75,10 @@ def create_main_app():
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
                 board_str = llm_utils.from_fen_to_board(fen_after_move)
-                player_made_move = stockfish_utils.get_current_player(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
-                    "player": llm_utils.get_player(player_made_move),
+                    "player": llm_utils.get_player(current_player),
                     "move": move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -91,7 +98,7 @@ def create_main_app():
 
         
         return jsonify({
-            "player_made_move": player_made_move,
+            "player_made_move": current_player,
             "feedback": response,
         }), 200
 
@@ -112,10 +119,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         try:
             # obtain from stockfish the best move
@@ -178,10 +192,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         if not llm_utils.is_question_valid(question):
             return jsonify({
@@ -244,10 +265,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         if not stockfish_utils.is_skill_level_valid(skill_level):
             return jsonify({
@@ -289,10 +317,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         try:
             # obtain from stockfish the best move
@@ -329,10 +364,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         try:
             game_status_evaluation = stockfish.get_board_evaluation(fen)
@@ -380,10 +422,17 @@ def create_main_app():
             }), 400
 
         if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
         
         try:
             winning_percentage = stockfish.get_winning_percentage(fen)

@@ -58,6 +58,23 @@ Response:
     "type": "invalid_fen_notation"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "move": "e7e5"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Invalid Move Notation
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -128,6 +145,22 @@ Response:
     "message": "Invalid FEN string provided.",
     "type": "invalid_fen_notation"
 }
+
+
+### Game over
+POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
 
 ### Empty Request Body
 POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
@@ -226,6 +259,23 @@ Response:
    "type": "invalid_fen_notation"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "question": string
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Invalid question string
 POST http://127.0.0.1:5000/answer_question
 Content-Type: application/json
@@ -312,6 +362,23 @@ Response:
   "message": "Invalid FEN string provided.",
   "type": "invalid_fen_notation"
 }
+
+
+### Game over
+POST http://127.0.0.1:5000/get_bot_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "skill_level": 18
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
 
 ### Invalid skill level Notation
 POST http://127.0.0.1:5000/get_bot_move
@@ -413,6 +480,21 @@ Response:
 }
 
 
+### Game over
+POST http://127.0.0.1:5000/get_best_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/get_best_move
 Content-Type: text/plain
@@ -481,6 +563,21 @@ Response:
 {
   "message": "Invalid FEN string provided.",
   "type": "invalid_fen_notation"
+}
+
+
+### Game over
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
 }
 
 
@@ -599,6 +696,21 @@ Response:
 {
   "message": "Invalid FEN string provided.",
   "type": "invalid_fen_notation"
+}
+
+
+### Game over
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
 }
 
 
