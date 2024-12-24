@@ -8,7 +8,6 @@
    - [3. Get Best Move Endpoint](#3-get-best-move-endpoint)
    - [4. Get Move Suggestion with Evaluation Endpoint](#4-Get-Move-Suggestion-with-Evaluation-Endpoint)
    - [5. Get Bot Move Endpoint](#5-get-bot-move-endpoint)
-   - [6. More Explanation Endpoint](#6-more-explanation-endpoint)
 2. [Error Handling](#error-handling)
 
 ## Endpoints
@@ -277,14 +276,13 @@ POST /get_game_status
 
 - **Endpoint**: `/more_explanation`
 - **Method**: `POST`
-- **Description**: Accepts a chess board in FEN notation and the previous question and answer
+- **Description**: Accepts the previous question and answer
 
   Return another response from the previous message with more explanation
 
 #### Request Parameters
 
 - **Body (JSON)**:
-  - `fen` (string, required): The FEN string representing the board state.
   - `question` (string, required): The previous question.
   - `first_answer` (string, required): The previous answer
 
@@ -300,7 +298,6 @@ POST /get_game_status
 ```json
 POST /more_explanation
 {
-  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
   "question": "What can i do to improve my pawn structure in this state?",
   "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
 }

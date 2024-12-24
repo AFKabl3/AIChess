@@ -52,10 +52,16 @@ class MainCoach(LLM):
         board = ask_input.get("board")
         evaluation = ask_input.get("evaluation")
         question = ask_input.get("question")
-        response =  (self.direct_question(f"""The current state of the board is: {board} \n
-        The evaluation of the state is {evaluation}.\n
-        {question}\n 
-        Limit the response to 70 words\n"""))
+        first_answer = ask_input.get("first_answer")
+        if  not board or not evaluation:
+            response =  (self.direct_question(f""" Respond again to the previous question: {question} \n
+            give a more detailed explanation compared to the last response: {first_answer}\n
+            Limit the response to 70 words\n"""))
+        else:
+            response =  (self.direct_question(f"""The current state of the board is: {board} \n
+            The evaluation of the state is {evaluation}.\n
+            {question}\n 
+            Limit the response to 70 words\n"""))
         return response
     
     def ask_game_status_explanation(self, ask_input):

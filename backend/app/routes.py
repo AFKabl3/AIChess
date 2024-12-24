@@ -326,22 +326,22 @@ def create_main_app():
         
     @app.route('/more_explanation', methods=['POST'])
     async def more_explanation():
+        
+        if not request.is_json: 
+            return jsonify({ 
+                "type": "invalid_request", 
+                "message": "Request must be a JSON object." 
+            }), 400
+            
         data = await request.get_json()
-        fen = data.get("fen")
         question = data.get("question")
         first_answer = data.get("first_answer")
 
-        if not fen or not question or not first_answer:
+        if not question or not first_answer:
             return jsonify({
                 "type": "invalid_request",
-                "message": "All 'fen', 'question' and 'first_answer' fields are required."
+                "message": "Both 'question' and 'first_answer' fields are required."
             }), 400
-
-        if not stockfish.is_fen_valid(fen):
-            return jsonify({
-                "type": "invalid_fen_notation",
-                "message": "Invalid FEN string provided."
-            }), 422
 
         if not llm_utils.is_string_valid(question):
             return jsonify({
@@ -356,20 +356,11 @@ def create_main_app():
             }), 422
 
         try:
-            evaluation = stockfish.get_board_evaluation(fen)
-
-            # reset stockfish parameters
-            stockfish.reset_engine_parameters()
-
-            if evaluation is None:
-                raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
                 ask_input = {
-                    "board": board_str,
-                    "question": f"Answer with more explanation to the question: '{question}' which you answered as: '{first_answer}'?",
-                    "evaluation": evaluation
+                    "question": question,
+                    "first_answer": first_answer
                 }
 
                 answer = coach.ask_chess_question(ask_input)
