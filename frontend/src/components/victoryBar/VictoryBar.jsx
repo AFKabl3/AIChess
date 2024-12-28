@@ -1,11 +1,18 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import PropTypes from "prop-types";
 import { ChessContext } from "../../pages/ChessPage/ChessContext";
 
 export const VictoryBar = () => {
   const { chess, config } = useContext(ChessContext);
   const { whitePercentage, blackPercentage } = chess;
+
+  const [downPercentage, setDownPercentage] = useState(50);
+  const [topPercentage, setTopPercentage] = useState(50);
+
+  useEffect(() => {
+    setDownPercentage((config.selectedColor === 'w' ? whitePercentage : blackPercentage).toFixed(1));
+    setTopPercentage((config.selectedColor === 'w' ? blackPercentage : whitePercentage).toFixed(1));
+  }, [whitePercentage, blackPercentage, config.selectedColor]);
 
   return (
     <Box
@@ -36,7 +43,7 @@ export const VictoryBar = () => {
           variant="caption"
           sx={{ color: `${config.selectedColor === 'w' ? "#000" : "#fff"}`, fontWeight: "bold", position: "absolute" }}
         >
-          {(config.selectedColor === 'w' ? whitePercentage : blackPercentage).toFixed(1)}%
+          {downPercentage > 5 ? downPercentage + '%' : ''}
         </Typography>
       </Box>
 
@@ -55,16 +62,11 @@ export const VictoryBar = () => {
           variant="caption"
           sx={{ color: `${config.selectedColor === 'w' ? "#fff" : "#000"}`, fontWeight: "bold", position: "absolute" }}
         >
-          {(config.selectedColor === 'w' ? blackPercentage : whitePercentage).toFixed(1)}%
+          {topPercentage > 5 ? topPercentage + '%' : ''}
         </Typography>
       </Box>
     </Box>
   );
-};
-
-VictoryBar.propTypes = {
-  whitePercentage: PropTypes.number.isRequired,
-  blackPercentage: PropTypes.number.isRequired,
 };
 
 export default VictoryBar;

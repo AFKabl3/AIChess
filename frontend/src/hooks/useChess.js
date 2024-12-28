@@ -177,7 +177,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           const res = await api.getWinningPercentage(game.fen());
           const data = await res.json();
           const { current_player, percentage } = data;
-  
+
           setWhitePercentage(current_player === 'w' ? percentage : 100.0 - percentage);
           setBlackPercentage(current_player === 'b' ? percentage : 100.0 - percentage);
 
