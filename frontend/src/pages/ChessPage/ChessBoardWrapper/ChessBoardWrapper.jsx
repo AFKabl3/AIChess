@@ -25,14 +25,13 @@ export const ChessBoardWrapper = ({ settings }) => {
   const { resetGame } = chess;
 
   const handleFenSubmit = (fen) => {
-    const { loadGame, fetchProbabilities } = chess;
+    const { loadGame } = chess;
     resetGame();
     setConfigValue('fullControlMode', false);
     setConfigValue('selectedColor', 'w');
     setConfigValue('startedGame', true);
     loadGame(fen);
     resetHistory();
-    fetchProbabilities();
     if (fen.split(' ')[1] === 'b') {
       updateHistory({ san: '-' }, fen, 'user');
     }

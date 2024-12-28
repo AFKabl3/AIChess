@@ -129,6 +129,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setIsGameOver(false);
     setArrows([]);
     disableTimers();
+    fetchProbabilities(game.fen());
   };
 
   const showStatusMessage = (message) => {
@@ -171,17 +172,12 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
 
-  const fetchProbabilities = async () => {
+  const fetchProbabilities = async (fen) => {
     try {
-      const res = await api.getWinningPercentage(game.fen());
+      const res = await api.getWinningPercentage(fen);
       const data = await res.json();
-      console.log("data: ", data);
       
-      if (data.type === undefined) {
-        setWhitePercentage(data.current_player === 'w' ? data.percentage : 100.0 - data.percentage);
-        setBlackPercentage(data.current_player === 'b' ? data.percentage : 100.0 - data.percentage);
-      }
-      else if (data.type === "game_over") {
+      if (data.type === "game_over") {
         if (game.turn() === "w") {
           setWhitePercentage(0);
           setBlackPercentage(100);
@@ -190,6 +186,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           setBlackPercentage(0);
         }
       }
+      else {
+        setWhitePercentage(data.current_player === 'w' ? data.percentage : 100.0 - data.percentage);
+        setBlackPercentage(data.current_player === 'b' ? data.percentage : 100.0 - data.percentage);
+      }
 
     } catch (error) {
       console.error("Error fetching probabilities:", error);
@@ -197,7 +197,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   };
 
   useEffect(() => {
-      fetchProbabilities();
+      fetchProbabilities(game.fen());
   }, [game.turn()]);
 
   /**
@@ -523,6 +523,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   const loadGame = (fen) => {
     setGame(new Chess(fen));
+    fetchProbabilities(fen);
     resetArrows();
   };
 
@@ -552,6 +553,5 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     getGameMode,
     whitePercentage,
     blackPercentage,
-    fetchProbabilities,
   };
 };
