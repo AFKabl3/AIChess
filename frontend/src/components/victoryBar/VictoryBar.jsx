@@ -4,7 +4,7 @@ import { ChessContext } from "../../pages/ChessPage/ChessContext";
 
 export const VictoryBar = () => {
   const { chess, config } = useContext(ChessContext);
-  const { whitePercentage, blackPercentage } = chess;
+  const { whitePercentage, blackPercentage, isGameOver, resetGame } = chess;
 
   const [downPercentage, setDownPercentage] = useState(50);
   const [topPercentage, setTopPercentage] = useState(50);
@@ -12,7 +12,7 @@ export const VictoryBar = () => {
   useEffect(() => {
     setDownPercentage((config.selectedColor === 'w' ? whitePercentage : blackPercentage).toFixed(1));
     setTopPercentage((config.selectedColor === 'w' ? blackPercentage : whitePercentage).toFixed(1));
-  }, [whitePercentage, blackPercentage, config.selectedColor]);
+  }, [whitePercentage, blackPercentage, config.selectedColor, isGameOver, resetGame]);
 
   return (
     <Box

@@ -171,23 +171,34 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
 
-  useEffect(() => {
-      const fetchProbabilities = async () => {
-        try {
-          const res = await api.getWinningPercentage(game.fen());
-          const data = await res.json();
-          const { current_player, percentage } = data;
-
-          setWhitePercentage(current_player === 'w' ? percentage : 100.0 - percentage);
-          setBlackPercentage(current_player === 'b' ? percentage : 100.0 - percentage);
-
-        } catch (error) {
-          console.error("Error fetching probabilities:", error);
+  const fetchProbabilities = async () => {
+    try {
+      const res = await api.getWinningPercentage(game.fen());
+      const data = await res.json();
+      console.log("data: ", data);
+      
+      if (data.type === undefined) {
+        setWhitePercentage(data.current_player === 'w' ? data.percentage : 100.0 - data.percentage);
+        setBlackPercentage(data.current_player === 'b' ? data.percentage : 100.0 - data.percentage);
+      }
+      else if (data.type === "game_over") {
+        if (game.turn() === "w") {
+          setWhitePercentage(0);
+          setBlackPercentage(100);
+        } else {
+          setWhitePercentage(100);
+          setBlackPercentage(0);
         }
-      };
-  
+      }
+
+    } catch (error) {
+      console.error("Error fetching probabilities:", error);
+    }
+  };
+
+  useEffect(() => {
       fetchProbabilities();
-    }, [game.turn()]);
+  }, [game.turn()]);
 
   /**
    * Safely mutates the current game state by applying a modification function.
@@ -541,5 +552,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     getGameMode,
     whitePercentage,
     blackPercentage,
+    fetchProbabilities,
   };
 };
