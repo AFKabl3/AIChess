@@ -34,6 +34,16 @@ Content-Type: application/json
 }
 
 
+### Game over
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "move": "e2e4"
+}
+
+
 ### Invalid Move Notation
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -76,6 +86,15 @@ Content-Type: application/json
 
 {
   "fen": "invalid_fen_string"
+}
+
+
+### Game over
+POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
 }
 
 
@@ -128,6 +147,16 @@ Content-Type: application/json
 
 {
   "fen": "invalid_fen_string",
+  "question": "string"
+}
+
+
+### Game over
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
   "question": "string"
 }
 
@@ -187,6 +216,17 @@ Content-Type: application/json
   "skill_level": 18
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/get_bot_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "skill_level": 18
+}
+
+
 ### Invalid skill level Notation
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
@@ -237,6 +277,15 @@ Content-Type: application/json
 }
 
 
+### Game over
+POST http://127.0.0.1:5000/get_best_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/get_best_move
 Content-Type: text/plain
@@ -279,6 +328,16 @@ Content-Type: application/json
 {
   "fen": "invalid_fen_string"
 }
+
+
+### Game over
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
 
 
 ### Non-JSON Content Type
@@ -350,6 +409,14 @@ Content-Type: application/json
   "fen": "invalid_fen_string"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
 
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/get_winning_percentage

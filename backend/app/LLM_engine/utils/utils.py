@@ -21,7 +21,6 @@ def get_player(fen_player):
 def from_fen_to_board(fen):
     board = get_string_board(fen)
     matrixboard = [[' ' for _ in range(8)] for _ in range(8)]
-    # matrixboard = np.zeros((8,8))
     rows = board.split('/')
     for i, row in enumerate(rows):
         col = 0
