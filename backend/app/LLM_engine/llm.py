@@ -3,8 +3,11 @@ from huggingface_hub import InferenceClient
 class LLM:
     def __init__(self, api_key):
         self.automatic_conversation = []
-        self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        self.model = "meta-llama/Meta-Llama-3-8B-Instruct"
+        # self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         # self.model = "Qwen/QwQ-32B-Preview"
+        # self.model = "Qwen/Qwen2.5-Coder-32B-Instruct"
+        # self.model = "HuggingFaxceH4/zephyr-7b-beta"
         self.direct_conversation_history = []
         self.client = InferenceClient(api_key=api_key)
         self.max_messages = 5

@@ -50,9 +50,14 @@ class StockfishEngine(Stockfish):
             }
         board = Board(fen)
         type = str(board.outcome().termination).split(".")[1]
+        if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
+            return {
+                "is_game_over": True,
+                "type": type
+            }
         return {
-            "is_game_over": board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material(),
-            "type": type
+            "is_game_over": False,
+            "type": "None"
         }
 
 
@@ -73,7 +78,13 @@ class StockfishEngine(Stockfish):
             # this formula is based on the one use in lichess
             percentage = 50 + 50 * (2 / (1 + np.exp(-0.00368208 * evaluation_field)) - 1)
         elif evaluation_type == "mate":
-            percentage = 100.0
+            if evaluation_field > 0:
+                # the white player is winning
+                percentage = 100.0
+            else:
+                # the black player is winning
+                percentage = 0.0
+
         # if the current player is white, the one who made the move is the black
         if current_player == "b":
             percentage = 100.0 - percentage
