@@ -394,6 +394,15 @@ Content-Type: application/json
 }
 
 
+### Valid Request - mate for white
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1b4r/ppp1kpp1/n3p1pn/8/4q3/1Pb5/P5PP/RN3KNR b - - 1 13"
+}
+
+
 ### Missing FEN Field
 POST http://127.0.0.1:5000/get_winning_percentage
 Content-Type: application/json
