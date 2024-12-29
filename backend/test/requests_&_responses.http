@@ -842,6 +842,6 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred: : 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. ",
-    "type": "internal_server_error"
+    "message": "Request must be a JSON object.",
+    "type": "invalid_request"
 }

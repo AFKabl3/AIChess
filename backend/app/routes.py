@@ -443,7 +443,12 @@ def create_main_app():
             return jsonify(
                 winning_percentage
             ), 200
-        }), 500  
+        
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500  
 
     @app.route('/more_explanation', methods=['POST'])
     async def more_explanation():
@@ -477,25 +482,23 @@ def create_main_app():
             }), 422
 
         try:
+            ask_input = {
+                "question": question,
+                "first_answer": first_answer
+            }
 
-            try:
-                ask_input = {
-                    "question": question,
-                    "first_answer": first_answer
-                }
+            answer = coach.ask_chess_question(ask_input)
 
-                answer = coach.ask_chess_question(ask_input)
-
-            except Exception as e:
-                return jsonify({
-                    "type": "llm_error",
-                    "message": f"Failed to get a response from the LLM: {str(e)}"
-                }), 500
-            except StockfishException as e:
-                return jsonify({
-                    "type": "stockfish_error",
-                    "message": f"Failed to get a response from the stockfish: {str(e)}"
-                }), 500
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500
 
         return jsonify({
             "answer": answer
