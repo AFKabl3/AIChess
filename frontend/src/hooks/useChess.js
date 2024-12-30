@@ -167,7 +167,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       !isPaused &&
       !config.fullControlMode &&
       config.startedGame &&
-      config.selectedColor !== game.turn()
+      config.selectedColor !== game.turn() &&
+      !game.in_checkmate()
     )
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
