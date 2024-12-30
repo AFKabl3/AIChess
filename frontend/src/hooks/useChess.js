@@ -129,7 +129,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setIsGameOver(false);
     setArrows([]);
     disableTimers();
-    fetchProbabilities(game.fen());
   };
 
   const showStatusMessage = (message) => {
@@ -160,6 +159,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     } else {
       setOptionSquares({});
     }
+    fetchProbabilities(game.fen());
   }, [game]);
 
   useEffect(() => {
@@ -173,32 +173,28 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   }, [game, config.startedGame]);
 
   const fetchProbabilities = async (fen) => {
-    try {
-      const res = await api.getWinningPercentage(fen);
-      const data = await res.json();
-      
-      if (data.type === "game_over") {
-        if (game.turn() === "w") {
-          setWhitePercentage(0);
-          setBlackPercentage(100);
-        } else {
-          setWhitePercentage(100);
-          setBlackPercentage(0);
-        }
+    if (game.game_over()) {
+      if (game.turn() === "w") {
+        setWhitePercentage(0);
+        setBlackPercentage(100);
+      } else {
+        setWhitePercentage(100);
+        setBlackPercentage(0);
       }
-      else {
+    } else {
+      try {
+        const res = await api.getWinningPercentage(fen);
+        const data = await res.json();
+
         setWhitePercentage(data.current_player === 'w' ? data.percentage : 100.0 - data.percentage);
         setBlackPercentage(data.current_player === 'b' ? data.percentage : 100.0 - data.percentage);
-      }
 
-    } catch (error) {
-      console.error("Error fetching probabilities:", error);
+      } catch (error) {
+        console.error("Error fetching probabilities:", error);
+      }
     }
   };
 
-  useEffect(() => {
-      fetchProbabilities(game.fen());
-  }, [game.turn()]);
 
   /**
    * Safely mutates the current game state by applying a modification function.
@@ -523,7 +519,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   const loadGame = (fen) => {
     setGame(new Chess(fen));
-    fetchProbabilities(fen);
     resetArrows();
   };
 
