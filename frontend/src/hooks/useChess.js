@@ -39,6 +39,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   const [timers, setTimers] = useState({ white: 0, black: 0 });
   const [gameMode, setGameMode] = useState(); // Selected game mode at the begin
 
+  // Percentage of probability of both players winning
+  const [whitePercentage, setWhitePercentage] = useState(50.0);
+  const [blackPercentage, setBlackPercentage] = useState(50.0);
+
   // Start the timer for the active player
   const startTimer = () => {
     if (timerInterval) clearInterval(timerInterval);
@@ -155,6 +159,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     } else {
       setOptionSquares({});
     }
+    fetchProbabilities(game.fen());
   }, [game]);
 
   useEffect(() => {
@@ -162,10 +167,35 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       !isPaused &&
       !config.fullControlMode &&
       config.startedGame &&
-      config.selectedColor !== game.turn()
+      config.selectedColor !== game.turn() &&
+      !game.in_checkmate()
     )
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);
+
+  const fetchProbabilities = async (fen) => {
+    if (game.game_over()) {
+      if (game.turn() === "w") {
+        setWhitePercentage(0);
+        setBlackPercentage(100);
+      } else {
+        setWhitePercentage(100);
+        setBlackPercentage(0);
+      }
+    } else {
+      try {
+        const res = await api.getWinningPercentage(fen);
+        const data = await res.json();
+
+        setWhitePercentage(data.current_player === 'w' ? data.percentage : 100.0 - data.percentage);
+        setBlackPercentage(data.current_player === 'b' ? data.percentage : 100.0 - data.percentage);
+
+      } catch (error) {
+        console.error("Error fetching probabilities:", error);
+      }
+    }
+  };
+
 
   /**
    * Safely mutates the current game state by applying a modification function.
@@ -517,5 +547,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     whiteTime,
     blackTime,
     getGameMode,
+    whitePercentage,
+    blackPercentage,
   };
 };
