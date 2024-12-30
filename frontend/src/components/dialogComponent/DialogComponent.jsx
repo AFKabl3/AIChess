@@ -13,10 +13,15 @@ const DialogComponent = ({ isOpen, onClose, onSubmit }) => {
         const isValidFen = game.validate_fen(fenInput); 
 
         if (isValidFen.valid) {
-            onSubmit(fenInput); 
-            setError('');      
-            setFenInput('');    
-            onClose();          
+            game.load(fenInput);
+            if (game.in_checkmate()) {
+                setError("The current FEN represents a checkmate. Please provide a FEN of an ongoing game.");
+            } else {
+                onSubmit(fenInput);
+                setError('');
+                setFenInput('');
+                onClose();
+            }         
         } else {
             setError("Invalid FEN notation. Please enter a valid FEN.");
         }
