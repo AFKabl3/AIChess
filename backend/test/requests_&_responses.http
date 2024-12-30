@@ -671,7 +671,7 @@ Response:
 }
 
 
-### Valid Request - mate for white
+### Valid Request - mate for black
 POST http://127.0.0.1:5000/get_winning_percentage
 Content-Type: application/json
 
