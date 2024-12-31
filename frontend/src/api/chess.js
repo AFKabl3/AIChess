@@ -7,6 +7,7 @@ const ChessEndpoint = {
   ANSWER_QUESTION: '/answer_question',
   GET_BOT_MOVE: '/get_bot_move',
   GET_BEST_MOVE: '/get_best_move',
+  GET_WINNING_PERCENTAGE: '/get_winning_percentage',
 };
 
 const errorMessages = {
@@ -15,6 +16,7 @@ const errorMessages = {
   ANSWER_QUESTION: 'An error occurred while answering the question.',
   GET_BOT_MOVE: 'An error occurred while getting the bot move.',
   GET_BEST_MOVE: 'An error occurred while getting the best move.',
+  GET_WINNING_PERCENTAGE: 'An error occurred while getting the winning percentage.',
 };
 
 /**
@@ -107,3 +109,24 @@ export const getBestMove = async (fen) =>
     {},
     errorMessages.GET_BEST_MOVE
   );
+
+
+/**
+ * Gets the winning percentage for a given board position and a move.
+ *
+ * @param {string} fen The FEN string representing the board state.
+ * @param {string} move The UCI notation of the move to evaluate.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - `current_player` (string): The player to move ("w" or "b").
+ *   - `percentage` (float): Percentage of winning of the `current_player`.
+ *  or rejects with an error message.
+ */
+export const getWinningPercentage = async (fen) =>
+  requestWithErrorToast(
+      ChessEndpoint.GET_WINNING_PERCENTAGE,
+      Method.POST,
+      { fen },
+      {},
+      errorMessages.GET_WINNING_PERCENTAGE
+    );
+

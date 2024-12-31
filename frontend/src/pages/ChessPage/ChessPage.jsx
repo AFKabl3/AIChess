@@ -11,6 +11,7 @@ import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
 import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
+import { VictoryBar } from '../../components/victoryBar/VictoryBar';
 
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
@@ -134,6 +135,7 @@ export const ChessPage = () => {
         p: 3,
       }}
     >
+      <VictoryBar />
       <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
       <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
       <Chat
