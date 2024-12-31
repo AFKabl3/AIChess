@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { api } from '../../api/api';
 import { useChat } from '../../hooks/useChat';
 import { useChess } from '../../hooks/useChess';
@@ -28,7 +27,11 @@ export const ChessPage = () => {
   const chess = useChess({
     onPlayerMove: (move, prevFen, currFen) => {
       onPlayerMove(formatUciMove(move), prevFen);
-      updateHistory(move, currFen, config.fullControlMode ? (move['color'] === 'w' ? 'user' : 'bot') : 'user');
+      updateHistory(
+        move,
+        currFen,
+        config.fullControlMode ? (move['color'] === 'w' ? 'user' : 'bot') : 'user'
+      );
     },
     onBotMove: (move, _, currFen) => {
       updateHistory(move, currFen, 'bot');
@@ -59,7 +62,6 @@ export const ChessPage = () => {
       modifyText(`You played ${move}. ${data.feedback}`);
     } catch (error) {
       console.error(error);
-      toast.error('An error occurred while evaluating the move.');
 
       modifyText('An error occurred while evaluating the move.');
     }
@@ -83,7 +85,6 @@ export const ChessPage = () => {
       addArrow(parseArrow(data.suggested_move));
     } catch (error) {
       console.error(error);
-      toast.error('An error occurred while suggesting a move.');
 
       modifyText('An error occurred while suggesting a move.');
     }
@@ -107,7 +108,6 @@ export const ChessPage = () => {
       addResponseFunc(data.answer);
     } catch (error) {
       console.error(error);
-      toast.error('An error occurred while waiting for an answer.');
 
       addResponseFunc('An error occurred while waiting for an answer.');
     }
