@@ -29,4 +29,4 @@ AIChess is a project proposed by the [Mia-Platform group](https://mia-platform.e
     [Go to the Backend Installation Guide](/backend/README.md)
 2. **Frontend Installation**
 
-    [Go to the Backend Installation Guide](/frontend/README.md)
+    [Go to the Frontend Installation Guide](/frontend/README.md)
