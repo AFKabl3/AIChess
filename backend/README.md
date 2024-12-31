@@ -133,7 +133,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
          ```
        - On **Windows**:
          ```powershell
-         venv\Scripts\activate
+         Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+         ./venv\Scripts\activate
          ```
 
 
