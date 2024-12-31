@@ -4,6 +4,7 @@ import {
   getBestMove,
   getBotMove,
   getMoveSuggestionWithEvaluation,
+  moreExplanation,
   getWinningPercentage,
 } from './chess';
 import { example } from './example';
@@ -23,5 +24,6 @@ export const api = {
   answerChessQuestion,
   getBotMove,
   getBestMove,
+  moreExplanation,
   getWinningPercentage,
 };

@@ -33,7 +33,7 @@ class MainCoach(LLM):
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
         prompt = (f"""The player who made the move {player},
-                        The current state of the board is, empty cells are rapresented with ' ':\n{board}.
+                        The current state of the board is, empty cells are represented with ' ':\n{board}.
                         The move made is {move},
                         The delta of the two evaluations of the board state, before and after the move: {evaluation}.
                         Provide only a feedback on this move. 
@@ -61,11 +61,17 @@ class MainCoach(LLM):
         player = ask_input.get("player")
         evaluation = ask_input.get("evaluation")
         question = ask_input.get("question")
-        prompt = (f"""The current player is {player},
-                    The current state of the board is, empty cells are rapresented with ' ':\n{board}
-                    The evaluation of current board is: {evaluation}.
-                    {question}
-                    Limit the response to 70 words""")
+        first_answer = ask_input.get("first_answer")
+        if  not board or not evaluation or not player:
+            prompt = (f""" Respond again to the previous question: {question} \n
+            give a more detailed explanation compared to the last response: {first_answer}\n
+            Limit the response to 70 words\n""")
+        else:
+            prompt = (f"""The current player is {player},
+            The current state of the board is, empty cells are rapresented with ' ':\n{board}
+            The evaluation of current board is: {evaluation}.
+            {question}
+            Limit the response to 70 words""")
         response =  (self.direct_question(prompt))
         return response
     
