@@ -18,6 +18,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ```bash
    cd backend
    ```
+
+
 1. **Stockfish installation**
 
    - Download the binaries for your `OS` from [stockfishchess.org](https://stockfishchess.org).
@@ -37,6 +39,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
 - Extract the contents of the previously downloaded compressed file and __RENAME__ the executable to `executable`.
   On `Windows`, the `executable` will have the `.exe` extension. After renaming, it should be `executable.exe`.
 - __ADD__ into the `stockfish_binaries` folder the `executable` file previously renamed
+
 
 2. **HugginFace API KEY**
 
@@ -59,6 +62,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
        - Under `Billing`:
          - Read access to your billing usage and know if a payment method is set
    - __SAVE__ the `Token` and __COPY__ the generated `KEY`
+
+
 3. **Environment Variables**
 
    Create a file `.env` in the `backend` root directory to define environment-specific variables:
@@ -89,6 +94,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
        LLM_API_KEY=your_secret_key_here
        STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe
        ```
+
+
 4. **Final backend structure**
 
    The final structure of the backend.
@@ -108,6 +115,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
      │   └── executable
      │ 
      ```
+
+
 5. **Set Up Virtual Environment**
 
    - Create a virtual environment (__only the First time__).
@@ -137,6 +146,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
          ```powershell
          ./venv\Scripts\activate
          ```
+
+
 6. **Install Dependencies**
 
    Once the virtual environment is active, install the required dependencies using `pip`.
@@ -145,6 +156,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ```bash
    pip install update; pip install --upgrade pip; pip install -r requirements.txt
    ```
+
+
 7. **Start the Quart Development Server**
 
    Run the Quart application.
@@ -157,4 +170,5 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
   [Go to the Frontend Installation Guide](./../frontend/README.md)
+
   [Go to the Global README](./../README.md)
