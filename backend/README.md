@@ -81,7 +81,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    - On **Windows**:
      - In `LLM_API_KEY`, __REPLACE__ `your_secret_key_here` with the `API Key` you previously __CREATED__ on [Huggingface](https://huggingface.co/)
        ```powershell
-       rm -Force .\backend\.env; New-Item -Path ".\backend" -Name ".env" -ItemType "file"; "LLM_API_KEY=your_secret_key_here" | Out-File -FilePath .\backend\.env; "STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe" | Out-File -FilePath \backend\.env -Append; cat .\backend\.env
+       rm -Force .\backend\.env; New-Item -Path ".\backend" -Name ".env" -ItemType "file"; "LLM_API_KEY=your_secret_key_here" | Out-File -FilePath .\backend\.env; "STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe" | Out-File -FilePath .\backend\.env -Append; cat .\backend\.env
        ```
      - `.env` result in the terminal:
        ```plain
