@@ -14,13 +14,24 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
 
 1. **Clone the Repository**
 
-   In the terminal clone the repository to your local machine:
+   
 
-   ```bash
-   git clone https://github.com/AFKabl3/AIChess.git
-   cd AIChess/backend
+   - On **Linux/Mac**:
+     - In the terminal clone the repository to your local machine:
+         ```bash
+         git clone https://github.com/AFKabl3/AIChess.git
+         cd AIChess/backend
+         ```
+   - On **Windows**:
+     - Download git using the following link: [`https://git-scm.com`](https://git-scm.com).
+     - Execute the `installer`
+     - In the terminal clone the repository to your local machine:  
+         ```powershell
+         git clone https://github.com/AFKabl3/AIChess.git
+         cd AIChess\backend
+         ```
+     
 
-   ```
 2. **Set Up Virtual Environment**
 
    Create a virtual environment:
@@ -28,6 +39,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ```bash
    python -m venv venv
    ```
+
    or
 
    ```bash
@@ -43,6 +55,8 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
      ```powershell
      venv\Scripts\activate
      ```
+
+
 3. **Install Dependencies**
 
    Once the virtual environment is active, install the required dependencies using `pip`:
@@ -52,15 +66,29 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    pip install --upgrade pip
    pip install -r requirements.txt
    ```
+
+
 4. **Stockfish installation**
 
    Download the binaries for your `OS` from [`https://stockfishchess.org/`](https://stockfishchess.org/download/).
+
+   Once you downloaded the binary create the `stockfish-executable` folder:
+
+   ```bash
+
+   ```
 
    Extract from the compressed folder __ONLY__ the `executable` file.
    Rename the file as `stockfish-executable`. On windows you have also the extension, so the complete name should be `stockfish-executable.exe`.
 
    Create a folder named `stockfish_binaries` in the backend root directory, and place __ONLY__ the `executable` inside it.
-5. **Environment Variables**
+
+
+5. **HugginFace API KEY**
+    
+
+
+6. **Environment Variables**
 
    Create a file `.env` in the backend root directory to define environment-specific variables:
 
@@ -80,7 +108,9 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
      LLM_API_KEY=your_secret_key_here
      STOCKFISH_EXECUTABLE=stockfish_binaries\stockfish-executable.exe
      ```
-6. **Final backend structure**
+
+
+7. **Final backend structure**
 
    Here the final structure of the backend
 
@@ -91,7 +121,9 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ├── stockfish_binaries/
    │   └── stockfish-executable
    ```
-7. **Start the Quart Development Server**
+
+   
+8. **Start the Quart Development Server**
 
    Run the Quart application:
 
