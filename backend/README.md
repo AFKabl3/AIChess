@@ -112,7 +112,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ├── .env
    ├── app/
    ├── stockfish_binaries/
-   │   └── stockfish-executable
+   │   └── executable
    ```
 
 
