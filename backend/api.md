@@ -26,6 +26,9 @@
     - [7. Get Winning percentage current player](#7-get-winning-percentage-current-player)
       - [Request Parameters](#request-parameters-6)
       - [Response](#response-6)
+    - [8. More explanation endpoint](#8-more-explanation-endpoint)
+      - [Request Parameters](#request-parameters-7)
+      - [Response](#response-7)
   - [Error Handling](#error-handling)
     - [Error Response Format](#error-response-format)
     - [Common Error Codes](#common-error-codes)
@@ -330,12 +333,50 @@ POST /get_winning_percentage
 {
   "current_player": "w",
   "percentage": 52.57517538936253
+}
+```
+</details>
+### 8. More explanation endpoint
 
+- **Endpoint**: `/more_explanation`
+- **Method**: `POST`
+- **Description**: Accepts the previous question and answer
+
+  Return another response from the previous message with more explanation
+  
+  - **Body (JSON)**:
+   - `question` (string, required): The previous question.
+   - `first_answer` (string, required): The previous answer
+  
+#### Response
+  
+- **200 OK**:
+  - **Body (JSON)**:
+      - `answer` (string): answer from the LLM with more data about the question
+  
+<details>
+<summary>Example Request</summary>
+
+```json
+  POST /more_explanation
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+```
+  
+</details>
+
+<details>
+<summary>Example Response</summary>
+ 
+```json
+{
+    "answer": "Move the knight in order to defend the pawns in the board center."
 }
 ```
 
 </details>
-
 ## Error Handling
 
 For all error responses, the REST API will return the relevant HTTP status code (4xx or 5xx), along with a JSON object containing details about the error. The error response should includes the type, and an optional message providing more context.

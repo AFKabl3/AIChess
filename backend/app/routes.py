@@ -204,7 +204,7 @@ def create_main_app():
                     "message": is_game_over.get('type')
                 }), 422
 
-        if not llm_utils.is_question_valid(question):
+        if not llm_utils.is_string_valid(question):
             return jsonify({
                 "type": "invalid_question",
                 "message": "Invalid question string provided."
@@ -450,6 +450,54 @@ def create_main_app():
                 "message": f"Failed to get a response from the stockfish: {str(e)}"
             }), 500  
 
+    @app.route('/more_explanation', methods=['POST'])
+    async def more_explanation():
+        
+        if not request.is_json: 
+            return jsonify({ 
+                "type": "invalid_request", 
+                "message": "Request must be a JSON object." 
+            }), 400
+            
+        data = await request.get_json()
+        question = data.get("question")
+        first_answer = data.get("first_answer")
+
+        if not question or not first_answer:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'question' and 'first_answer' fields are required."
+            }), 400
+
+        if not llm_utils.is_string_valid(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422
+            
+        if not llm_utils.is_string_valid(first_answer):
+            return jsonify({
+                "type": "invalid_first_answer",
+                "message": "Invalid first_answer string provided."
+            }), 422
+
+        try:
+            ask_input = {
+                "question": question,
+                "first_answer": first_answer
+            }
+
+            answer = coach.ask_chess_question(ask_input)
+
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
+
+        return jsonify({
+            "answer": answer
+        }), 200
 
     @app.errorhandler(404)
     async def not_found(error):

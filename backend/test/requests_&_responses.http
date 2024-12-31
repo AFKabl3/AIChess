@@ -610,7 +610,6 @@ Response:
   "answer":string
 }
 
-
 ### Valid Request - initial state
 POST http://127.0.0.1:5000/get_winning_percentage
 Content-Type: application/json
@@ -624,7 +623,6 @@ Response:
   "current_player": string,
   "percentage": float
 }
-
 
 ### Valid Request - in game status (white is in advantage)
 POST http://127.0.0.1:5000/get_winning_percentage
@@ -770,4 +768,95 @@ Response:
 {
   "message": "404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
   "type": "not_found"
+}
+
+### Valid Request
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+
+{
+  "answer":string
+}
+
+
+### Missing Question Field
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+    "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+{
+    "type": "invalid_request",
+    "message": "Both 'question' and 'first_answer' fields are required."
+}
+
+
+### Missing First Answer Field
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+    "question": "What can i do to improve my pawn structure in this state?"
+}
+
+Response:
+{
+    "type": "invalid_request",
+    "message": "Both 'question' and 'first_answer' fields are required."
+}
+
+### Invalid Question String
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+  "question": 1,
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+{
+    "type": "invalid_question",
+    "message": "Invalid question string provided."
+}
+
+
+### Invalid First Answer String
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": 1
+}
+
+Response:
+{
+    "type": "invalid_first_answer",
+    "message": "Invalid first_answer string provided."
+}
+
+### Non-JSON Content Type
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: text/plain
+
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+{
+    "message": "Request must be a JSON object.",
+    "type": "invalid_request"
 }

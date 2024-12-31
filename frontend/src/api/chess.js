@@ -7,6 +7,7 @@ const ChessEndpoint = {
   ANSWER_QUESTION: '/answer_question',
   GET_BOT_MOVE: '/get_bot_move',
   GET_BEST_MOVE: '/get_best_move',
+  MORE_EXPLANATION: '/more_explanation',
   GET_WINNING_PERCENTAGE: '/get_winning_percentage',
 };
 
@@ -72,7 +73,18 @@ export const getBestMove = async (fen) =>
   request(ChessEndpoint.GET_BEST_MOVE, Method.POST, { fen });
 
 /**
- * Gets the winning percentage for a given board position and a move.
+ * Gives a more detailed explanation from a previous question
+ *
+ * @param {string} question Previous question.
+ * @param {string} first_answer Previous response.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - `more_explanation` (string): A better explanation.
+ *  or rejects with an error message.
+ */
+export const moreExplanation = async (question, first_answer) =>
+  request(ChessEndpoint.MORE_EXPLANATION, Method.POST, { question, first_answer });
+
+ /** Gets the winning percentage for a given board position and a move.
  *
  * @param {string} fen The FEN string representing the board state.
  * @param {string} move The UCI notation of the move to evaluate.
@@ -83,3 +95,4 @@ export const getBestMove = async (fen) =>
  */
 export const getWinningPercentage = async (fen) =>
   request(ChessEndpoint.GET_WINNING_PERCENTAGE, Method.POST, { fen });
+
