@@ -45,12 +45,12 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
 
      - On **Linux/Mac**:
       ```bash
-      cd AIChess\backend
+      cd AIChess/backend
       mkdir stockfish_binaries
       ```
      - On **Windows**:
       ```powershell
-      cd AIChess/backend
+      cd AIChess\backend
       mkdir stockfish_binaries
        ```
 
