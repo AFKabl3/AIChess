@@ -12,6 +12,12 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
 
 ### Installation and Setup
 
+0. **Preliminar Step**
+   Open your `terminal` (`powershell` in **Windows**) and go to the project `AIChess` folder:
+
+   ```bash
+   cd backend
+   ```
 1. **Stockfish installation**
 
    - Download the binaries for your `OS` from [stockfishchess.org](https://stockfishchess.org).
@@ -22,24 +28,21 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
      - [Stockfish binaries for MacOS Apple Silicon](https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-macos-m1-apple-silicon.tar)
      - [Stockfish binaries for Windows](https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-windows-x86-64-avx2.zip)
    - Once you downloaded the file, create the `stockfish_binaries` folder in the `backend` folder of the project.
-    Open your `terminal` (`powershell` for **Windows**) and go to the project `AIChess` folder:
 
-     - On **Linux/Mac** in the `backend` folder:
+- In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
-     ```bash
-     mkdir backend/stockfish_binaries
-     ```
-     - On **Windows** in the `backend` folder:
+  ```bash
+  mkdir stockfish_binaries
+  ```
+- Extract the contents of the previously downloaded compressed file and __RENAME__ the executable to `executable`.
+  On `Windows`, the `executable` will have the `.exe` extension. After renaming, it should be `executable.exe`.
+- __ADD__ into the `stockfish_binaries` folder the `executable` file previously renamed
 
-     ```powershell
-     mkdir backend\stockfish_binaries
-     ```
-   - Extract the contents of the previously downloaded compressed file and __RENAME__ the executable to `executable`.
-     On `Windows`, the `executable` will have the `.exe` extension. After renaming, it should be `executable.exe`.
-   - __ADD__ into the `stockfish_binaries` folder the `executable` file previously renamed
-1. **HugginFace API KEY**
+2. **HugginFace API KEY**
 
-   - go to [`huggingface.co`](https://huggingface.co/) and create an account. Follow the following link: [Hugginface registration](https://huggingface.co/join)
+   - Create an account using the following link: [Huggin face Registration](https://huggingface.co/join).
+   If you already have an account, Login using the following link:
+   [Huggin face Login](https://huggingface.co/login).
    - Create your `Access Token` following these simple steps:
      - Open this link: [Create your access Token](https://huggingface.co/settings/tokens)
      - Click the button `Create new Token`
@@ -56,7 +59,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
        - Under `Billing`:
          - Read access to your billing usage and know if a payment method is set
    - __SAVE__ the `Token` and __COPY__ the generated `KEY`
-2. **Environment Variables**
+3. **Environment Variables**
 
    Create a file `.env` in the `backend` root directory to define environment-specific variables:
 
@@ -64,16 +67,14 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    - `STOCKFISH_EXECUTABLE` contain the relative path from
      backend in order to reach the `executable`
 
-   Command line code to generate the `.env` file for different `OS`. Open your `terminal` (`powershell` for **Windows**) and go to the project `AIChess` folder:
+   In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
    - On **Linux/Mac**:
      - In `LLM_API_KEY`, __REPLACE__ `your_secret_key_here` with the `API Key` you previously __CREATED__ on [Huggingface](https://huggingface.co/)
-
        ```bash
-       rm -fr ./backend/.env; echo "LLM_API_KEY=your_secret_key_here" >> ./backend/.env; echo "STOCKFISH_EXECUTABLE=stockfish_binaries/executable" >> ./backend/.env; cat ./backend/.env
+       rm -fr .env; echo "LLM_API_KEY=your_secret_key_here" >> .env; echo "STOCKFISH_EXECUTABLE=stockfish_binaries/executable" >> .env; cat .env
        ```
      - `.env` result in the terminal:
-
        ```plain
        LLM_API_KEY=your_secret_key_here
        STOCKFISH_EXECUTABLE=stockfish_binaries/executable
@@ -81,47 +82,54 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    - On **Windows**:
      - In `LLM_API_KEY`, __REPLACE__ `your_secret_key_here` with the `API Key` you previously __CREATED__ on [Huggingface](https://huggingface.co/)
        ```powershell
-       rm -Force .\backend\.env; New-Item -Path ".\backend" -Name ".env" -ItemType "file"; "LLM_API_KEY=your_secret_key_here" | Out-File -FilePath .\backend\.env; "STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe" | Out-File -FilePath .\backend\.env -Append; cat .\backend\.env
+       rm -Force .env; New-Item -Path "." -Name ".env" -ItemType "file"; "LLM_API_KEY=your_secret_key_here" | Out-File -FilePath .\.env; "STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe" | Out-File -FilePath .\.env -Append; cat .\.env
        ```
      - `.env` result in the terminal:
        ```plain
        LLM_API_KEY=your_secret_key_here
        STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe
        ```
-3. **Final backend structure**
+4. **Final backend structure**
 
-   Here the final structure of the backend
+   The final structure of the backend.
+   In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
-   ```plain
-   backend/
-   ├── app/
-   ├── venv/
-   ├── .env
-   ├── stockfish_binaries/
-   │   └── executable
-   │ 
-   ```
-4. **Set Up Virtual Environment**
+   - use this command:
+     ```bash
+     tree
+     ```
+   - the result in the `terminal` (`powershell` in **Windows**) should be like this:
+     ```plain
+     backend/
+     ├── app/
+     ├── venv/
+     ├── .env
+     ├── stockfish_binaries/
+     │   └── executable
+     │ 
+     ```
+5. **Set Up Virtual Environment**
 
-   - Create a virtual environment.
-      Open your `terminal` (`powershell` for **Windows**) and go to the project `AIChess` folder:
+   - Create a virtual environment (__only the First time__).
+     In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
      ```bash
-     cd backend; python -m venv venv
+     python -m venv venv
      ```
      or
 
      ```bash
-     cd backend; python3 -m venv venv
+     python3 -m venv venv
      ```
-   - Activate the virtual environment:
+   - Activate the virtual environment.
+     In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
      - On **Linux/Mac**:
        ```bash
        source venv/bin/activate
        ```
      - On **Windows**:
-       - Only the __FIRST__ time:
+       - __Only the First time__:
          ```powershell
          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; ./venv\Scripts\activate
          ```
@@ -129,19 +137,21 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
          ```powershell
          ./venv\Scripts\activate
          ```
-1. **Install Dependencies (only the FIRST time)**
+6. **Install Dependencies**
 
-   Once the virtual environment is active, install the required dependencies using `pip`:
+   Once the virtual environment is active, install the required dependencies using `pip`.
+   In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
    ```bash
    pip install update; pip install --upgrade pip; pip install -r requirements.txt
    ```
-2. **Start the Quart Development Server**
+7. **Start the Quart Development Server**
 
-   Run the Quart application:
+   Run the Quart application.
+   In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
    ```bash
    quart run --host 127.0.0.1 --port 5000
    ```
    Once the server is running, the API will be available at your __localhost__:
-       [http://127.0.0.1:5000](http://127.0.0.1:5000).
+   [http://127.0.0.1:5000](http://127.0.0.1:5000).
