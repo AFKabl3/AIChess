@@ -64,7 +64,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
 3. **HugginFace API KEY**
    - go to [`huggingface.co`](https://huggingface.co/) and create an account. Follow the following link: [Hugginface registration](https://huggingface.co/join)
    - Create your `Access Token` following these simple steps: 
-     - Open this link[Create your access Token](https://huggingface.co/settings/tokens)
+     - Open this link: [Create your access Token](https://huggingface.co/settings/tokens)
      - Click the button `Create new Token`
      - Name the `Token` as `AIChess`
      - Check the following settings:
