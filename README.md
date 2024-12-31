@@ -23,10 +23,10 @@ AIChess is a project proposed by the [Mia-Platform group](https://mia-platform.e
    git clone https://github.com/AFKabl3/AIChess.git
    ```
 
-   
+
 1. **Backend Installation**
 
- [Go to the Backend Installation Guide](/backend/README.md)
-1. **Frontend Installation**
+    [Go to the Backend Installation Guide](/backend/README.md)
+2. **Frontend Installation**
 
- [Go to the Backend Installation Guide](/frontend/README.md)
+    [Go to the Backend Installation Guide](/frontend/README.md)
