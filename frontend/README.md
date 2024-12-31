@@ -79,3 +79,6 @@ The project is structured as follows:
   ├── .env
   │ 
   ```
+
+  [Go to the Backend Installation Guide](./../backend/README.md)
+  [Go to the Global README](./../README.md)

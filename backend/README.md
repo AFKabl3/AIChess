@@ -155,3 +155,6 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ```
    Once the server is running, the API will be available at your __localhost__:
    [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+  [Go to the Frontend Installation Guide](./../frontend/README.md)
+  [Go to the Global README](./../README.md)
