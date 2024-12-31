@@ -76,7 +76,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    - `STOCKFISH_EXECUTABLE` contain the relative path from
      backend in order to reach the `executable`
 
-   command line code to generate the `.env` file for different `OS`:
+   Command line code to generate the `.env` file for different `OS`:
 
    - On **Linux/Mac**:
      - In `LLM_API_KEY`, __REPLACE__ `your_secret_key_here` with the `API Key` you previously __CREATED__ on [Huggingface](https://huggingface.co/)
