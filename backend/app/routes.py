@@ -494,11 +494,6 @@ def create_main_app():
                 "type": "llm_error",
                 "message": f"Failed to get a response from the LLM: {str(e)}"
             }), 500
-        except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
 
         return jsonify({
             "answer": answer
