@@ -132,7 +132,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
        source venv/bin/activate
        ```
      - On **Windows**:
-       - the __FIRST__ installation:
+       - Only the __FIRST__ time:
          ```powershell
          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; ./venv\Scripts\activate
          ```
