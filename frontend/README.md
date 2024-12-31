@@ -38,7 +38,6 @@ The client is built with [Vite](https://vitejs.dev/), a frontend build tool and 
   - Command
     ```bash
     rm -fr .env; echo "VITE_API_BASE_ADDRESS=http://127.0.0.1:5000/" >> .env; cat .env
-    ``
     ```
 - On **Windows**:
 
