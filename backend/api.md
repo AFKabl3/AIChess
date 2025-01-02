@@ -2,13 +2,37 @@
 
 ## Table of Contents
 
-1. [Endpoints](#endpoints)
-   - [1. Evaluate Move Endpoint](#1-evaluate-move-endpoint)
-   - [2. Answer Chess Question Endpoint](#2-answer-chess-question-endpoint)
-   - [3. Get Best Move Endpoint](#3-get-best-move-endpoint)
-   - [4. Get Move Suggestion with Evaluation Endpoint](#4-Get-Move-Suggestion-with-Evaluation-Endpoint)
-   - [5. Get Bot Move Endpoint](#5-get-bot-move-endpoint)
-2. [Error Handling](#error-handling)
+- [Chess Analysis API Specification](#chess-analysis-api-specification)
+  - [Table of Contents](#table-of-contents)
+  - [Endpoints](#endpoints)
+    - [1. Evaluate Move Endpoint](#1-evaluate-move-endpoint)
+      - [Request Parameters](#request-parameters)
+      - [Response](#response)
+    - [2. Answer Chess Question Endpoint](#2-answer-chess-question-endpoint)
+      - [Request Parameters](#request-parameters-1)
+      - [Response](#response-1)
+    - [3. Get Best Move Endpoint](#3-get-best-move-endpoint)
+      - [Request Parameters](#request-parameters-2)
+      - [Response](#response-2)
+    - [4. Get Move Suggestion with Evaluation Endpoint](#4-get-move-suggestion-with-evaluation-endpoint)
+      - [Request Parameters](#request-parameters-3)
+      - [Response](#response-3)
+    - [5. Get Bot Move Endpoint](#5-get-bot-move-endpoint)
+      - [Request Parameters](#request-parameters-4)
+      - [Response](#response-4)
+    - [6. Get Game status endpoint](#6-get-game-status-endpoint)
+      - [Request Parameters](#request-parameters-5)
+      - [Response](#response-5)
+    - [7. Get Winning percentage current player](#7-get-winning-percentage-current-player)
+      - [Request Parameters](#request-parameters-6)
+      - [Response](#response-6)
+    - [8. More explanation endpoint](#8-more-explanation-endpoint)
+      - [Request Parameters](#request-parameters-7)
+      - [Response](#response-7)
+  - [Error Handling](#error-handling)
+    - [Error Response Format](#error-response-format)
+    - [Common Error Codes](#common-error-codes)
+    - [Example Error Response](#example-error-response)
 
 ## Endpoints
 
@@ -230,7 +254,7 @@ POST /get_bot_move
 
 </details>
 
-### 5. Get Game status endpoint
+### 6. Get Game status endpoint
 
 - **Endpoint**: `/get_game_status`
 - **Method**: `POST`
@@ -272,6 +296,87 @@ POST /get_game_status
 
 </details>
 
+### 7. Get Winning percentage current player
+
+- **Endpoint**: `/get_winning_percentage`
+- **Method**: `POST`
+- **Description**: Accepts a chess board in FEN notation and returns the winning percentage of the current player.
+
+#### Request Parameters
+
+- **Body (JSON)**:
+  - `fen` (string, required): The FEN string representing the board state.
+
+#### Response
+
+- **200 OK**:
+  - **Body (JSON)**:
+    - `current_player` (string)
+    - `percentage` (float): percentage of winning of the `current_player`.
+
+<details>
+<summary>Example Request</summary>
+
+```json
+POST /get_winning_percentage
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+```
+
+</details>
+
+<details>
+<summary>Example Response</summary>
+
+```json
+{
+  "current_player": "w",
+  "percentage": 52.57517538936253
+}
+```
+</details>
+### 8. More explanation endpoint
+
+- **Endpoint**: `/more_explanation`
+- **Method**: `POST`
+- **Description**: Accepts the previous question and answer
+
+  Return another response from the previous message with more explanation
+  
+  - **Body (JSON)**:
+   - `question` (string, required): The previous question.
+   - `first_answer` (string, required): The previous answer
+  
+#### Response
+  
+- **200 OK**:
+  - **Body (JSON)**:
+      - `answer` (string): answer from the LLM with more data about the question
+  
+<details>
+<summary>Example Request</summary>
+
+```json
+  POST /more_explanation
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+```
+  
+</details>
+
+<details>
+<summary>Example Response</summary>
+ 
+```json
+{
+    "answer": "Move the knight in order to defend the pawns in the board center."
+}
+```
+
+</details>
 ## Error Handling
 
 For all error responses, the REST API will return the relevant HTTP status code (4xx or 5xx), along with a JSON object containing details about the error. The error response should includes the type, and an optional message providing more context.

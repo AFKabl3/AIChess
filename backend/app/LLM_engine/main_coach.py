@@ -10,62 +10,82 @@ class MainCoach(LLM):
     def automatic_coach_creation(self):
         self.reset_automatic_history()
         self.prompt = """You are a chess coach. Your role is to advise and coach the user on playing chess.
-                For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
-                Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
-                the move you suggested, move sequences, or any general advice they may seek."""
-        # self.automatic_conversation.append({"role": "user", "content": self.prompt})
+                            For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
+                            Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
+                            the move you suggested, move sequences, or any general advice they may seek."""
+        self.automatic_conversation.append({"role": "user", "content": self.prompt})
         self.automatic_conversation.append({"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 
     def direct_coach_creation(self):
         self.reset_direct_history()
         self.prompt = """You are a chess coach. Your role is to advise and coach the user on playing chess.
-                For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
-                Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
-                the move you suggested, move sequences, or any general advice they may seek."""
-        # self.direct_conversation_history.append({"role": "user", "content": self.prompt})
+                            For each move, you will evaluate the user’s move and provide feedback on it, using the Stockfish engine to guide your assessments.
+                            Additionally, and this is the most challenging part, you should be ready to answer any questions the user has about the current game state,
+                            the move you suggested, move sequences, or any general advice they may seek."""
+        self.direct_conversation_history.append({"role": "user", "content": self.prompt})
         self.direct_conversation_history.append(
             {"role": "assistant", "content": "Perfectly understood. I'm ready to coach the user"})
 
     def ask_move_feedback(self,input):
         self.automatic_coach_creation()
         board = input.get("board")
+        player = input.get("player")
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
-        response = (self.ask(f"""The current state of the board is: \n  {board} \n
-        The move made is {move},\n
-        having the delta of the two evaluations, before and after the move: {evaluation}.
-        In your response only provide a feedback on this move using the info above and limit the response to 70 words\n"""))
+        prompt = (f"""The player who made the move {player},
+                        The current state of the board is, empty cells are represented with ' ':\n{board}.
+                        The move made is {move},
+                        The delta of the two evaluations of the board state, before and after the move: {evaluation}.
+                        Provide only a feedback on this move. 
+                        Limit the response to 70 words""")
+        response = (self.ask(prompt))
         return response
 
     def ask_move_suggestion(self, input):
         self.automatic_coach_creation()
         board = input.get("board")
+        player = input.get("player")
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
-        response = (self.ask(f"""The current state of the board is: {board} \n
-        The move:{move},\n
-        Having the delta of the two evaluations, before and after the move: {evaluation}.\n
-        In your response only suggest this move to the user using the info above and limit the response to 70 words\n"""))
+        prompt = (f"""The current player is {player},
+                        The current state of the board is, empty cells are rapresented with ' ':\n{board}
+                        The move to be suggested is: {move},
+                        Having the delta of the two evaluations of the board state, before and after the move: {evaluation}.
+                        Suggest only this move to the user.
+                        Limit the response to 70 words""")
+        response = (self.ask(prompt))
         return response
 
     def ask_chess_question(self, ask_input):
         board = ask_input.get("board")
+        player = ask_input.get("player")
         evaluation = ask_input.get("evaluation")
         question = ask_input.get("question")
-        response =  (self.direct_question(f"""The current state of the board is: {board} \n
-        The evaluation of the state is {evaluation}.\n
-        {question}\n 
-        Limit the response to 70 words\n"""))
+        first_answer = ask_input.get("first_answer")
+        if  not board or not evaluation or not player:
+            prompt = (f""" Respond again to the previous question: {question} \n
+            give a more detailed explanation compared to the last response: {first_answer}\n
+            Limit the response to 70 words\n""")
+        else:
+            prompt = (f"""The current player is {player},
+            The current state of the board is, empty cells are rapresented with ' ':\n{board}
+            The evaluation of current board is: {evaluation}.
+            {question}
+            Limit the response to 70 words""")
+        response =  (self.direct_question(prompt))
         return response
     
     def ask_game_status_explanation(self, ask_input):
         self.automatic_coach_creation()
         board = ask_input.get("board")
+        player = ask_input.get("player")
         evaluation = ask_input.get("evaluation")
-        response = (self.ask(f"""The current state of the board is: {board} \n
-        The evaluation of the state is {evaluation}.\n
-        Explain the game status to the user, you can for example explain if black or white are winning and explain why. \n 
-        Limit the response to 70 words\n"""))
+        prompt = (f"""The current player is {player},
+                        The current state of the board is, empty cells are rapresented with ' ':\n{board}.
+                        The evaluation of current board is: {evaluation}.
+                        Provide an explanation on the current status. 
+                        Limit the response to 70 words\n""")
+        response = (self.ask(prompt))
         return response
 
     

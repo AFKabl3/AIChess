@@ -37,6 +37,11 @@ def create_main_app():
 
     @app.route('/evaluate_move', methods=['POST'])
     async def evaluate_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         move = data.get("move")
@@ -46,7 +51,17 @@ def create_main_app():
             return invalid_request_error(["'fen'", "'move'"])
 
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         if not stockfish.is_move_valid(fen, move):
             return invalid_move_error()
@@ -61,9 +76,11 @@ def create_main_app():
 
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
-                board_str = stockfish_utils.get_string_board(fen_after_move)
+                board_str = llm_utils.from_fen_to_board(fen_after_move)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "move": move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -74,14 +91,19 @@ def create_main_app():
         except StockfishException as e:
             return stockfish_error(e)
 
-        player_made_move = stockfish_utils.get_current_player(fen)
+        
         return jsonify({
-            "player_made_move": player_made_move,
+            "player_made_move": current_player,
             "feedback": response,
         }), 200
 
     @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
     async def get_move_suggestion_with_evaluation():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -89,7 +111,17 @@ def create_main_app():
             return invalid_request_error(["fen"])
 
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         try:
             # obtain from stockfish the best move
@@ -105,9 +137,11 @@ def create_main_app():
                 raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
+                board_str = llm_utils.from_fen_to_board(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "move": suggested_move,
                     "delta_evaluation": delta_evaluation
                 }
@@ -120,7 +154,6 @@ def create_main_app():
         except StockfishException as e:
             return stockfish_error(e)
 
-        current_player = stockfish_utils.get_current_player(fen)
         return jsonify({
             "current_player": current_player,
             "suggested_move": suggested_move,
@@ -129,6 +162,11 @@ def create_main_app():
 
     @app.route('/answer_question', methods=['POST'])
     async def answer_question():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         question = data.get("question")
@@ -137,10 +175,23 @@ def create_main_app():
             return invalid_request_error(["fen","question"])
 
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
-        if not llm_utils.is_question_valid(question):
-            return invalid_question_error()
+        if not llm_utils.is_string_valid(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422
 
         try:
             evaluation = stockfish.get_board_evaluation(fen)
@@ -152,9 +203,11 @@ def create_main_app():
                 raise StockfishException("no evaluation for the current fen")
 
             try:
-                board_str = stockfish_utils.get_string_board(fen)
+                board_str = llm_utils.from_fen_to_board(fen)
+                current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
+                    "player": llm_utils.get_player(current_player),
                     "question": question,
                     "evaluation": evaluation
                 }
@@ -173,6 +226,11 @@ def create_main_app():
 
     @app.route('/get_bot_move', methods=['POST'])
     async def get_bot_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
         skill_level = data.get("skill_level")
@@ -181,7 +239,17 @@ def create_main_app():
             return invalid_request_error(["fen","skill_level"])
 
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         if not stockfish_utils.is_skill_level_valid(skill_level):
             return jsonify({
@@ -205,6 +273,11 @@ def create_main_app():
 
     @app.route('/get_best_move', methods=['POST'])
     async def get_best_move():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -212,7 +285,17 @@ def create_main_app():
             return invalid_request_error(["fen"])
 
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         try:
             # obtain from stockfish the best move
@@ -230,6 +313,12 @@ def create_main_app():
 
     @app.route('/get_game_status', methods=['POST'])
     async def get_game_status():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
+        
         data = await request.get_json()
         fen = data.get("fen")
 
@@ -237,23 +326,224 @@ def create_main_app():
             return invalid_request_error(["fen"])
 
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
 
         try:
             game_status_evaluation = stockfish.get_board_evaluation(fen)
             # reset stockfish_parameters
             stockfish.reset_engine_parameters()
         except StockfishException as e:
-            return stockfish_error(e)
-
-        ask_input = {
-            "board": fen,
-            "evaluation": game_status_evaluation
-        }
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500
+        
         try:
+            board_str = llm_utils.from_fen_to_board(fen)
+            current_player = stockfish_utils.get_current_player(fen)
+            ask_input = {
+                "board": board_str,
+                "player": llm_utils.get_player(current_player),
+                "evaluation": game_status_evaluation
+            }
             answer = coach.ask_game_status_explanation(ask_input)
         except Exception as e:
             return llm_error(e)
+
+        return jsonify({
+            "answer": answer
+        }), 200
+    
+    @app.route('/get_winning_percentage', methods=['POST'])
+    async def get_winning_percentage():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
+        data = await request.get_json()
+        fen = data.get("fen")
+
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "'fen' field is required."
+            }), 400
+
+        if not stockfish.is_fen_valid(fen):
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
+        
+        try:
+            winning_percentage = stockfish.get_winning_percentage(fen)
+            
+            # reset stockfish_parameters
+            stockfish.reset_engine_parameters()
+
+            return jsonify(
+                winning_percentage
+            ), 200
+        
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500  
+
+    @app.route('/more_explanation', methods=['POST'])
+    async def more_explanation():
+        
+        if not request.is_json: 
+            return jsonify({ 
+                "type": "invalid_request", 
+                "message": "Request must be a JSON object." 
+            }), 400
+            
+        data = await request.get_json()
+        question = data.get("question")
+        first_answer = data.get("first_answer")
+
+        if not question or not first_answer:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'question' and 'first_answer' fields are required."
+            }), 400
+
+        if not llm_utils.is_string_valid(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422
+            
+        if not llm_utils.is_string_valid(first_answer):
+            return jsonify({
+                "type": "invalid_first_answer",
+                "message": "Invalid first_answer string provided."
+            }), 422
+
+        try:
+            ask_input = {
+                "question": question,
+                "first_answer": first_answer
+            }
+
+            answer = coach.ask_chess_question(ask_input)
+
+        except Exception as e:
+            return llm_error(e)
+
+        return jsonify({
+            "answer": answer
+        }), 200
+    
+    @app.route('/get_winning_percentage', methods=['POST'])
+    async def get_winning_percentage():
+        if not request.is_json:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400
+        data = await request.get_json()
+        fen = data.get("fen")
+
+        if not fen:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "'fen' field is required."
+            }), 400
+
+        if not stockfish.is_fen_valid(fen):
+            is_game_over = stockfish.is_game_over(fen)
+            if is_game_over.get("is_game_over"):
+                return jsonify({
+                    "type": "game_over",
+                    "message": f"Game is over: {is_game_over.get('type')}"
+                }), 422
+            else:
+                return jsonify({
+                    "type": "invalid_fen_notation",
+                    "message": is_game_over.get('type')
+                }), 422
+        
+        try:
+            winning_percentage = stockfish.get_winning_percentage(fen)
+            
+            # reset stockfish_parameters
+            stockfish.reset_engine_parameters()
+
+            return jsonify(
+                winning_percentage
+            ), 200
+        
+        except StockfishException as e:
+            return jsonify({
+                "type": "stockfish_error",
+                "message": f"Failed to get a response from the stockfish: {str(e)}"
+            }), 500  
+
+    @app.route('/more_explanation', methods=['POST'])
+    async def more_explanation():
+        
+        if not request.is_json: 
+            return jsonify({ 
+                "type": "invalid_request", 
+                "message": "Request must be a JSON object." 
+            }), 400
+            
+        data = await request.get_json()
+        question = data.get("question")
+        first_answer = data.get("first_answer")
+
+        if not question or not first_answer:
+            return jsonify({
+                "type": "invalid_request",
+                "message": "Both 'question' and 'first_answer' fields are required."
+            }), 400
+
+        if not llm_utils.is_string_valid(question):
+            return jsonify({
+                "type": "invalid_question",
+                "message": "Invalid question string provided."
+            }), 422
+            
+        if not llm_utils.is_string_valid(first_answer):
+            return jsonify({
+                "type": "invalid_first_answer",
+                "message": "Invalid first_answer string provided."
+            }), 422
+
+        try:
+            ask_input = {
+                "question": question,
+                "first_answer": first_answer
+            }
+
+            answer = coach.ask_chess_question(ask_input)
+
+        except Exception as e:
+            return jsonify({
+                "type": "llm_error",
+                "message": f"Failed to get a response from the LLM: {str(e)}"
+            }), 500
 
         return jsonify({
             "answer": answer
@@ -263,6 +553,7 @@ def create_main_app():
     async def not_found(error):
         return jsonify({
             "type": "not_found",
+            "message": f"{str(error)}"
             "message": "The requested resource was not found. "
         }), 404
 

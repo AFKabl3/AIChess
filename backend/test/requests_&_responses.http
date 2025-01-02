@@ -58,6 +58,23 @@ Response:
     "type": "invalid_fen_notation"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "move": "e7e5"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Invalid Move Notation
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -96,8 +113,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred. Please try again.",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 ### Valid request
@@ -129,6 +146,22 @@ Response:
     "type": "invalid_fen_notation"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Empty Request Body
 POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
 Content-Type: application/json
@@ -152,8 +185,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred. Please try again.",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -176,7 +209,7 @@ POST http://127.0.0.1:5000/answer_question
 Content-Type: application/json
 
 {
-  "question": "string"
+  "question": string
 }
 
 Response:
@@ -217,7 +250,7 @@ Content-Type: application/json
 
 {
   "fen": "invalid_fen_string",
-  "question": "string"
+  "question": string
 }
 
 Response:
@@ -225,6 +258,23 @@ Response:
    "message": "Invalid FEN string provided.",
    "type": "invalid_fen_notation"
 }
+
+
+### Game over
+POST http://127.0.0.1:5000/answer_question
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "question": string
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
 
 ### Invalid question string
 POST http://127.0.0.1:5000/answer_question
@@ -251,8 +301,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred. Please try again.",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -313,6 +363,23 @@ Response:
   "type": "invalid_fen_notation"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/get_bot_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "skill_level": 18
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Invalid skill level Notation
 POST http://127.0.0.1:5000/get_bot_move
 Content-Type: application/json
@@ -366,8 +433,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred. Please try again.",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -413,6 +480,21 @@ Response:
 }
 
 
+### Game over
+POST http://127.0.0.1:5000/get_best_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/get_best_move
 Content-Type: text/plain
@@ -423,8 +505,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred. Please try again.",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -484,6 +566,21 @@ Response:
 }
 
 
+### Game over
+POST http://127.0.0.1:5000/get_game_status
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
 ### Non-JSON Content Type
 POST http://127.0.0.1:5000/get_game_status
 Content-Type: text/plain
@@ -494,8 +591,8 @@ Content-Type: text/plain
 
 Response:
 {
-    "message": "An unexpected error occurred. Please try again.",
-    "type": "internal_server_error"
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
 }
 
 
@@ -511,4 +608,255 @@ Response:
 
 {
   "answer":string
+}
+
+### Valid Request - initial state
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+Response:
+{
+  "current_player": string,
+  "percentage": float
+}
+
+### Valid Request - in game status (white is in advantage)
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r2Q1b1r/3R1p2/k1b2Bnp/pp6/8/1PP2N1P/P4P2/4R1K1 w - - 5 34"
+}
+
+Response:
+{
+  "current_player": string,
+  "percentage": float
+}
+
+
+### Valid Request - in game status (black is in advantage)
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r2qkbnr/ppp2ppp/2n5/3pp3/2N5/4P2b/PPPPBPPP/R1BQ1RK1 b kq - 1 6"
+}
+
+Response:
+{
+  "current_player": string,
+  "percentage": float
+}
+
+
+### Valid Request - mate for white
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4"
+}
+
+Response:
+{
+  "current_player": "w",
+  "percentage": 100.0
+}
+
+
+### Valid Request - mate for black
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1b4r/ppp1kpp1/n3p1pn/8/4q3/1Pb5/P5PP/RN3KNR b - - 1 13"
+}
+
+Response:
+{
+  "current_player": "b",
+  "percentage": 100.0
+}
+
+
+### Missing FEN Field
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{}
+
+Response:
+ {
+  "message": "'fen' field is required.",
+  "type": "invalid_request"
+}
+
+
+### Invalid FEN String
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "invalid_fen_string"
+}
+
+Response:
+{
+  "message": "Invalid FEN string provided.",
+  "type": "invalid_fen_notation"
+}
+
+
+### Game over
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+}
+
+Response:
+{
+  "message": "Game is over: CHECKMATE",
+  "type": "game_over"
+}
+
+
+### Non-JSON Content Type
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: text/plain
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+Response:
+{
+  "message": "Request must be a JSON object.",
+  "type": "invalid_request"
+}
+
+### Enpassant field in FEN
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+}
+
+Response:
+{
+  "current_player": "b",
+  "percentage": float
+}
+
+
+### endpoint not found
+POST http://127.0.0.1:5000/get_winning_percentages
+Content-Type: application/json
+
+{
+  "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+}
+
+Response:
+{
+  "message": "404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
+  "type": "not_found"
+}
+
+### Valid Request
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+
+{
+  "answer":string
+}
+
+
+### Missing Question Field
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+    "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+{
+    "type": "invalid_request",
+    "message": "Both 'question' and 'first_answer' fields are required."
+}
+
+
+### Missing First Answer Field
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+    "question": "What can i do to improve my pawn structure in this state?"
+}
+
+Response:
+{
+    "type": "invalid_request",
+    "message": "Both 'question' and 'first_answer' fields are required."
+}
+
+### Invalid Question String
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+  "question": 1,
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+{
+    "type": "invalid_question",
+    "message": "Invalid question string provided."
+}
+
+
+### Invalid First Answer String
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: application/json
+
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": 1
+}
+
+Response:
+{
+    "type": "invalid_first_answer",
+    "message": "Invalid first_answer string provided."
+}
+
+### Non-JSON Content Type
+POST http://127.0.0.1:5000/more_explanation
+Content-Type: text/plain
+
+{
+  "question": "What can i do to improve my pawn structure in this state?",
+  "first_answer": "Try to ensure the pawns defend eachother, and don't stack pawns."
+}
+
+Response:
+{
+    "message": "Request must be a JSON object.",
+    "type": "invalid_request"
 }

@@ -1,5 +1,5 @@
 import { Method } from './api';
-import { request } from './request';
+import { requestWithErrorToast } from './request';
 
 const ChessEndpoint = {
   EVALUATE_MOVE: '/evaluate_move',
@@ -7,6 +7,17 @@ const ChessEndpoint = {
   ANSWER_QUESTION: '/answer_question',
   GET_BOT_MOVE: '/get_bot_move',
   GET_BEST_MOVE: '/get_best_move',
+  MORE_EXPLANATION: '/more_explanation',
+  GET_WINNING_PERCENTAGE: '/get_winning_percentage',
+};
+
+const errorMessages = {
+  EVALUATE_MOVE: 'An error occurred while evaluating the move.',
+  MOVE_SUGGESTION_WITH_EVALUATION: 'An error occurred while getting the move suggestion.',
+  ANSWER_QUESTION: 'An error occurred while answering the question.',
+  GET_BOT_MOVE: 'An error occurred while getting the bot move.',
+  GET_BEST_MOVE: 'An error occurred while getting the best move.',
+  GET_WINNING_PERCENTAGE: 'An error occurred while getting the winning percentage.',
 };
 
 /**
@@ -20,7 +31,13 @@ const ChessEndpoint = {
  *  or rejects with an error message.
  */
 export const evaluateMove = async (fen, move) =>
-  request(ChessEndpoint.EVALUATE_MOVE, Method.POST, { fen, move });
+  requestWithErrorToast(
+    ChessEndpoint.EVALUATE_MOVE,
+    Method.POST,
+    { fen, move },
+    {},
+    errorMessages.EVALUATE_MOVE
+  );
 
 /**
  * Gets a suggested move along with its evaluation for a given board position.
@@ -33,7 +50,13 @@ export const evaluateMove = async (fen, move) =>
  *  or rejects with an error message.
  */
 export const getMoveSuggestionWithEvaluation = async (fen) =>
-  request(ChessEndpoint.MOVE_SUGGESTION_WITH_EVALUATION, Method.POST, { fen });
+  requestWithErrorToast(
+    ChessEndpoint.MOVE_SUGGESTION_WITH_EVALUATION,
+    Method.POST,
+    { fen },
+    {},
+    errorMessages.MOVE_SUGGESTION_WITH_EVALUATION
+  );
 
 /**
  * Answers a question about a given chess board position.
@@ -45,7 +68,13 @@ export const getMoveSuggestionWithEvaluation = async (fen) =>
  *  or rejects with an error message.
  */
 export const answerChessQuestion = async (fen, question) =>
-  request(ChessEndpoint.ANSWER_QUESTION, Method.POST, { fen, question });
+  requestWithErrorToast(
+    ChessEndpoint.ANSWER_QUESTION,
+    Method.POST,
+    { fen, question },
+    {},
+    errorMessages.ANSWER_QUESTION
+  );
 
 /**
  * Gets the bot's move for a given board position.
@@ -57,7 +86,13 @@ export const answerChessQuestion = async (fen, question) =>
  *  or rejects with an error message.
  */
 export const getBotMove = async (fen, skill_level) =>
-  request(ChessEndpoint.GET_BOT_MOVE, Method.POST, { fen, skill_level });
+  requestWithErrorToast(
+    ChessEndpoint.GET_BOT_MOVE,
+    Method.POST,
+    { fen, skill_level },
+    {},
+    errorMessages.GET_BOT_MOVE
+  );
 
 /**
  * Gets the best move for a given board position.
@@ -68,4 +103,40 @@ export const getBotMove = async (fen, skill_level) =>
  *  or rejects with an error message.
  */
 export const getBestMove = async (fen) =>
-  request(ChessEndpoint.GET_BEST_MOVE, Method.POST, { fen });
+  requestWithErrorToast(
+    ChessEndpoint.GET_BEST_MOVE,
+    Method.POST,
+    { fen },
+    {},
+    errorMessages.GET_BEST_MOVE
+  );
+
+/**
+ * Gives a more detailed explanation from a previous question
+ *
+ * @param {string} question Previous question.
+ * @param {string} first_answer Previous response.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - `more_explanation` (string): A better explanation.
+ *  or rejects with an error message.
+ */
+export const moreExplanation = async (question, first_answer) =>
+  request(ChessEndpoint.MORE_EXPLANATION, Method.POST, { question, first_answer });
+
+/** Gets the winning percentage for a given board position and a move.
+ *
+ * @param {string} fen The FEN string representing the board state.
+ * @param {string} move The UCI notation of the move to evaluate.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - `current_player` (string): The player to move ("w" or "b").
+ *   - `percentage` (float): Percentage of winning of the `current_player`.
+ *  or rejects with an error message.
+ */
+export const getWinningPercentage = async (fen) =>
+  requestWithErrorToast(
+    ChessEndpoint.GET_WINNING_PERCENTAGE,
+    Method.POST,
+    { fen },
+    {},
+    errorMessages.GET_WINNING_PERCENTAGE
+  );
