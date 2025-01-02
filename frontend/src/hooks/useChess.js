@@ -38,6 +38,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   const [timerInterval, setTimerInterval] = useState(null); // To track the timer
   const [timers, setTimers] = useState({ white: 0, black: 0 });
   const [gameMode, setGameMode] = useState(); // Selected game mode at the begin
+  const [fen, setFen] = useState('');
 
   // Percentage of probability of both players winning
   const [whitePercentage, setWhitePercentage] = useState(50.0);
@@ -129,6 +130,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setIsGameOver(false);
     setArrows([]);
     disableTimers();
+    setFen('');
   };
 
   const showStatusMessage = (message) => {
@@ -137,6 +139,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setTimeout(() => {
       setStatusMessage('');
     }, 2500);
+  };
+
+  const updateFENAfterMove = () => {
+    const currentFEN = game.fen();
+    setFen(currentFEN);
   };
 
   // Effect to check the game's status whenever the game state changes
@@ -150,7 +157,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       showStatusMessage(winner);
       setIsGameOver(true);
       stopTimer();
-      
+
       console.log(winner);
     } else if (game.in_check()) {
       const kingPos = getKingPosition(game);
@@ -175,7 +182,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   const fetchProbabilities = async (fen) => {
     if (game.game_over()) {
-      if (game.turn() === "w") {
+      if (game.turn() === 'w') {
         setWhitePercentage(0);
         setBlackPercentage(100);
       } else {
@@ -189,13 +196,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
         setWhitePercentage(data.current_player === 'w' ? data.percentage : 100.0 - data.percentage);
         setBlackPercentage(data.current_player === 'b' ? data.percentage : 100.0 - data.percentage);
-
       } catch (error) {
-        console.error("Error fetching probabilities:", error);
+        console.error('Error fetching probabilities:', error);
       }
     }
   };
-
 
   /**
    * Safely mutates the current game state by applying a modification function.
@@ -283,6 +288,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
           return game.move(move, { sloppy: true });
         });
         if (successfulMove && onBotMove) onBotMove(successfulMove, prevFen, game.fen());
+        updateFENAfterMove();
         if (gameMode === 'timed') handleMoveTimerSwitch();
       } else {
         setTimeout(makeRandomMove, 150);
@@ -384,6 +390,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setMoveFrom('');
       setMoveTo(null);
       setOptionSquares({});
+      updateFENAfterMove();
       if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
       return;
     }
@@ -423,6 +430,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       });
 
       if (move && onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+      updateFENAfterMove();
       if (move && gameMode === 'timed') handleMoveTimerSwitch();
       resetArrows();
     }
@@ -474,6 +482,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     const randomIndex = Math.floor(Math.random() * possibleMove.length);
     const move = game.move(possibleMove[randomIndex]); // TODO: Change to safe game mutate
     if (move && onBotMove) onBotMove(move, null, game.fen());
+    updateFENAfterMove();
     if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
     setGame(new Chess(game.fen()));
   };
@@ -513,6 +522,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     if (move == null) return false;
 
     if (onPlayerMove) onPlayerMove(move, prevFen, game.fen());
+    updateFENAfterMove();
     resetArrows();
     if (move !== null && gameMode === 'timed') handleMoveTimerSwitch();
     return move !== null;
@@ -549,5 +559,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     getGameMode,
     whitePercentage,
     blackPercentage,
+    fen,
   };
 };

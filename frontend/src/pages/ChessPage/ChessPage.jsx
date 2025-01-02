@@ -43,7 +43,7 @@ export const ChessPage = () => {
     setConfigValue,
   });
 
-  const { position, addArrow } = chess;
+  const { fen, position, addArrow } = chess;
 
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
@@ -154,7 +154,7 @@ export const ChessPage = () => {
           <VictoryBar />
           <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
         </Box>
-        <FenInput />
+        <FenInput fen={fen}/>
       </Box>
       <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
       <Chat
