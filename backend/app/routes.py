@@ -553,7 +553,6 @@ def create_main_app():
     async def not_found(error):
         return jsonify({
             "type": "not_found",
-            "message": f"{str(error)}"
             "message": "The requested resource was not found. "
         }), 404
 
