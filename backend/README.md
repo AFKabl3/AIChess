@@ -13,11 +13,19 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
 ### Installation and Setup
 
 0. **Preliminar Step**
-   Open your `terminal` (`powershell` in **Windows**) and go to the project `AIChess` folder:
+   Open your `terminal` (`powershell` in **Windows**) and use this `command` (if you download AIChess in a different location, go this folder):
 
-   ```bash
-   cd backend
-   ```
+   - On **Linux/Mac**:
+  
+      ```bash
+      cd AIChess/backend
+      ```
+
+   - On **Windows**:
+  
+      ```powershell
+      cd AIChess\backend
+      ```
 
 
 1. **Stockfish installation**
@@ -29,6 +37,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
      - [Stockfish binaries for MacOS Intel processor](https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-macos-x86-64-avx2.tar)
      - [Stockfish binaries for MacOS Apple Silicon](https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-macos-m1-apple-silicon.tar)
      - [Stockfish binaries for Windows](https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-windows-x86-64-avx2.zip)
+  
    - Once you downloaded the file, create the `stockfish_binaries` folder in the `backend` folder of the project.
 
 - In the `terminal` (`powershell` in **Windows**) execute the  following code:
@@ -36,8 +45,10 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
   ```bash
   mkdir stockfish_binaries
   ```
+
 - Extract the contents of the previously downloaded compressed file and __RENAME__ the executable to `executable`.
   On `Windows`, the `executable` will have the `.exe` extension. After renaming, it should be `executable.exe`.
+
 - __ADD__ into the `stockfish_binaries` folder the `executable` file previously renamed
 
 
@@ -69,55 +80,44 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    Create a file `.env` in the `backend` root directory to define environment-specific variables:
 
    - `LLM_API_KEY` contain the `KEY` generated in the previous paragraph.
+  
    - `STOCKFISH_EXECUTABLE` contain the relative path from
      backend in order to reach the `executable`
 
    In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
    - On **Linux/Mac**:
+  
      - In `LLM_API_KEY`, __REPLACE__ `your_secret_key_here` with the `API Key` you previously __CREATED__ on [Huggingface](https://huggingface.co/)
+  
        ```bash
        rm -fr .env; echo "LLM_API_KEY=your_secret_key_here" >> .env; echo "STOCKFISH_EXECUTABLE=stockfish_binaries/executable" >> .env; cat .env
        ```
+
      - `.env` result in the terminal:
+  
        ```plain
        LLM_API_KEY=your_secret_key_here
        STOCKFISH_EXECUTABLE=stockfish_binaries/executable
        ```
+
    - On **Windows**:
+  
      - In `LLM_API_KEY`, __REPLACE__ `your_secret_key_here` with the `API Key` you previously __CREATED__ on [Huggingface](https://huggingface.co/)
+  
        ```powershell
        rm -Force .env; New-Item -Path "." -Name ".env" -ItemType "file"; "LLM_API_KEY=your_secret_key_here" | Out-File -FilePath .\.env; "STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe" | Out-File -FilePath .\.env -Append; cat .\.env
        ```
+
      - `.env` result in the terminal:
+  
        ```plain
        LLM_API_KEY=your_secret_key_here
        STOCKFISH_EXECUTABLE=stockfish_binaries\executable.exe
        ```
 
 
-4. **Final backend structure**
-
-   The final structure of the backend.
-   In the `terminal` (`powershell` in **Windows**) execute the  following code:
-
-   - use this command:
-     ```bash
-     tree
-     ```
-   - the result in the `terminal` (`powershell` in **Windows**) should be like this:
-     ```plain
-     backend/
-     ├── app/
-     ├── venv/
-     ├── .env
-     ├── stockfish_binaries/
-     │   └── executable
-     │ 
-     ```
-
-
-5. **Set Up Virtual Environment**
+4. **Set Up Virtual Environment**
 
    - Create a virtual environment (__only the First time__).
      In the `terminal` (`powershell` in **Windows**) execute the  following code:
@@ -125,30 +125,38 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
      ```bash
      python -m venv venv
      ```
+
      or
 
      ```bash
      python3 -m venv venv
      ```
+
    - Activate the virtual environment.
      In the `terminal` (`powershell` in **Windows**) execute the  following code:
 
      - On **Linux/Mac**:
+  
        ```bash
        source venv/bin/activate
        ```
+
      - On **Windows**:
+  
        - __Only the First time__:
+  
          ```powershell
          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; ./venv\Scripts\activate
          ```
+
        - Normal usage:
+
          ```powershell
          ./venv\Scripts\activate
          ```
 
 
-6. **Install Dependencies**
+5. **Install Dependencies**
 
    Once the virtual environment is active, install the required dependencies using `pip`.
    In the `terminal` (`powershell` in **Windows**) execute the  following code:
@@ -158,7 +166,7 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    ```
 
 
-7. **Start the Quart Development Server**
+6. **Start the Quart Development Server**
 
    Run the Quart application.
    In the `terminal` (`powershell` in **Windows**) execute the  following code:
@@ -169,6 +177,23 @@ The backend is built with [Quart](https://quart.palletsprojects.com/en/latest/),
    Once the server is running, the API will be available at your __localhost__:
    [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
-  [Go to the Frontend Installation Guide](./../frontend/README.md)
 
-  [Go to the Global README](./../README.md)
+## Structure
+
+The project is structured as follows:
+
+  ```plain
+  backend/
+  ├── app/
+  ├── venv/
+  ├── .env
+  ├── stockfish_binaries/
+  │   └── executable
+  │ 
+  ```
+
+  ## Other Pages
+
+  - [`Frontend Installation Guide`](./../frontend/README.md)
+
+  - [`Global README`](./../README.md)

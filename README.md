@@ -17,7 +17,7 @@ AIChess is a project proposed by the [Mia-Platform group](https://mia-platform.e
 
 0. **Preliminar Step**
 
-   Open your `terminal` (`powershell` in **Windows**) and go to the project `AIChess` folder:
+   Open your `terminal` (`powershell` in **Windows**) and download the `project` using the following `command`:
 
    ```bash
    git clone https://github.com/AFKabl3/AIChess.git
@@ -26,7 +26,9 @@ AIChess is a project proposed by the [Mia-Platform group](https://mia-platform.e
 
 1. **Backend Installation**
 
-    [Go to the Backend Installation Guide](/backend/README.md)
+    [`Backend Installation Guide`](/backend/README.md)
+
+
 2. **Frontend Installation**
 
-    [Go to the Frontend Installation Guide](/frontend/README.md)
+    [`Frontend Installation Guide`](/frontend/README.md)
