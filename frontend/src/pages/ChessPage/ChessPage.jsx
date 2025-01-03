@@ -148,13 +148,13 @@ export const ChessPage = () => {
             display: 'flex',
             flexDirection: 'row',
             gap: 2,
-            height: '100%',
+            minHeight: '95%',
           }}
         >
           <VictoryBar />
           <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
         </Box>
-        <FenInput fen={fen}/>
+        <FenInput fen={fen} />
       </Box>
       <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
       <Chat

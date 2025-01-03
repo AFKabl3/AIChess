@@ -12,7 +12,7 @@ export const FenInput = ({ fen }) => {
   };
 
   return (
-    <Box sx={{ mt: 0.5, mb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Box sx={{display: 'flex', alignItems: 'center', gap: 1, minWidth:'120%'}}>
       <TextField label="FEN" variant="outlined" value={fen} fullWidth />
       <Tooltip title="Copy FEN">
         <IconButton onClick={handleCopy} color="secondary" aria-label="Copy FEN" disabled={!fen}>
