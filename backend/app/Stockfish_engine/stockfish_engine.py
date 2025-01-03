@@ -10,8 +10,42 @@ class StockfishEngine(Stockfish):
     def is_move_valid(self, fen, move):
         new_fen = utils.from_move_to_fen(fen, move)
         if new_fen is None:
-            return False
-        return self.is_fen_valid(new_fen)
+            return {"is_valid": False, "endgame": None}
+        
+        # Check for endgame conditions
+        board = Board(new_fen)
+        endgame_type = self.check_endgame(board)
+        
+        if endgame_type:
+            return {"is_valid": True, "endgame": endgame_type}
+   
+        # If none of the endgame conditions apply then validate the FEN
+        is_valid = self.is_fen_valid(new_fen)
+        return {"is_valid": is_valid, "endgame": None}
+    
+    def fen_to_board(self,fen):
+        return Board(fen)
+
+
+    def check_endgame(self, board):
+        """
+        Checks if the given board state results in an endgame.
+        
+        Args:
+            board (Board): A chess Board object.
+
+        Returns:
+            str: The type of endgame ('checkmate', 'stalemate', 'insufficient_material') if applicable, 
+                otherwise None.
+        """
+        if board.is_checkmate():
+            return "checkmate"
+        if board.is_stalemate():
+            return "stalemate"
+        if board.is_insufficient_material():
+            return "insufficient_material"
+        return None
+
 
     def get_move_suggestion(self, fen):
         self.set_fen_position(fen)
@@ -32,7 +66,7 @@ class StockfishEngine(Stockfish):
         evaluation_before = self.get_board_evaluation(fen)
         fen_after_move = utils.from_move_to_fen(fen, move)
         evaluation_after = self.get_board_evaluation(fen_after_move)
-
+        # use the new funciton here, return some kind of endgame, so we directly ask llm
         if evaluation_before is None or evaluation_after is None:
            return None
 

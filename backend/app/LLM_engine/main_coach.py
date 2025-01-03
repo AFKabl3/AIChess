@@ -40,6 +40,20 @@ class MainCoach(LLM):
                         Limit the response to 70 words""")
         response = (self.ask(prompt))
         return response
+    
+    def ask_endgame(self,input):
+        self.automatic_coach_creation()
+        board = input.get("board")
+        player = input.get("player")
+        print("Player:"+ player)
+        move = input.get("move")
+        prompt = (f"""The player who made the move {player},
+                        The current state of the board is, empty cells are represented with ' ':\n{board}.
+                        The move made is {move}.
+                        The player:{player} has won the game. Provide a short congratulations. 
+                        Limit the response to 70 words""")
+        response = (self.ask(prompt))
+        return response
 
     def ask_move_suggestion(self, input):
         self.automatic_coach_creation()

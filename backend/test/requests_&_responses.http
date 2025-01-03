@@ -24,7 +24,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
+    "message": "The following fields are required: 'fen', 'move'.",
     "type": "invalid_request"
 }
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 Response:
 {
-      "message": "Both 'fen' and 'move' fields are required.",
+      "message": "The following fields are required: 'fen', 'move'.",
       "type": "invalid_request"
 }
 
@@ -86,7 +86,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Invalid/illegal string move provided.",
+    "message": "Invalid/illegal move provided.",
     "type": "invalid_move"
 }
 
@@ -98,7 +98,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
+    "message": "The following fields are required: 'fen', 'move'.",
     "type": "invalid_request"
 }
 
@@ -170,7 +170,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "'fen' fields is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -214,7 +214,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'question' fields are required.",
+    "message": "The following fields are required: fen, question.",
     "type": "invalid_request"
 }
 
@@ -228,7 +228,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'question' fields are required.",
+    "message": "The following fields are required: fen, question.",
     "type": "invalid_request"
 }
 
@@ -240,7 +240,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'question' fields are required.",
+    "message": "The following fields are required: fen, question.",
     "type": "invalid_request"
 }
 
@@ -330,7 +330,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "message": "The following fields are required: fen, skill_level.",
   "type": "invalid_request"
 }
 
@@ -344,7 +344,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "message": "The following fields are required: fen, skill_level.",
   "type": "invalid_request"
 }
 
@@ -418,7 +418,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'skill_level' fields are required.",
+    "message": "The following fields are required: fen, skill_level.",
     "type": "invalid_request"
 }
 
@@ -460,7 +460,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -546,7 +546,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
