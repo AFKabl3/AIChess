@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from chess import Board
+from chess import Board, Move
 from chess import IllegalMoveError, InvalidMoveError, AmbiguousMoveError
 
 def get_stockfish_binary_path():
@@ -24,4 +24,13 @@ def is_skill_level_valid(skill_level):
 
 def get_current_player(fen):
     return fen.split()[1]
+
+def uci_to_san(fen, move):
+    try:
+        board = Board(fen)
+        move = Move.from_uci(move)
+        san_move = board.san(move)
+        return san_move
+    except (IllegalMoveError, InvalidMoveError, AmbiguousMoveError):
+        return None
 

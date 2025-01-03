@@ -115,69 +115,6 @@ Content-Type: text/plain
 }
 
 
-### Valid Request
-POST http://127.0.0.1:5000/answer_question
-Content-Type: application/json
-
-{
-  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
-  "question": "string"
-}
-
-### Missing FEN field
-POST http://127.0.0.1:5000/answer_question
-Content-Type: application/json
-
-{
-  "question": "string"
-}
-
-
-### Missing question field
-POST http://127.0.0.1:5000/answer_question
-Content-Type: application/json
-
-{
-  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
-}
-
-### Invalid FEN string
-POST http://127.0.0.1:5000/answer_question
-Content-Type: application/json
-
-{
-  "fen": "invalid_fen_string",
-  "question": "string"
-}
-
-
-### Game over
-POST http://127.0.0.1:5000/answer_question
-Content-Type: application/json
-
-{
-  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
-  "question": "string"
-}
-
-### Invalid question string
-POST http://127.0.0.1:5000/answer_question
-Content-Type: application/json
-
-{
-  "fen": "r2qkbnr/pp3ppp/2np4/2p1pb2/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 1",
-  "question": 1
-}
-
-
-### Non-JSON Content Type
-POST http://127.0.0.1:5000/answer_question
-Content-Type: text/plain
-
-{
-  "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
-}
-
 
 
 ### Valid Request
