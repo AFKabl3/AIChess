@@ -12,6 +12,8 @@ import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
 import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
+import { FenInput } from '../../components/fenInput/FenInput';
+
 
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
@@ -42,7 +44,7 @@ export const ChessPage = () => {
     setConfigValue,
   });
 
-  const { position, addArrow } = chess;
+  const { fen, position, addArrow } = chess;
 
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
@@ -156,8 +158,26 @@ export const ChessPage = () => {
         p: 3,
       }}
     >
-      <VictoryBar />
-      <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 2,
+            minHeight: '95%',
+          }}
+        >
+          <VictoryBar />
+          <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+        </Box>
+        <FenInput fen={fen} />
+      </Box>
       <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
       <Chat
         followChat={followChat}
@@ -167,6 +187,7 @@ export const ChessPage = () => {
       />
     </Box>
   );
+
   return (
     <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
       {content}
