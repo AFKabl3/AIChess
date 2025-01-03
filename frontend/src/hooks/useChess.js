@@ -32,6 +32,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   // State to track custom arrows, are on the form [[from, to], [from, to], ...]
   const [arrows, setArrows] = useState([]);
 
+  const [canMovePieces, setCanMovePieces] = useState(true);
+
   const [whiteTime, setWhiteTime] = useState(60);
   const [blackTime, setBlackTime] = useState(60);
   const [increment, setIncrement] = useState(0);
@@ -156,14 +158,17 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
         : 'Draw!';
       showStatusMessage(winner);
       setIsGameOver(true);
+      setCanMovePieces(false); // Disable piece movement
       stopTimer();
-
+      
       console.log(winner);
     } else if (game.in_check()) {
       const kingPos = getKingPosition(game);
 
       setOptionSquares({ [kingPos]: { backgroundColor: 'rgba(255, 0, 0, 0.5)' } });
     } else {
+      setIsGameOver(false);
+      setCanMovePieces(true);
       setOptionSquares({});
     }
     fetchProbabilities(game.fen());
@@ -327,8 +332,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    *    to clear any right-click highlights.
    */
   const onSquareClick = (square) => {
+    if (isGameOver ||!canMovePieces || isPaused || (gameMode === 'timed' && isGameOver)) return; // Disable movement only if `canMovePieces` is false
     setRightClickedSquares({});
-    if (isPaused || (gameMode === 'timed' && isGameOver)) return;
 
     const isPromotionMove = (move, square) => {
       return (
@@ -499,7 +504,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   const onDrop = (source, target) => {
-    if (isPaused) return;
+    if (!canMovePieces || isGameOver || isPaused) return;
     if (gameMode === 'timed' && isGameOver) {
       if (!statusMessage) showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!');
       return;
