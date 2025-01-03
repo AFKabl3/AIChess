@@ -29,7 +29,6 @@ class MainCoach(LLM):
                         The probability of winning is: {winning_percentage}%.
                         Provide only a feedback on this move. 
                         Limit the response to 70 words""")
-        # print(prompt)
         response = (self.ask(prompt))
         return response
 
