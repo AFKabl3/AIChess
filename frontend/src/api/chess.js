@@ -1,5 +1,5 @@
 import { Method } from './api';
-import { requestWithErrorToast } from './request';
+import { request, requestWithErrorToast } from './request';
 
 const ChessEndpoint = {
   EVALUATE_MOVE: '/evaluate_move',
@@ -9,6 +9,7 @@ const ChessEndpoint = {
   GET_BEST_MOVE: '/get_best_move',
   MORE_EXPLANATION: '/more_explanation',
   GET_WINNING_PERCENTAGE: '/get_winning_percentage',
+  GET_GAME_STATUS: '/get_game_status',
 };
 
 const errorMessages = {
@@ -18,6 +19,7 @@ const errorMessages = {
   GET_BOT_MOVE: 'An error occurred while getting the bot move.',
   GET_BEST_MOVE: 'An error occurred while getting the best move.',
   GET_WINNING_PERCENTAGE: 'An error occurred while getting the winning percentage.',
+  GET_GAME_STATUS: 'An error occurred while getting the game status.',
 };
 
 /**
@@ -139,4 +141,21 @@ export const getWinningPercentage = async (fen) =>
     { fen },
     {},
     errorMessages.GET_WINNING_PERCENTAGE
+  );
+
+/**
+ * Gets the current game status for a given board position.
+ *
+ * @param {string} fen The FEN string representing the board state.
+ * @returns {Promise<Object>} A promise that resolves to an object containing:
+ *   - `answer` (string): The current status of the game.
+ *  or rejects with an error message.
+ */
+export const getGameStatus = async (fen) =>
+  requestWithErrorToast(
+    ChessEndpoint.GET_GAME_STATUS,
+    Method.POST,
+    { fen },
+    {},
+    errorMessages.GET_GAME_STATUS
   );
