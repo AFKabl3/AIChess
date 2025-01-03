@@ -74,13 +74,15 @@ def create_main_app():
 
             try:
                 fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
+                winning_percentage = stockfish.get_winning_percentage(fen_after_move).get("percentage")
                 board_str = llm_utils.from_fen_to_board(fen_after_move)
                 current_player = stockfish_utils.get_current_player(fen)
                 ask_input = {
                     "board": board_str,
                     "player": llm_utils.get_player(current_player),
-                    "move": move,
-                    "delta_evaluation": delta_evaluation
+                    "move": stockfish_utils.uci_to_san(fen, move),
+                    "delta_evaluation": delta_evaluation,
+                    "winning_percentage": 100 - winning_percentage
                 }
 
                 response = coach.ask_move_feedback(ask_input)
@@ -143,6 +145,9 @@ def create_main_app():
 
             if delta_evaluation is None:
                 raise StockfishException("no evaluation for the current fen")
+            
+            fen_after_move = stockfish_utils.from_move_to_fen(fen, suggested_move)
+            winning_percentage = stockfish.get_winning_percentage(fen_after_move).get("percentage")
 
             try:
                 board_str = llm_utils.from_fen_to_board(fen)
@@ -150,8 +155,9 @@ def create_main_app():
                 ask_input = {
                     "board": board_str,
                     "player": llm_utils.get_player(current_player),
-                    "move": suggested_move,
-                    "delta_evaluation": delta_evaluation
+                    "move": stockfish_utils.uci_to_san(fen, suggested_move),
+                    "delta_evaluation": delta_evaluation,
+                    "winning_percentage": 100 - winning_percentage
                 }
 
                 response = coach.ask_move_suggestion(ask_input)
@@ -174,78 +180,6 @@ def create_main_app():
             "suggestion": response,
         }), 200
 
-    @app.route('/answer_question', methods=['POST'])
-    async def answer_question():
-        if not request.is_json:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "Request must be a JSON object."
-            }), 400
-        data = await request.get_json()
-        fen = data.get("fen")
-        question = data.get("question")
-
-        if not fen or not question:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "Both 'fen' and 'question' fields are required."
-            }), 400
-
-        if not stockfish.is_fen_valid(fen):
-            is_game_over = stockfish.is_game_over(fen)
-            if is_game_over.get("is_game_over"):
-                return jsonify({
-                    "type": "game_over",
-                    "message": f"Game is over: {is_game_over.get('type')}"
-                }), 422
-            else:
-                return jsonify({
-                    "type": "invalid_fen_notation",
-                    "message": is_game_over.get('type')
-                }), 422
-
-        if not llm_utils.is_string_valid(question):
-            return jsonify({
-                "type": "invalid_question",
-                "message": "Invalid question string provided."
-            }), 422
-
-        try:
-            evaluation = stockfish.get_board_evaluation(fen)
-
-            # reset stockfish parameters
-            stockfish.reset_engine_parameters()
-
-            if evaluation is None:
-                raise StockfishException("no evaluation for the current fen")
-
-            try:
-                board_str = llm_utils.from_fen_to_board(fen)
-                current_player = stockfish_utils.get_current_player(fen)
-                ask_input = {
-                    "board": board_str,
-                    "player": llm_utils.get_player(current_player),
-                    "question": question,
-                    "evaluation": evaluation
-                }
-
-                answer = coach.ask_chess_question(ask_input)
-
-            except Exception as e:
-                return jsonify({
-                    "type": "llm_error",
-                    "message": f"Failed to get a response from the LLM: {str(e)}"
-                }), 500
-
-        except StockfishException as e:
-            return jsonify({
-                "type": "stockfish_error",
-                "message": f"Failed to get a response from the stockfish: {str(e)}"
-            }), 500
-
-        return jsonify({
-            "answer": answer
-        }), 200
 
     @app.route('/get_bot_move', methods=['POST'])
     async def get_bot_move():
@@ -377,7 +311,8 @@ def create_main_app():
                 }), 422
 
         try:
-            game_status_evaluation = stockfish.get_board_evaluation(fen)
+            # game_status_evaluation = stockfish.get_board_evaluation(fen)
+            winning_percentage = stockfish.get_winning_percentage(fen).get("percentage")
             # reset stockfish_parameters
             stockfish.reset_engine_parameters()
         except StockfishException as e:
@@ -392,7 +327,8 @@ def create_main_app():
             ask_input = {
                 "board": board_str,
                 "player": llm_utils.get_player(current_player),
-                "evaluation": game_status_evaluation
+                "winning_percentage": winning_percentage
+                # "evaluation": game_status_evaluation
             }
             answer = coach.ask_game_status_explanation(ask_input)
         except Exception as e:
@@ -487,7 +423,7 @@ def create_main_app():
                 "first_answer": first_answer
             }
 
-            answer = coach.ask_chess_question(ask_input)
+            answer = coach.ask_more_explanation(ask_input)
 
         except Exception as e:
             return jsonify({
