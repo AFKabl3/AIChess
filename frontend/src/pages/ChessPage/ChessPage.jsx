@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
 import { api } from '../../api/api';
+import { VictoryBar } from '../../components/victoryBar/VictoryBar';
 import { useChat } from '../../hooks/useChat';
 import { useChess } from '../../hooks/useChess';
 import { useConfig } from '../../hooks/useConfig';
@@ -11,7 +12,8 @@ import { Chat } from './Chat/Chat';
 import { ChessBoardWrapper } from './ChessBoardWrapper/ChessBoardWrapper';
 import { ChessContext } from './ChessContext';
 import { MoveHistoryTable } from './MoveHistory/MoveHistoryTable';
-import { VictoryBar } from '../../components/victoryBar/VictoryBar';
+import { FenInput } from '../../components/fenInput/FenInput';
+
 
 export const ChessPage = () => {
   const [llmUse, setLLMUse] = useState(true);
@@ -42,7 +44,7 @@ export const ChessPage = () => {
     setConfigValue,
   });
 
-  const { position, addArrow } = chess;
+  const { fen, position, addArrow } = chess;
 
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
@@ -114,12 +116,33 @@ export const ChessPage = () => {
     setLock(false);
   };
 
+  const onExplainGameStatus = async () => {
+    if (lock) {
+      waitForResponseToast();
+      return;
+    }
+
+    const modifyText = addBotChat('Evaluating game status ...');
+
+    setLock(true);
+    try {
+      const res = await api.getGameStatus(position);
+      const data = await res.json();
+
+      modifyText(`${data.answer}.`);
+    } catch (error) {
+      console.error(error);
+
+      modifyText('An error occurred while explaining current game status.');
+    }
+    setLock(false);
+  };
+
   const commands = [
     { text: 'Suggest a Move', command: onSuggestionRequest },
     {
       text: 'Explain game status',
-      command: () => console.warn('This command is not implemented yet.'),
-      disabled: true,
+      command: onExplainGameStatus,
     },
   ];
 
@@ -135,8 +158,26 @@ export const ChessPage = () => {
         p: 3,
       }}
     >
-      <VictoryBar />
-      <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 2,
+            minHeight: '95%',
+          }}
+        >
+          <VictoryBar />
+          <MoveHistoryTable undoLastMove={moveHistory.undoLastMove} />
+        </Box>
+        <FenInput fen={fen} />
+      </Box>
       <ChessBoardWrapper settings={{ toggleFollowChat, toggleLLMUse: () => setLLMUse(!llmUse) }} />
       <Chat
         followChat={followChat}
@@ -146,6 +187,7 @@ export const ChessPage = () => {
       />
     </Box>
   );
+
   return (
     <ChessContext.Provider value={{ chess, moveHistory, config, setConfigValue, chat }}>
       {content}
