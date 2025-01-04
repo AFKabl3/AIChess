@@ -36,13 +36,29 @@ class MainCoach(LLM):
         self.automatic_coach_creation()
         board = input.get("board")
         player = input.get("player")
-        print("Player:"+ player)
         move = input.get("move")
         prompt = (f"""The player who made the move {player},
                         The current state of the board is, empty cells are represented with ' ':\n{board}.
                         The move made is {move}.
                         The player:{player} has won the game. Provide a short congratulations. 
                         Limit the response to 70 words""")
+        response = (self.ask(prompt))
+        return response
+    
+    def move_suggestion_endgame(self, input):
+        self.automatic_coach_creation()
+        board = input.get("board")
+        player = input.get("player")
+        move = input.get("move")
+        winning_percentage = input.get("winning_percentage")
+        
+        prompt = (f"""The current player is {player}.
+                      The current state of the board is:\n{board}
+                      The move to be suggested is: {move}.
+                      This move will lead to a winning position with a probability of {winning_percentage}%.
+                      Motivate the user to make this move as it is the winning one.
+                      Limit the response to 70 words.""")
+        
         response = (self.ask(prompt))
         return response
 
@@ -85,4 +101,4 @@ class MainCoach(LLM):
         response = (self.ask(prompt))
         return response
 
-    
+

@@ -144,9 +144,11 @@ def create_main_app():
 
             if delta_evaluation is None:
                 raise StockfishException("no evaluation for the current fen")
-            
+            print(fen)
             fen_after_move = stockfish_utils.from_move_to_fen(fen, suggested_move)
+            print (fen_after_move)
             winning_percentage = stockfish.get_winning_percentage(fen_after_move).get("percentage")
+            print(winning_percentage)
 
             try:
                 board_str = llm_utils.from_fen_to_board(fen)
@@ -158,8 +160,15 @@ def create_main_app():
                     "delta_evaluation": delta_evaluation,
                     "winning_percentage": 100 - winning_percentage
                 }
-
-                response = coach.ask_move_suggestion(ask_input)
+                #check if there is endgame, in which case we let the user know that the next move is the decisive one, otherwise we proceed as usual
+                board = stockfish.fen_to_board(fen_after_move)
+                type = stockfish.check_endgame(board)
+                if(type is not None):
+                    if(type == "checkmate"):
+                        ask_input["winning_percentage"] = 100
+                        response = coach.move_suggestion_endgame(ask_input)
+                else:
+                    response = coach.ask_move_suggestion(ask_input) 
 
             except Exception as e:
                 return llm_error(e)
