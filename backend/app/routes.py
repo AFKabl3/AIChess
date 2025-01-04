@@ -11,7 +11,7 @@ from stockfish import StockfishException
 # Assistant module
 from .LLM_engine import MainCoach
 from .LLM_engine import utils as llm_utils
-import pdb
+
 # Error handling functions
 from .error_handlers import (
     invalid_request_error,
@@ -365,11 +365,9 @@ def create_main_app():
         
         # Validate FEN and ensure no endgame condition
         if stockfish.invalid_fen(fen):
-            # pdb.set_trace()
             return invalid_fen_error()
         
         if not stockfish.is_fen_valid(fen):
-            # pdb.set_trace()
             board = stockfish.fen_to_board(fen)
             if stockfish.check_endgame(board) is not None:
                 type = stockfish.check_endgame(board)
