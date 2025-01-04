@@ -33,7 +33,7 @@ export const Chat = ({ followChat, messages, sendMessage, commands }) => (
 
       <ChatDisplay messages={messages} followChat={followChat} commands={commands} />
       <Divider sx={{ mb: 1 }} />
-      <ChatInput sendMessage={sendMessage} />
+      {/* <ChatInput sendMessage={sendMessage} /> */}
     </Box>
   </SideContainer>
 );
