@@ -41,3 +41,9 @@ def llm_error(e):
         "type": "llm_error",
         "message": f"Failed to get a response from the LLM: {str(e)}"
     }), 500
+    
+def is_json_error():
+    return jsonify({
+                "type": "invalid_request",
+                "message": "Request must be a JSON object."
+            }), 400

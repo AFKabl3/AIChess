@@ -25,6 +25,13 @@ class StockfishEngine(Stockfish):
     
     def fen_to_board(self,fen):
         return Board(fen)
+    
+    def invalid_fen(self,fen):
+        try:
+            Board(fen)
+            return False  # Valid FEN
+        except ValueError:
+            return True  # Invalid FEN
 
 
     def check_endgame(self, board):

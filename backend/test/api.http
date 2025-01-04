@@ -1,0 +1,13 @@
+### Non-JSON Content Type
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+
+{
+  "fen": "invalid_fen_string"
+}
+
+Response:
+{
+  "message": "Invalid FEN string provided.",
+  "type": "invalid_fen_notation"
+}
