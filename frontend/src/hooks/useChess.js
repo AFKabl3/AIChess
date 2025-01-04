@@ -507,11 +507,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   const onDrop = (source, target) => {
-    if (!canMovePieces || isGameOver || isPaused) return;
     if (gameMode === 'timed' && isGameOver) {
       if (!statusMessage) showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!');
       return;
     }
+    if (!canMovePieces || isGameOver || isPaused) return;
     if (lock) {
       waitForResponseToast();
       return false;
