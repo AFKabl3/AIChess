@@ -7,7 +7,7 @@ from quart_cors import cors
 from .Stockfish_engine import StockfishEngine
 from .Stockfish_engine import utils as stockfish_utils
 from stockfish import StockfishException
-import pdb
+
 # Assistant module
 from .LLM_engine import MainCoach
 from .LLM_engine import utils as llm_utils
@@ -141,18 +141,6 @@ def create_main_app():
                 "message": "Fen notation provided is wrong"
             }), 422
             
-        # if not stockfish.is_fen_valid(fen):
-        #     is_game_over = stockfish.is_game_over(fen)
-        #     if is_game_over.get("is_game_over"):
-        #         return jsonify({
-        #             "type": "game_over",
-        #             "message": f"Game is over: {is_game_over.get('type')}"
-        #         }), 422
-        #     else:
-        #         return jsonify({
-        #             "type": "invalid_fen_notation",
-        #             "message": is_game_over.get('type')
-        #         }), 422
         
 
             # if not endgame, proceed as usual
@@ -276,14 +264,11 @@ def create_main_app():
             is_game_over = stockfish.is_game_over(fen)
             if is_game_over.get("is_game_over"):
                 return jsonify({
-                    "type": "game_over",
-                    "message": f"Game is over: {is_game_over.get('type')}"
-                }), 403
-            else:
-                return jsonify({
-                    "type": "invalid_fen_notation",
-                    "message": is_game_over.get('type')
-                }), 422
+                    "bot_move": ""
+                }), 200
+            else: 
+                return invalid_fen_error()
+                
 
         if not stockfish_utils.is_skill_level_valid(skill_level):
             return jsonify({
