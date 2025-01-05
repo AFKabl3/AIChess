@@ -22,7 +22,7 @@ export const ChessBoardWrapper = ({ settings }) => {
   const [selectedColor, setSelectedColor] = useState();
 
   const { resetHistory, updateHistory } = moveHistory;
-  const { resetGame } = chess;
+  const { resetGame, updateFENAfterUndo } = chess;
 
   const handleFenSubmit = (fen) => {
     const { loadGame } = chess;
@@ -35,6 +35,7 @@ export const ChessBoardWrapper = ({ settings }) => {
     if (fen.split(' ')[1] === 'b') {
       updateHistory({ san: '-' }, fen, 'user');
     }
+    updateFENAfterUndo(fen);
     setTimersVisible(false);
     closeDialog();
   };

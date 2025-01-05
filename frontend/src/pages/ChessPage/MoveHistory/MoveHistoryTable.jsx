@@ -14,7 +14,7 @@ const NotationLink = styled('span')({
 
 export const MoveHistoryTable = () => {
   const { chess, moveHistory, config } = useContext(ChessContext);
-  const { position, loadGame } = chess;
+  const { position, loadGame, updateFENAfterUndo } = chess;
   const {
     isPaused,
     setIsPaused,
@@ -37,6 +37,7 @@ export const MoveHistoryTable = () => {
 
   function handleNotationClick(fen) {
     loadGame(fen);
+    updateFENAfterUndo(fen);
     setIsPaused(true);
   }
 
@@ -46,6 +47,7 @@ export const MoveHistoryTable = () => {
         ? history[history.length - 1].bot?.fen || history[history.length - 1].user.fen
         : position;
       loadGame(latestFEN);
+      updateFENAfterUndo(latestFEN);
       setIsPaused(false);
     } else {
       setIsPaused(true);
@@ -58,6 +60,7 @@ export const MoveHistoryTable = () => {
       setSaveMode(false);
     } else if (savedFEN) {
       loadGame(savedFEN);
+      updateFENAfterUndo(savedFEN);
       resetToFEN(savedFEN);
     }
   }
@@ -96,14 +99,22 @@ export const MoveHistoryTable = () => {
               }}
             >
               <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
-                {config.selectedColor === 'w' ? 
-                (movePair.user ? `${index + 1}. ${movePair.user.san}` : ``) : 
-                (movePair.bot ? `${index + 1}. ${movePair.bot.san}` : ``)}
+                {config.selectedColor === 'w'
+                  ? movePair.user
+                    ? `${index + 1}. ${movePair.user.san}`
+                    : ``
+                  : movePair.bot
+                  ? `${index + 1}. ${movePair.bot.san}`
+                  : ``}
               </NotationLink>
               <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
-                {config.selectedColor === 'w' ? 
-                (movePair.bot ? movePair.bot.san : ``) : 
-                (movePair.user ? movePair.user.san : ``)}
+                {config.selectedColor === 'w'
+                  ? movePair.bot
+                    ? movePair.bot.san
+                    : ``
+                  : movePair.user
+                  ? movePair.user.san
+                  : ``}
               </NotationLink>
             </Box>
           ))}
@@ -138,6 +149,8 @@ export const MoveHistoryTable = () => {
             undoLastMove();
             const fen =
               history.length >= 2 ? history[history.length - 2].bot?.fen : chess.savedFEN;
+            history.length <= 1 ? updateFENAfterUndo('') : updateFENAfterUndo(fen);
+
             loadGame(fen);
           }}
           disabled={!history.length || savedFEN === position || isPaused}
