@@ -148,6 +148,10 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     setFen(currentFEN);
   };
 
+  const updateFENAfterUndo = (fen) => {
+    setFen(fen);
+  };
+
   // Effect to check the game's status whenever the game state changes
   useEffect(() => {
     if (game.game_over()) {
@@ -160,7 +164,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       setIsGameOver(true);
       setCanMovePieces(false); // Disable piece movement
       stopTimer();
-      
       console.log(winner);
     } else if (game.in_check()) {
       const kingPos = getKingPosition(game);
@@ -332,7 +335,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    *    to clear any right-click highlights.
    */
   const onSquareClick = (square) => {
-    if (isGameOver ||!canMovePieces || isPaused || (gameMode === 'timed' && isGameOver)) return; // Disable movement only if `canMovePieces` is false
+    if (isGameOver || !canMovePieces || isPaused || (gameMode === 'timed' && isGameOver)) return; // Disable movement only if `canMovePieces` is false
     setRightClickedSquares({});
 
     const isPromotionMove = (move, square) => {
@@ -504,11 +507,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   const onDrop = (source, target) => {
-    if (!canMovePieces || isGameOver || isPaused) return;
     if (gameMode === 'timed' && isGameOver) {
       if (!statusMessage) showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!');
       return;
     }
+    if (!canMovePieces || isGameOver || isPaused) return;
     if (lock) {
       waitForResponseToast();
       return false;
@@ -565,5 +568,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     whitePercentage,
     blackPercentage,
     fen,
+    updateFENAfterUndo,
   };
 };
