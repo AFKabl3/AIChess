@@ -7,6 +7,7 @@ import { waitForResponseToast } from '../util/toasts';
 export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setConfigValue }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
+  const [savedFEN, setSavedFEN] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 
   // Tracks the initial square of the piece being moved (e.g., "e2").
   const [moveFrom, setMoveFrom] = useState('');
@@ -538,6 +539,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
 
   const loadGame = (fen) => {
     setGame(new Chess(fen));
+    setSavedFEN(fen); // Update savedFEN whenever a new FEN is loaded
     resetArrows();
   };
 
@@ -557,6 +559,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     resetGame,
     moveTo,
     loadGame,
+    savedFEN, // Expose savedFEN
     arrows,
     addArrow,
     resetArrows,
