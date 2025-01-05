@@ -13,15 +13,7 @@ from .LLM_engine import MainCoach
 from .LLM_engine import utils as llm_utils
 
 # Error handling functions
-from .error_handlers import (
-    invalid_request_error,
-    invalid_fen_error,
-    invalid_move_error,
-    stockfish_error,
-    llm_error,
-    is_json_error,
-    invalid_string_error
-)
+from .error_handlers import *
 
 def create_main_app():
 
@@ -191,10 +183,7 @@ def create_main_app():
                 return invalid_fen_error()
             
         if not stockfish_utils.is_skill_level_valid(skill_level):
-            return jsonify({
-                "type": "invalid_skill_level",
-                "message": "Invalid skill level provided."
-            }), 422
+            return invalid_skill_error()
 
         try:
             # obtain from stockfish the bot move modifying the stockfish skill level

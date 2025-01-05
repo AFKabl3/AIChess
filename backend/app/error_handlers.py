@@ -16,6 +16,12 @@ def invalid_string_error():
         "message": "Invalid string provided."
     }), 422
 
+def invalid_skill_error():
+    return jsonify({
+        "type": "invalid_skill_level",
+        "message": "Invalid skill level provided."
+    }), 422
+
 def invalid_fen_error():
     return jsonify({
         "type": "invalid_fen_notation",
