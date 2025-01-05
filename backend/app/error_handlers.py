@@ -1,5 +1,4 @@
 # error_handlers.py
-
 from quart import jsonify
 import logging
 
@@ -11,11 +10,10 @@ def invalid_request_error(missing_fields):
         "message": f"The following fields are required: {', '.join(missing_fields)}."
     }), 400
 
-
-def invalid_question_error():
+def invalid_string_error():
     return jsonify({
-        "type": "invalid_question",
-        "message": "Invalid question string provided."
+        "type": "invalid_string",
+        "message": "Invalid string provided."
     }), 422
 
 def invalid_fen_error():
@@ -46,4 +44,4 @@ def is_json_error():
     return jsonify({
                 "type": "invalid_request",
                 "message": "Request must be a JSON object."
-            }), 400
+    }), 400

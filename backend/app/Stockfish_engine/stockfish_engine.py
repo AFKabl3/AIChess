@@ -10,48 +10,21 @@ class StockfishEngine(Stockfish):
     def is_move_valid(self, fen, move):
         new_fen = utils.from_move_to_fen(fen, move)
         if new_fen is None:
-            return {"is_valid": False, "endgame": None}
-        
-        # Check for endgame conditions
-        board = Board(new_fen)
-        endgame_type = self.check_endgame(board)
-        
-        if endgame_type:
-            return {"is_valid": True, "endgame": endgame_type}
-   
-        # If none of the endgame conditions apply then validate the FEN
-        is_valid = self.is_fen_valid(new_fen)
-        return {"is_valid": is_valid, "endgame": None}
+            return False
+        return True
     
-    def fen_to_board(self,fen):
-        return Board(fen)
-    
-    def invalid_fen(self,fen):
+
+    def check_endgame(self, fen):
+        '''
+        return the type of the endgame, None if the game is not over
+        '''
         try:
-            Board(fen)
-            return False  # Valid FEN
-        except ValueError:
-            return True  # Invalid FEN
-
-
-    def check_endgame(self, board):
-        """
-        Checks if the given board state results in an endgame.
-        
-        Args:
-            board (Board): A chess Board object.
-
-        Returns:
-            str: The type of endgame ('checkmate', 'stalemate', 'insufficient_material') if applicable, 
-                otherwise None.
-        """
-        if board.is_checkmate():
-            return "checkmate"
-        if board.is_stalemate():
-            return "stalemate"
-        if board.is_insufficient_material():
-            return "insufficient_material"
-        return None
+            board = Board(fen)
+            if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
+                return str(board.outcome().termination).split(".")[1].lower()
+            return None
+        except:
+            return None
 
 
     def get_move_suggestion(self, fen):
@@ -82,25 +55,6 @@ class StockfishEngine(Stockfish):
             return round(evaluation_after - evaluation_before, 5)
         else:
             return round(evaluation_before - evaluation_after, 5)
-        
-    def is_game_over(self, fen):
-        if fen is None or len(fen.split(" ")) != 6:
-            return {
-                "is_game_over": False,
-                "type": "Invalid FEN string provided."
-            }
-        board = Board(fen)
-        type = str(board.outcome().termination).split(".")[1]
-        if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
-            return {
-                "is_game_over": True,
-                "type": type
-            }
-        return {
-            "is_game_over": False,
-            "type": "None"
-        }
-
 
     # calcutation of the winnig percentage of the current player
     def get_winning_percentage(self, fen):

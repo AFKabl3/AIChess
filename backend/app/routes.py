@@ -20,7 +20,7 @@ from .error_handlers import (
     stockfish_error,
     llm_error,
     is_json_error,
-    invalid_question_error
+    invalid_string_error
 )
 
 def create_main_app():
@@ -40,6 +40,7 @@ def create_main_app():
     async def evaluate_move():
         if not request.is_json:
             return is_json_error()
+        
         data = await request.get_json()
         fen = data.get("fen")
         move = data.get("move")
@@ -47,63 +48,61 @@ def create_main_app():
         # Validate FEN and move data
         if not fen or not move:
             return invalid_request_error(["'fen'", "'move'"])
-
+                
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
-                
-                
-        move_validity = stockfish.is_move_valid(fen, move)
-        if not move_validity["is_valid"]:
+            print(stockfish.check_endgame(fen))
+            if stockfish.check_endgame(fen) is not None:
+                type = stockfish.check_endgame(fen)
+                return jsonify({
+                    "player_made_move": stockfish_utils.get_current_player(fen),
+                    "feedback": f"Game is ended in a {type}"
+                }), 200 
+            else:
+                return invalid_fen_error()   
+            
+        if not stockfish.is_move_valid(fen, move):
             return invalid_move_error()
         
         try:
             fen_after_move = stockfish_utils.from_move_to_fen(fen, move)
-            winning_percentage = stockfish.get_winning_percentage(fen_after_move).get("percentage")
-            board_str = llm_utils.from_fen_to_board(fen_after_move)
-            current_player = stockfish_utils.get_current_player(fen)
-        except Exception as e:
-            return stockfish_error(e)
-        
-        ask_input = {
-            "board": board_str,
-            "player": llm_utils.get_player(current_player),
-            "move": stockfish_utils.uci_to_san(fen, move),
-            "winning_percentage": 100 - winning_percentage
-        }
-
-        if move_validity["endgame"] is not None:
-            try:
-                    response = coach.ask_endgame(ask_input)
-            except Exception as e:
-                    return llm_error(e)
-
-            return jsonify({
-                "player_made_move": current_player,
-                "feedback": response,
-            }), 200
-        else:
-        # Proceed with delta evaluation for normal moves
-            try:
+            ask_input = {}
+            if stockfish.check_endgame(fen_after_move) is None:
                 delta_evaluation = stockfish.get_move_evaluation(fen, move)
+                if delta_evaluation is None:
+                    raise StockfishException("no evaluation for the current move")
+                winning_percentage = 100 - stockfish.get_winning_percentage(fen_after_move).get("percentage")
                 stockfish.reset_engine_parameters()
 
-                if delta_evaluation is None:
-                    raise StockfishException("No evaluation for the current FEN")
-                
-                ask_input["delta_evaluation"] = delta_evaluation
-                
-                try:
-                    response = coach.ask_move_feedback(ask_input)
-                except Exception as e:
-                    return llm_error(e)
-            
-            except StockfishException as e:
-                return stockfish_error(e)
+                ask_input.update({
+                    "delta_evaluation": delta_evaluation,
+                    "winning_percentage": winning_percentage
+                })
 
-            return jsonify({
-                "player_made_move": current_player,
-                "feedback": response,
-            }), 200
+            board_str = llm_utils.from_fen_to_board(fen_after_move)
+            player_made_move = stockfish_utils.get_current_player(fen)
+            ask_input.update({
+                "board": board_str,
+                "player": llm_utils.get_player(player_made_move),
+                "move": stockfish_utils.uci_to_san(fen, move),
+            })
+
+            try:
+                if stockfish.check_endgame(fen_after_move) is None:
+                    response = coach.ask_move_feedback(ask_input)
+                else:
+                    ask_input["type"] = stockfish.check_endgame(fen_after_move)
+                    response = coach.ask_endgame(ask_input)
+            except Exception as e:
+                return llm_error(e)
+            
+        except StockfishException as e:
+            return stockfish_error(e)
+
+        return jsonify({
+            "player_made_move": player_made_move,
+            "feedback": response,
+        }), 200
+
 
     @app.route('/get_move_suggestion_with_evaluation', methods=['POST'])
     async def get_move_suggestion_with_evaluation():
@@ -115,61 +114,49 @@ def create_main_app():
 
         if not fen:
             return invalid_request_error(["fen"])
-        
-        if stockfish.invalid_fen(fen):
-            return invalid_fen_error()
-        
-        board = stockfish.fen_to_board(fen)
-        # If one type of endgame [draw,victory,insuficent material] is present then we give a message 
-        if stockfish.check_endgame(board) is not None:
-            type = stockfish.check_endgame(board)
-            return jsonify({
-            "suggested_move": '',
-            "suggestion": f'No more moves available, it is a {type}',
-        }), 200 
             
         if not stockfish.is_fen_valid(fen):
-            return invalid_fen_error()
-            
-            # if not endgame, proceed as usual
+            if stockfish.check_endgame(fen) is not None:
+                type = stockfish.check_endgame(fen)
+                return jsonify({
+                    "current_player": stockfish_utils.get_current_player(fen),
+                    "suggested_move": "",
+                    "suggestion": f"No more moves available, the game ended in a {type}"
+                }), 200 
+            else:
+                return invalid_fen_error()
+
         try:
             # obtain from stockfish the best move
             suggested_move = stockfish.get_move_suggestion(fen)
 
-            # calculate the evaluation of the move
-            delta_evaluation = stockfish.get_move_evaluation(fen, suggested_move)
-
-            # reset stockfish_parameters
-            stockfish.reset_engine_parameters()
-
-            if delta_evaluation is None:
-                raise StockfishException("no evaluation for the current fen")
-            print(fen)
             fen_after_move = stockfish_utils.from_move_to_fen(fen, suggested_move)
-            print (fen_after_move)
-            winning_percentage = stockfish.get_winning_percentage(fen_after_move).get("percentage")
-            print(winning_percentage)
+            ask_input = {}
+            if stockfish.check_endgame(fen_after_move) is None:
+                delta_evaluation = stockfish.get_move_evaluation(fen, suggested_move)
+                if delta_evaluation is None:
+                    raise StockfishException("no evaluation for the current move")
+                winning_percentage = 100 - stockfish.get_winning_percentage(fen_after_move).get("percentage")
+                stockfish.reset_engine_parameters()
+
+                ask_input.update({
+                    "delta_evaluation": delta_evaluation,
+                    "winning_percentage": winning_percentage
+                })
+
+            board_str = llm_utils.from_fen_to_board(fen)
+            current_player = stockfish_utils.get_current_player(fen)
+            ask_input.update({
+                "board": board_str,
+                "player": llm_utils.get_player(current_player),
+                "move": stockfish_utils.uci_to_san(fen, suggested_move),
+            })
 
             try:
-                board_str = llm_utils.from_fen_to_board(fen)
-                current_player = stockfish_utils.get_current_player(fen)
-                ask_input = {
-                    "board": board_str,
-                    "player": llm_utils.get_player(current_player),
-                    "move": stockfish_utils.uci_to_san(fen, suggested_move),
-                    "delta_evaluation": delta_evaluation,
-                    "winning_percentage": 100 - winning_percentage
-                }
-                #check if there is endgame, in which case we let the user know that the next move is the decisive one, otherwise we proceed as usual
-                board = stockfish.fen_to_board(fen_after_move)
-                type = stockfish.check_endgame(board)
-                if(type is not None):
-                    if(type == "checkmate"):
-                        ask_input["winning_percentage"] = 100
-                        response = coach.move_suggestion_endgame(ask_input)
-                else:
+                if stockfish.check_endgame(fen_after_move) is None:
                     response = coach.ask_move_suggestion(ask_input) 
-
+                else:
+                    response = coach.move_suggestion_endgame(ask_input)
             except Exception as e:
                 return llm_error(e)
 
@@ -196,12 +183,8 @@ def create_main_app():
             return invalid_request_error(["fen","skill_level"])
         
          # Validate FEN and ensure no endgame condition
-        if stockfish.invalid_fen(fen):
-            return invalid_fen_error()
-
         if not stockfish.is_fen_valid(fen):
-            board = stockfish.fen_to_board(fen)
-            if stockfish.check_endgame(board) is not None:
+            if stockfish.check_endgame(fen) is not None:
                 return jsonify({
                     "bot_move": ""
                 }), 200
@@ -228,6 +211,7 @@ def create_main_app():
             "bot_move": bot_move
         }), 200
 
+
     @app.route('/get_best_move', methods=['POST'])
     async def get_best_move():
         if not request.is_json:
@@ -239,14 +223,9 @@ def create_main_app():
         if not fen:
             return invalid_request_error(["fen"])
 
-
         # Validate FEN and ensure no endgame condition
-        if stockfish.invalid_fen(fen):
-            return invalid_fen_error()
-        
         if not stockfish.is_fen_valid(fen):
-            board = stockfish.fen_to_board(fen)
-            if stockfish.check_endgame(board) is not None:
+            if stockfish.check_endgame(fen) is not None:
                 return jsonify({
                     "suggested_move": ""
                 }), 200 
@@ -266,6 +245,7 @@ def create_main_app():
         return jsonify({
             "suggested_move": suggested_move
         }), 200
+    
 
     @app.route('/get_game_status', methods=['POST'])
     async def get_game_status():
@@ -277,22 +257,15 @@ def create_main_app():
 
         if not fen:
             return invalid_request_error(["fen"])
-        
-         # Validate FEN and ensure no endgame condition
-        if stockfish.invalid_fen(fen):
-            return invalid_fen_error()
-
-        # Make a board object with the current fen, check the type of endgame (if it is), give message in the chat     
+           
         if not stockfish.is_fen_valid(fen):
-            board = stockfish.fen_to_board(fen)
-            if stockfish.check_endgame(board) is not None:
-                type = stockfish.check_endgame(board)
+            if stockfish.check_endgame(fen) is not None:
+                type = stockfish.check_endgame(fen)
                 return jsonify({
                     "answer": f"Game is over: {type}"
                 }), 200 
             else:
-                return invalid_fen_error()
-            
+                return invalid_fen_error()    
 
         try:
             # game_status_evaluation = stockfish.get_board_evaluation(fen)
@@ -309,7 +282,6 @@ def create_main_app():
                 "board": board_str,
                 "player": llm_utils.get_player(current_player),
                 "winning_percentage": winning_percentage
-                # "evaluation": game_status_evaluation
             }
             answer = coach.ask_game_status_explanation(ask_input)
         except Exception as e:
@@ -331,25 +303,17 @@ def create_main_app():
         if not fen:
             return invalid_request_error(["fen"])
         
-        
         # Validate FEN and ensure no endgame condition
-        if stockfish.invalid_fen(fen):
-            return invalid_fen_error()
-        
         if not stockfish.is_fen_valid(fen):
-            board = stockfish.fen_to_board(fen)
-            if stockfish.check_endgame(board) is not None:
-                type = stockfish.check_endgame(board)
+            if stockfish.check_endgame(fen) is not None:
                 return jsonify({
-                    "suggested_move": '',
-                    "suggestion": f'No more moves available, it is a {type}',
+                    "current_player": stockfish_utils.get_current_player(fen),
+                    "percentage": None
                 }), 200 
             else:
                 return invalid_fen_error()
-        
         try:
             winning_percentage = stockfish.get_winning_percentage(fen)
-            
             # reset stockfish_parameters
             stockfish.reset_engine_parameters()
 
@@ -359,6 +323,7 @@ def create_main_app():
         
         except StockfishException as e:
             return stockfish_error(e) 
+        
 
     @app.route('/more_explanation', methods=['POST'])
     async def more_explanation():
@@ -371,19 +336,13 @@ def create_main_app():
         first_answer = data.get("first_answer")
 
         if not question or not first_answer:
-            return jsonify({
-                "type": "invalid_request",
-                "message": "Both 'question' and 'first_answer' fields are required."
-            }), 400
+            return invalid_request_error(["question", "first_answer"])
 
         if not llm_utils.is_string_valid(question):
-            return invalid_question_error()
+            return invalid_string_error()
             
         if not llm_utils.is_string_valid(first_answer):
-            return jsonify({
-                "type": "invalid_first_answer",
-                "message": "Invalid first_answer string provided."
-            }), 422
+            return invalid_string_error()
 
         try:
             ask_input = {

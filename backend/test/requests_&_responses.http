@@ -90,6 +90,39 @@ Response:
     "type": "invalid_move"
 }
 
+
+### Game over
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "move": "e5c7"
+}
+
+Response:
+{
+  "player_made_move": "b",
+  "feedback": "Game is ended in a checkmate"
+}
+
+
+### Game over - draw
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "1B6/8/p7/k7/1RK5/8/PP3P1P/8 b - - 1 41",
+  "move": "e5c7"
+}
+
+Response:
+{
+  "player_made_move": "b",
+  "feedback": "Game is ended in a stalemate"
+}
+
+
 ### Empty Request Body
 POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
@@ -157,9 +190,11 @@ Content-Type: application/json
 
 Response:
 {
- "suggested_move": "",
- "suggestion": "No more moves available, it is a checkmate"
+  "current_player": "b",
+  "suggested_move": "",
+  "suggestion": "No more moves available, the game ended in a checkmate"
 }
+
 
 ### Game over - draw
 POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
@@ -171,12 +206,10 @@ Content-Type: application/json
 
 Response:
 {
- "suggested_move": "",
- "suggestion": "No more moves available, it is a stalemate"
+  "current_player": "b",
+  "suggested_move": "",
+  "suggestion": "No more moves available, the game ended in a stalemate"
 }
-
-
-
 
 
 ### Empty Request Body
@@ -620,8 +653,8 @@ Content-Type: application/json
 
 Response:
 {
-  "suggested_move": "",
-  "suggestion": "No more moves available, it is a checkmate"
+  "current_player": 'b',
+  "percentage": 
 }
 
 
@@ -694,8 +727,8 @@ Content-Type: application/json
 
 Response:
 {
-    "type": "invalid_request",
-    "message": "Both 'question' and 'first_answer' fields are required."
+  "type": "invalid_request",
+  "message": "The following fields are required: question, first_answer."
 }
 
 
@@ -704,16 +737,16 @@ POST http://127.0.0.1:5000/more_explanation
 Content-Type: application/json
 
 {
-    "question": "What can i do to improve my pawn structure in this state?"
+  "question": "What can i do to improve my pawn structure in this state?"
 }
 
 Response:
 {
-    "type": "invalid_request",
-    "message": "Both 'question' and 'first_answer' fields are required."
+  "type": "invalid_request",
+  "message": "The following fields are required: question, first_answer."
 }
 
-### Invalid Question String
+### 49 Invalid Question String
 POST http://127.0.0.1:5000/more_explanation
 Content-Type: application/json
 
@@ -724,12 +757,12 @@ Content-Type: application/json
 
 Response:
 {
-    "type": "invalid_question",
-    "message": "Invalid question string provided."
+  "message": "Invalid string provided.",
+  "type": "invalid_string"
 }
 
 
-### Invalid First Answer String
+###Invalid First Answer String
 POST http://127.0.0.1:5000/more_explanation
 Content-Type: application/json
 
@@ -740,11 +773,11 @@ Content-Type: application/json
 
 Response:
 {
-    "type": "invalid_first_answer",
-    "message": "Invalid first_answer string provided."
+  "message": "Invalid string provided.",
+  "type": "invalid_string"
 }
 
-### Non-JSON Content Type
+###Non-JSON Content Type
 POST http://127.0.0.1:5000/more_explanation
 Content-Type: text/plain
 
@@ -759,7 +792,7 @@ Response:
     "type": "invalid_request"
 }
 
-### Invalid fen notation uppercase letter and lowercase letters
+###Invalid fen notation uppercase letter and lowercase letters
 POST http://127.0.0.1:5000/get_winning_percentage
 Content-Type: application/json
 {
