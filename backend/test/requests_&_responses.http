@@ -24,7 +24,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
+    "message": "The following fields are required: 'fen', 'move'.",
     "type": "invalid_request"
 }
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 Response:
 {
-      "message": "Both 'fen' and 'move' fields are required.",
+      "message": "The following fields are required: 'fen', 'move'.",
       "type": "invalid_request"
 }
 
@@ -64,14 +64,14 @@ POST http://127.0.0.1:5000/evaluate_move
 Content-Type: application/json
 
 {
-  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
-  "move": "e7e5"
+  "fen": "8/8/p7/k3B3/1RK5/8/PP3P1P/8 w - - 0 41",
+  "move": "e5c7"
 }
 
 Response:
 {
-  "message": "Game is over: CHECKMATE",
-  "type": "game_over"
+  "feedback": string,
+  "player_made_move": "w"
 }
 
 
@@ -86,9 +86,42 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Invalid/illegal string move provided.",
+    "message": "Invalid/illegal move provided.",
     "type": "invalid_move"
 }
+
+
+### Game over
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+  "move": "e5c7"
+}
+
+Response:
+{
+  "player_made_move": "b",
+  "feedback": "Game is ended in a checkmate"
+}
+
+
+### Game over - draw
+POST http://127.0.0.1:5000/evaluate_move
+Content-Type: application/json
+
+{
+  "fen": "1B6/8/p7/k7/1RK5/8/PP3P1P/8 b - - 1 41",
+  "move": "e5c7"
+}
+
+Response:
+{
+  "player_made_move": "b",
+  "feedback": "Game is ended in a stalemate"
+}
+
 
 ### Empty Request Body
 POST http://127.0.0.1:5000/evaluate_move
@@ -98,7 +131,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'move' fields are required.",
+    "message": "The following fields are required: 'fen', 'move'.",
     "type": "invalid_request"
 }
 
@@ -157,8 +190,25 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Game is over: CHECKMATE",
-  "type": "game_over"
+  "current_player": "b",
+  "suggested_move": "",
+  "suggestion": "No more moves available, the game ended in a checkmate"
+}
+
+
+### Game over - draw
+POST http://127.0.0.1:5000/get_move_suggestion_with_evaluation
+Content-Type: application/json
+
+{
+  "fen": "1B6/8/p7/k7/1RK5/8/PP3P1P/8 b - - 1 41"
+}
+
+Response:
+{
+  "current_player": "b",
+  "suggested_move": "",
+  "suggestion": "No more moves available, the game ended in a stalemate"
 }
 
 
@@ -170,7 +220,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "'fen' fields is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -214,7 +264,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "message": "The following fields are required: fen, skill_level.",
   "type": "invalid_request"
 }
 
@@ -228,7 +278,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Both 'fen' and 'skill_level' fields are required.",
+  "message": "The following fields are required: fen, skill_level.",
   "type": "invalid_request"
 }
 
@@ -259,8 +309,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Game is over: CHECKMATE",
-  "type": "game_over"
+  "bot_move": ""
 }
 
 
@@ -302,7 +351,7 @@ Content-Type: application/json
 
 Response:
 {
-    "message": "Both 'fen' and 'skill_level' fields are required.",
+    "message": "The following fields are required: fen, skill_level.",
     "type": "invalid_request"
 }
 
@@ -344,7 +393,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -374,8 +423,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Game is over: CHECKMATE",
-  "type": "game_over"
+  "suggested_move": ""
 }
 
 
@@ -430,7 +478,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -460,8 +508,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Game is over: CHECKMATE",
-  "type": "game_over"
+  "answer": "Game is over: checkmate"
 }
 
 
@@ -576,7 +623,7 @@ Content-Type: application/json
 
 Response:
  {
-  "message": "'fen' field is required.",
+  "message": "The following fields are required: fen.",
   "type": "invalid_request"
 }
 
@@ -606,8 +653,8 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "Game is over: CHECKMATE",
-  "type": "game_over"
+  "current_player": 'b',
+  "percentage": 
 }
 
 
@@ -650,7 +697,7 @@ Content-Type: application/json
 
 Response:
 {
-  "message": "404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
+  "message": "The requested resource was not found. ",
   "type": "not_found"
 }
 
@@ -680,8 +727,8 @@ Content-Type: application/json
 
 Response:
 {
-    "type": "invalid_request",
-    "message": "Both 'question' and 'first_answer' fields are required."
+  "type": "invalid_request",
+  "message": "The following fields are required: question, first_answer."
 }
 
 
@@ -690,16 +737,16 @@ POST http://127.0.0.1:5000/more_explanation
 Content-Type: application/json
 
 {
-    "question": "What can i do to improve my pawn structure in this state?"
+  "question": "What can i do to improve my pawn structure in this state?"
 }
 
 Response:
 {
-    "type": "invalid_request",
-    "message": "Both 'question' and 'first_answer' fields are required."
+  "type": "invalid_request",
+  "message": "The following fields are required: question, first_answer."
 }
 
-### Invalid Question String
+### 49 Invalid Question String
 POST http://127.0.0.1:5000/more_explanation
 Content-Type: application/json
 
@@ -710,12 +757,12 @@ Content-Type: application/json
 
 Response:
 {
-    "type": "invalid_question",
-    "message": "Invalid question string provided."
+  "message": "Invalid string provided.",
+  "type": "invalid_string"
 }
 
 
-### Invalid First Answer String
+###Invalid First Answer String
 POST http://127.0.0.1:5000/more_explanation
 Content-Type: application/json
 
@@ -726,11 +773,11 @@ Content-Type: application/json
 
 Response:
 {
-    "type": "invalid_first_answer",
-    "message": "Invalid first_answer string provided."
+  "message": "Invalid string provided.",
+  "type": "invalid_string"
 }
 
-### Non-JSON Content Type
+###Non-JSON Content Type
 POST http://127.0.0.1:5000/more_explanation
 Content-Type: text/plain
 
@@ -743,4 +790,17 @@ Response:
 {
     "message": "Request must be a JSON object.",
     "type": "invalid_request"
+}
+
+###Invalid fen notation uppercase letter and lowercase letters
+POST http://127.0.0.1:5000/get_winning_percentage
+Content-Type: application/json
+{
+  "fen": "rnbqkbnR/ppppppPp/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+}
+
+Response:
+{
+  "message": "Invalid FEN string provided.",
+  "type": "invalid_fen_notation"
 }

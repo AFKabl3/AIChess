@@ -48,3 +48,31 @@ export const parseArrow = (move) => {
 
   return [from, to, '#66bb6a'];
 };
+
+
+/**
+ * Checks if the number of pieces in a FEN string is correct according to chess rules.
+ * @param {string} fen - The FEN string.
+ * @returns {boolean} True if the number of pieces is correct, false otherwise.
+ */
+export const isPieceCountValid = (fen) => {
+  const pieceCounts = {
+    'p': 8, 'r': 2, 'n': 2, 'b': 2, 'q': 1, 'k': 1,
+    'P': 8, 'R': 2, 'N': 2, 'B': 2, 'Q': 1, 'K': 1
+  };
+
+  const fenParts = fen.split(' ')[0]; // Get the board part of the FEN
+  for (const char of fenParts) {
+    if (pieceCounts.hasOwnProperty(char)) {
+      pieceCounts[char]--;
+    }
+  }
+
+  for (const piece in pieceCounts) {
+    if (pieceCounts[piece] < 0) {
+      return false;
+    }
+  }
+
+  return true;
+};

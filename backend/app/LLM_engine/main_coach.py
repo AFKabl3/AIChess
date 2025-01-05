@@ -22,13 +22,41 @@ class MainCoach(LLM):
         move = input.get("move")
         winning_percentage = input.get("winning_percentage")
         evaluation = input.get("delta_evaluation")
-        prompt = (f"""The player who made the move {player},
-                        The current state of the board is, empty cells are represented with ' ':\n{board}.
-                        The move made is {move},
-                        The delta of the two evaluations of the board state, before and after the move: {evaluation}.
-                        The probability of winning is: {winning_percentage}%.
+        prompt = (f"""The current state of the board is, empty cells are represented with ' ':\n{board}.
+                        The {player} player made {move}, with an evaluation of {evaluation}.
+                        Winning probability is {winning_percentage}%.
                         Provide only a feedback on this move. 
                         Limit the response to 70 words""")
+        response = (self.ask(prompt))
+        return response
+    
+    def ask_endgame(self,input):
+        self.automatic_coach_creation()
+        board = input.get("board")
+        player = input.get("player")
+        move = input.get("move")
+        type = input.get("type")
+        prompt = (f"""Board state, empty cells are represented with ' ':\n{board}.
+                        The {player} leads a game to a {type}. 
+                        The move made is {move}.
+                        Explain the move and provide a congratulations. 
+                        Limit the response to 70 words""")
+        response = (self.ask(prompt))
+        return response
+    
+    def move_suggestion_endgame(self, input):
+        self.automatic_coach_creation()
+        board = input.get("board")
+        player = input.get("player")
+        move = input.get("move")
+        # winning_percentage = input.get("winning_percentage")
+        
+        prompt = (f"""The current player is {player}.
+                        Board state, empty cells are rapresented with ' ':\n{board}
+                        Stockfish best move {move}, which leads to checkmate. 
+                        Reccomend this move to the user.
+                        Limit the response to 70 words""")
+        
         response = (self.ask(prompt))
         return response
 
@@ -39,12 +67,12 @@ class MainCoach(LLM):
         move = input.get("move")
         evaluation = input.get("delta_evaluation")
         winning_percentage = input.get("winning_percentage")
-        prompt = (f"""The current player is {player},
-                        The current state of the board is, empty cells are rapresented with ' ':\n{board}
-                        The move to be suggested is: {move},
-                        Having the delta of the two evaluations of the board state, before and after the move: {evaluation}.
-                        The probability of winning after the move: {winning_percentage}%.
-                        Suggest only this move to the user.
+        
+        prompt = (f"""The current player is {player}.
+                        Board state, empty cells are rapresented with ' ':\n{board}
+                        Stockfish suggests the best move: {move}, with an evaluation of {evaluation}.
+                        Winning probability after this move is {winning_percentage}%.
+                        Recommend this move to the user.
                         Limit the response to 70 words""")
         response = (self.ask(prompt))
         return response
@@ -52,6 +80,7 @@ class MainCoach(LLM):
     def ask_more_explanation(self, ask_input):
         question = ask_input.get("question")
         first_answer = ask_input.get("first_answer")
+
         prompt = (f"""Respond again to the previous question: {question} \n
                         give a more detailed explanation compared to the last response: {first_answer}\n
                         Limit the response to 70 words\n""")
@@ -63,12 +92,13 @@ class MainCoach(LLM):
         board = ask_input.get("board")
         player = ask_input.get("player")
         winning_percentage = ask_input.get("winning_percentage")
-        prompt = (f"""The current player is {player},
-                        The current state of the board is, empty cells are rapresented with ' ':\n{board}.
-                        The probability of winning is: {winning_percentage}%.
-                        Provide an explanation on the current status. 
+        
+        prompt = (f"""The current player is {player}.
+                        Board state, empty cells are rapresented with ' ':\n{board}
+                        Winning probability of the current player: {winning_percentage}%.
+                        Explanation on the status of the current player. 
                         Limit the response to 70 words\n""")
         response = (self.ask(prompt))
         return response
 
-    
+

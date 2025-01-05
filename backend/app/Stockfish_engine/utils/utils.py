@@ -33,4 +33,16 @@ def uci_to_san(fen, move):
         return san_move
     except (IllegalMoveError, InvalidMoveError, AmbiguousMoveError):
         return None
+    
+def is_pieces_count_valid(fen):
+    pieceCounts = {
+        'p': 8, 'r': 2, 'n': 2, 'b': 2, 'q': 1, 'k': 1,
+        'P': 8, 'R': 2, 'N': 2, 'B': 2, 'Q': 1, 'K': 1
+    }
+    fenParts = fen.split(' ')[0]
+    for char in fenParts:
+        if char in pieceCounts:
+            pieceCounts[char] -= 1
+
+    return all(value >= 0 for value in pieceCounts.values())
 

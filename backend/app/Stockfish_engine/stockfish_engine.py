@@ -11,7 +11,21 @@ class StockfishEngine(Stockfish):
         new_fen = utils.from_move_to_fen(fen, move)
         if new_fen is None:
             return False
-        return self.is_fen_valid(new_fen)
+        return True
+    
+
+    def check_endgame(self, fen):
+        '''
+        return the type of the endgame, None if the game is not over
+        '''
+        try:
+            board = Board(fen)
+            if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_fivefold_repetition():
+                return str(board.outcome().termination).split(".")[1].lower()
+            return None
+        except:
+            return None
+
 
     def get_move_suggestion(self, fen):
         self.set_fen_position(fen)
@@ -32,7 +46,7 @@ class StockfishEngine(Stockfish):
         evaluation_before = self.get_board_evaluation(fen)
         fen_after_move = utils.from_move_to_fen(fen, move)
         evaluation_after = self.get_board_evaluation(fen_after_move)
-
+        # use the new funciton here, return some kind of endgame, so we directly ask llm
         if evaluation_before is None or evaluation_after is None:
            return None
 
@@ -41,25 +55,6 @@ class StockfishEngine(Stockfish):
             return round(evaluation_after - evaluation_before, 5)
         else:
             return round(evaluation_before - evaluation_after, 5)
-        
-    def is_game_over(self, fen):
-        if fen is None or len(fen.split(" ")) != 6:
-            return {
-                "is_game_over": False,
-                "type": "Invalid FEN string provided."
-            }
-        board = Board(fen)
-        type = str(board.outcome().termination).split(".")[1]
-        if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
-            return {
-                "is_game_over": True,
-                "type": type
-            }
-        return {
-            "is_game_over": False,
-            "type": "None"
-        }
-
 
     # calcutation of the winnig percentage of the current player
     def get_winning_percentage(self, fen):
