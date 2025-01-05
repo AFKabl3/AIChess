@@ -137,7 +137,7 @@ export const MoveHistoryTable = () => {
           onClick={() => {
             undoLastMove();
             const fen =
-              history.length >= 2 ? history[history.length - 2].bot?.fen : chess.defaultPosition;
+              history.length >= 2 ? history[history.length - 2].bot?.fen : chess.savedFEN;
             loadGame(fen);
           }}
           disabled={!history.length || savedFEN === position || isPaused}
