@@ -20,7 +20,7 @@ class StockfishEngine(Stockfish):
         '''
         try:
             board = Board(fen)
-            if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
+            if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_fivefold_repetition():
                 return str(board.outcome().termination).split(".")[1].lower()
             return None
         except:

@@ -180,7 +180,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
       !config.fullControlMode &&
       config.startedGame &&
       config.selectedColor !== game.turn() &&
-      !game.in_checkmate()
+      !game.game_over()
     )
       setTimeout(makeBotMove, 100);
   }, [game, config.startedGame]);

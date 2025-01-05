@@ -17,6 +17,8 @@
     "@mui/material": "^6.1.6",
     "@uidotdev/usehooks": "^2.4.1",
     "chess.js": "^0.12.0",
+    "fen-validator": "^2.0.1",
+    "fentastic": "^0.2.2",
     "react": "^18.3.1",
     "react-chessboard": "^4.7.2",
     "react-dom": "^18.3.1",
