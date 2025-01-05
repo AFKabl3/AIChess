@@ -49,9 +49,8 @@ def create_main_app():
         if not fen or not move:
             return invalid_request_error(["'fen'", "'move'"])
                 
-        if not stockfish.is_fen_valid(fen):
-            print(stockfish.check_endgame(fen))
-            if stockfish.check_endgame(fen) is not None:
+        if not (stockfish.is_fen_valid(fen) and stockfish_utils.is_pieces_count_valid(fen)):
+            if (stockfish.check_endgame(fen) is not None) and stockfish_utils.is_pieces_count_valid(fen):
                 type = stockfish.check_endgame(fen)
                 return jsonify({
                     "player_made_move": stockfish_utils.get_current_player(fen),
@@ -115,8 +114,8 @@ def create_main_app():
         if not fen:
             return invalid_request_error(["fen"])
             
-        if not stockfish.is_fen_valid(fen):
-            if stockfish.check_endgame(fen) is not None:
+        if not (stockfish.is_fen_valid(fen) and stockfish_utils.is_pieces_count_valid(fen)):
+            if (stockfish.check_endgame(fen) is not None) and stockfish_utils.is_pieces_count_valid(fen):
                 type = stockfish.check_endgame(fen)
                 return jsonify({
                     "current_player": stockfish_utils.get_current_player(fen),
@@ -183,8 +182,8 @@ def create_main_app():
             return invalid_request_error(["fen","skill_level"])
         
          # Validate FEN and ensure no endgame condition
-        if not stockfish.is_fen_valid(fen):
-            if stockfish.check_endgame(fen) is not None:
+        if not (stockfish.is_fen_valid(fen) and stockfish_utils.is_pieces_count_valid(fen)):
+            if (stockfish.check_endgame(fen) is not None) and stockfish_utils.is_pieces_count_valid(fen):
                 return jsonify({
                     "bot_move": ""
                 }), 200
@@ -224,8 +223,8 @@ def create_main_app():
             return invalid_request_error(["fen"])
 
         # Validate FEN and ensure no endgame condition
-        if not stockfish.is_fen_valid(fen):
-            if stockfish.check_endgame(fen) is not None:
+        if not (stockfish.is_fen_valid(fen) and stockfish_utils.is_pieces_count_valid(fen)):
+            if (stockfish.check_endgame(fen) is not None) and stockfish_utils.is_pieces_count_valid(fen):
                 return jsonify({
                     "suggested_move": ""
                 }), 200 
@@ -258,8 +257,8 @@ def create_main_app():
         if not fen:
             return invalid_request_error(["fen"])
            
-        if not stockfish.is_fen_valid(fen):
-            if stockfish.check_endgame(fen) is not None:
+        if not (stockfish.is_fen_valid(fen) and stockfish_utils.is_pieces_count_valid(fen)):
+            if (stockfish.check_endgame(fen) is not None) and stockfish_utils.is_pieces_count_valid(fen):
                 type = stockfish.check_endgame(fen)
                 return jsonify({
                     "answer": f"Game is over: {type}"
@@ -304,8 +303,8 @@ def create_main_app():
             return invalid_request_error(["fen"])
         
         # Validate FEN and ensure no endgame condition
-        if not stockfish.is_fen_valid(fen):
-            if stockfish.check_endgame(fen) is not None:
+        if not (stockfish.is_fen_valid(fen) and stockfish_utils.is_pieces_count_valid(fen)):
+            if (stockfish.check_endgame(fen) is not None) and stockfish_utils.is_pieces_count_valid(fen):
                 return jsonify({
                     "current_player": stockfish_utils.get_current_player(fen),
                     "percentage": None
