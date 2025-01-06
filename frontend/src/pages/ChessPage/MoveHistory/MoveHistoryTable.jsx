@@ -137,7 +137,7 @@ export const MoveHistoryTable = () => {
           variant="contained"
           color={isPaused ? 'primary' : 'secondary'}
           onClick={togglePauseResume}
-          disabled={areButtonsDisabled}
+          // disabled={areButtonsDisabled}
           sx={{
             flex: 1,
             backgroundColor: isPaused ? 'primary.main' : 'secondary.main',
