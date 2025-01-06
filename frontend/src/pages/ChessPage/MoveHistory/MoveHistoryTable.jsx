@@ -14,7 +14,7 @@ const NotationLink = styled('span')({
 
 export const MoveHistoryTable = () => {
   const { chess, moveHistory, config } = useContext(ChessContext);
-  const { position, loadGame, updateFENAfterUndo } = chess;
+  const { position, loadGame, updateFENAfterUndo, botThinking } = chess;
   const {
     isPaused,
     setIsPaused,
@@ -26,6 +26,8 @@ export const MoveHistoryTable = () => {
     undoLastMove,
   } = moveHistory;
 
+  const areButtonsDisabled = botThinking || isPaused;
+  
   const notationEndRef = useRef(null);
   const [saveMode, setSaveMode] = useState(true);
 
@@ -135,6 +137,7 @@ export const MoveHistoryTable = () => {
           variant="contained"
           color={isPaused ? 'primary' : 'secondary'}
           onClick={togglePauseResume}
+          disabled={areButtonsDisabled}
           sx={{
             flex: 1,
             backgroundColor: isPaused ? 'primary.main' : 'secondary.main',
@@ -153,7 +156,7 @@ export const MoveHistoryTable = () => {
 
             loadGame(fen);
           }}
-          disabled={!history.length || savedFEN === position || isPaused}
+          disabled={!history.length || savedFEN === position || areButtonsDisabled}
           sx={{
             flex: 1,
             backgroundColor: 'warning.main',
@@ -175,7 +178,7 @@ export const MoveHistoryTable = () => {
           variant="contained"
           color="error"
           onClick={handleResetSave}
-          disabled={!savedFEN || isPaused}
+          disabled={!savedFEN || areButtonsDisabled}
           sx={{
             flex: 1,
             backgroundColor: 'error.main',
@@ -188,7 +191,7 @@ export const MoveHistoryTable = () => {
           color={isPaused ? 'secondary' : 'success'}
           onClick={handleSaveOrLoad}
           disabled={
-            isPaused || position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+            areButtonsDisabled || position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
           }
           sx={{
             flex: 1,
