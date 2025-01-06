@@ -26,6 +26,7 @@ export const ChessPage = () => {
   const moveHistory = useMoveHistory();
   const { isPaused, updateHistory } = moveHistory;
 
+
   const chess = useChess({
     onPlayerMove: (move, prevFen, currFen) => {
       onPlayerMove(formatUciMove(move), prevFen);
@@ -44,7 +45,10 @@ export const ChessPage = () => {
     setConfigValue,
   });
 
-  const { fen, position, addArrow } = chess;
+  const { fen, position, addArrow, botThinking, isGameOver } = chess;
+
+  const areButtonsDisabled = botThinking || isGameOver;
+
 
   const onPlayerMove = async (move, fen) => {
     if (!llmUse) return;
@@ -139,10 +143,11 @@ export const ChessPage = () => {
   };
 
   const commands = [
-    { text: 'Suggest a Move', command: onSuggestionRequest },
+    { text: 'Suggest a Move', command: onSuggestionRequest, disabled: areButtonsDisabled },
     {
       text: 'Explain game status',
       command: onExplainGameStatus,
+      disabled: areButtonsDisabled,
     },
   ];
 

@@ -7,6 +7,8 @@ import { waitForResponseToast } from '../util/toasts';
 export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setConfigValue }) => {
   // Holds the current state of the chess game, including positions of pieces, castling rights, etc.
   const [game, setGame] = useState(new Chess());
+
+  // Allows to reset the game to the uploaded FEN or the default one.
   const [savedFEN, setSavedFEN] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 
   // Tracks the initial square of the piece being moved (e.g., "e2").
@@ -46,6 +48,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   // Percentage of probability of both players winning
   const [whitePercentage, setWhitePercentage] = useState(50.0);
   const [blackPercentage, setBlackPercentage] = useState(50.0);
+
+  const [botThinking, setBotThinking] = useState(false); // Track bot's thinking status
 
   // Start the timer for the active player
   const startTimer = () => {
@@ -274,9 +278,11 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   };
 
   const makeBotMove = async () => {
+    setBotThinking(true);
     const skillLevel = config.SKILL_LEVEL;
 
     if (skillLevel === 0) {
+      setBotThinking(false);
       setTimeout(makeRandomMove, 150);
       return;
     }
@@ -305,6 +311,8 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     } catch (error) {
       console.error(error);
       setTimeout(makeRandomMove, 150);
+    } finally {
+      setBotThinking(false);
     }
   };
 
@@ -572,5 +580,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     blackPercentage,
     fen,
     updateFENAfterUndo,
+    botThinking,
   };
 };
