@@ -9,7 +9,9 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
   const [game, setGame] = useState(new Chess());
 
   // Allows to reset the game to the uploaded FEN or the default one.
-  const [savedFEN, setSavedFEN] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+  const [savedFEN, setSavedFEN] = useState(
+    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  );
 
   // Tracks the initial square of the piece being moved (e.g., "e2").
   const [moveFrom, setMoveFrom] = useState('');
@@ -516,7 +518,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
    * @returns {boolean} Returns `true` if the move is valid, allowing it to be displayed; `false` if the move is invalid.
    */
   const onDrop = (source, target) => {
-    if (gameMode === 'timed' && isGameOver) {
+    if (isGameOver) {
       if (!statusMessage) showStatusMessage(game.turn() === 'w' ? 'Black wins!' : 'White wins!');
       return;
     }
@@ -581,5 +583,7 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     fen,
     updateFENAfterUndo,
     botThinking,
+    isGameOver,
+    gameMode,
   };
 };

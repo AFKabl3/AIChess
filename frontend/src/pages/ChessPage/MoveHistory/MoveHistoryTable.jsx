@@ -14,7 +14,14 @@ const NotationLink = styled('span')({
 
 export const MoveHistoryTable = () => {
   const { chess, moveHistory, config } = useContext(ChessContext);
-  const { position, loadGame, updateFENAfterUndo, botThinking } = chess;
+  const {
+    position,
+    loadGame,
+    updateFENAfterUndo,
+    botThinking,
+    isGameOver,
+    gameMode,
+  } = chess;
   const {
     isPaused,
     setIsPaused,
@@ -26,8 +33,7 @@ export const MoveHistoryTable = () => {
     undoLastMove,
   } = moveHistory;
 
-  const areButtonsDisabled = botThinking || isPaused;
-  
+  const areButtonsDisabled = botThinking || isPaused || (isGameOver && gameMode == 'timed');
   const notationEndRef = useRef(null);
   const [saveMode, setSaveMode] = useState(true);
 
@@ -100,7 +106,11 @@ export const MoveHistoryTable = () => {
                 padding: '4px',
               }}
             >
-              <NotationLink onClick={() => handleNotationClick(movePair.user.fen)}>
+              <NotationLink
+                onClick={() => {
+                  if (!(isGameOver && gameMode === 'timed')) handleNotationClick(movePair.user.fen);
+                }}
+              >
                 {config.selectedColor === 'w'
                   ? movePair.user
                     ? `${index + 1}. ${movePair.user.san}`
@@ -109,7 +119,11 @@ export const MoveHistoryTable = () => {
                   ? `${index + 1}. ${movePair.bot.san}`
                   : ``}
               </NotationLink>
-              <NotationLink onClick={() => handleNotationClick(movePair.bot.fen)}>
+              <NotationLink
+                onClick={() => {
+                  if (!(isGameOver && gameMode === 'timed')) handleNotationClick(movePair.user.fen);
+                }}
+              >
                 {config.selectedColor === 'w'
                   ? movePair.bot
                     ? movePair.bot.san
@@ -137,7 +151,7 @@ export const MoveHistoryTable = () => {
           variant="contained"
           color={isPaused ? 'primary' : 'secondary'}
           onClick={togglePauseResume}
-          // disabled={areButtonsDisabled}
+          disabled={isGameOver && gameMode == 'timed'}
           sx={{
             flex: 1,
             backgroundColor: isPaused ? 'primary.main' : 'secondary.main',
@@ -150,8 +164,7 @@ export const MoveHistoryTable = () => {
           color="warning"
           onClick={() => {
             undoLastMove();
-            const fen =
-              history.length >= 2 ? history[history.length - 2].bot?.fen : chess.savedFEN;
+            const fen = history.length >= 2 ? history[history.length - 2].bot?.fen : chess.savedFEN;
             history.length <= 1 ? updateFENAfterUndo('') : updateFENAfterUndo(fen);
 
             loadGame(fen);
@@ -191,7 +204,8 @@ export const MoveHistoryTable = () => {
           color={isPaused ? 'secondary' : 'success'}
           onClick={handleSaveOrLoad}
           disabled={
-            areButtonsDisabled || position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+            areButtonsDisabled ||
+            position === 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
           }
           sx={{
             flex: 1,
