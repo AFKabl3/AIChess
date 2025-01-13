@@ -13,6 +13,7 @@ export const Timer = ({ time, color }) => {
       sx={{
         display: 'flex',
         alignItems: 'center',
+        mt: 2
       }}
     >
       <Typography

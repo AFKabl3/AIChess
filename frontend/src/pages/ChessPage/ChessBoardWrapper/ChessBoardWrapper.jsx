@@ -73,19 +73,10 @@ export const ChessBoardWrapper = ({ settings }) => {
         {/* TODO: Create system for selecting difficulty */}
         <InfoBox title="Bot" subtitle="(205)" image="/bot.png" />
         {timerVisible && (
-          // <Box
-          //   sx={{
-          //     display: 'flex',
-          //     flexDirection: 'column',
-          //     alignItems: 'center',
-          //   }}
-          // >
           <Timer
             time={selectedColor === 'w' ? chess.whiteTime : chess.blackTime}
             color={selectedColor === 'w' ? 'white' : 'black'}
           />
-          // <Timer time={chess.blackTime} color="black" />
-          /* // </Box> */
         )}
         <ConfigBox controls={{ toggleFollowChat, toggleLLMUse }} />
       </Box>
