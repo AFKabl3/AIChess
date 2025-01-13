@@ -583,7 +583,6 @@ export const useChess = ({ onPlayerMove, onBotMove, lock, isPaused, config, setC
     fen,
     updateFENAfterUndo,
     botThinking,
-    isGameOver,
     gameMode,
   };
 };
